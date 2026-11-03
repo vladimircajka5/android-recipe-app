@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">RecipeApp</string>
+
+
+    <string name="login_title">Wellcome My Nigga</string>
+    <string name="login_subtitle">Login to continue</string>
+    <string name="login_register">Register</string>
+    <string name="login_sumbit">Login</string>
+
+    <string name="register_title">You Will Need Account My Nigga</string>
+    <string name="register_subtitle">Register to continue</string>
+    <string name="register_back">Back</string>
+    <string name="register_sumbit">Register</string>
+
+    <string name="home_title">What is up my Nigga</string>
+    <string name="home_subtitle">This is subtitle</string>
+    <string name="home_logout">Logout</string>
+
 </resources>
