@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Default -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Background -->
+    <color name="app_background">#202020</color>
+    <color name="app_surface">#303030</color>
+
+    <!-- Cyan accent -->
+    <color name="app_primary">#08a4a7</color>
+
+    <!-- Text -->
+    <color name="app_text">#E0E0E0</color>
+    <color name="app_text_secondary">#AAAAAA</color>
+
+    <!-- Borders -->
+    <color name="app_outline">#505050</color>
 </resources>
