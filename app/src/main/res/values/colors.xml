@@ -17,4 +17,7 @@
 
     <!-- Borders -->
     <color name="app_outline">#505050</color>
+
+    <!-- Shapes -->
+    <color name="app_circle">#65D0F4</color>
 </resources>

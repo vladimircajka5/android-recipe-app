@@ -6,6 +6,63 @@
     android:layout_height="match_parent"
     tools:context=".ui.auth.LoginFragment">
 
+    <View
+        android:id="@+id/view_login_circle_1"
+        android:layout_width="222dp"
+        android:layout_height="208dp"
+        android:alpha="0.4"
+        android:background="@drawable/bg_circle"
+        android:translationX="-60dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.074" />
+
+    <View
+        android:id="@+id/view_login_circle_2"
+        android:layout_width="203dp"
+        android:layout_height="200dp"
+        android:alpha="0.15"
+        android:background="@drawable/bg_circle"
+        android:translationX="60dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.444" />
+
+    <View
+        android:id="@+id/view_login_circle_3"
+        android:layout_width="153dp"
+        android:layout_height="156dp"
+        android:alpha="0.6"
+        android:background="@drawable/bg_circle"
+        android:translationX="60dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <View
+        android:id="@+id/view_login_circle_4"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:alpha="0.15"
+        android:background="@drawable/bg_circle"
+        android:translationX="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.051"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.657" />
+
+
     <TextView
         android:id="@+id/tv_login_title"
 
@@ -90,5 +147,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/et_login_password" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

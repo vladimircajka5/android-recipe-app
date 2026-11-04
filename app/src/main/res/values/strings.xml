@@ -2,7 +2,7 @@
     <string name="app_name">RecipeApp</string>
 
     <!-- Login Fragment -->
-    <string name="login_title">Wellcome My Nigga</string>
+    <string name="login_title">Wellcome Chief!</string>
     <string name="login_subtitle">Login to continue</string>
     <string name="login_register">Register</string>
     <string name="login_sumbit">Login</string>
@@ -19,7 +19,7 @@
     <string name="register_password_hint">Enter password</string>
 
     <!-- Home Fragment -->
-    <string name="home_title">What is up my Nigga</string>
+    <string name="home_title">This is HOME my Nigga</string>
     <string name="home_subtitle">This is subtitle</string>
     <string name="home_logout">Logout</string>
 
