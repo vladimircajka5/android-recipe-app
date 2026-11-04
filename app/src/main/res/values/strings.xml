@@ -21,6 +21,19 @@
     <!-- Home Fragment -->
     <string name="home_title">This is HOME my Nigga</string>
     <string name="home_subtitle">This is subtitle</string>
-    <string name="home_logout">Logout</string>
+    <string name="home_profile">My Profile</string>
+
+    <!-- Profile Fragment -->
+    <string name="profile_title">My Profile</string>
+    <string name="profile_username">testname</string>
+    <string name="profile_region">test region</string>
+    <string name="profile_bio">test bio</string>
+    <string name="profile_recipe_count">test count</string>
+    <string name="profile_recipes">My Recepies</string>
+    <string name="profile_favorites">Favorites</string>
+    <string name="profile_edit">Edit Profile</string>
+    <string name="profile_change_password">Change Password</string>
+    <string name="profile_logout">Log Out</string>
+
 
 </resources>

@@ -40,17 +40,20 @@ public class RegisterFragment extends Fragment {
         });
 
 
-        btnRegister.setOnClickListener(v -> {
-            FragmentManager manager = getParentFragmentManager();
 
-            manager.popBackStackImmediate(
+        btnRegister.setOnClickListener(v -> {
+            FragmentManager fm = getParentFragmentManager();
+
+            fm.popBackStack(
                     null,
                     FragmentManager.POP_BACK_STACK_INCLUSIVE
             );
 
-            manager.beginTransaction()
+            fm.beginTransaction()
+                    .setReorderingAllowed(true)
                     .replace(R.id.fragment_container, new HomeFragment())
                     .commit();
         });
+
     }
 }
