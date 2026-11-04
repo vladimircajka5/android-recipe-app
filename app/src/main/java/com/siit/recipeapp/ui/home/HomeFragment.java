@@ -13,6 +13,7 @@ import android.widget.Button;
 
 import com.siit.recipeapp.R;
 import com.siit.recipeapp.ui.auth.LoginFragment;
+import com.siit.recipeapp.ui.profile.ProfileFragment;
 
 public class HomeFragment extends Fragment {
 
@@ -32,12 +33,13 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Button btnLogout = view.findViewById(R.id.btn_home_logout);
+        Button btnProfile = view.findViewById(R.id.btn_home_profile);
 
-        btnLogout.setOnClickListener(v -> {
+        btnProfile.setOnClickListener(v -> {
             getParentFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fragment_container, new LoginFragment())
+                    .replace(R.id.fragment_container, new ProfileFragment())
+                    .addToBackStack(null)
                     .commit();
         });
     }
