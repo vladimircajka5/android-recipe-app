@@ -60,4 +60,9 @@ public class Location {
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
+
+    // Helpers
+    public boolean hasValidRegion() {
+        return region != null && !region.trim().isEmpty();
+    }
 }
