@@ -5,11 +5,11 @@
 
         <!-- Main accent color (cyan) -->
         <item name="colorPrimary">@color/app_primary</item>
-        <item name="colorOnPrimary">@color/app_text</item>
+        <item name="colorOnPrimary">@color/app_on_primary</item>
 
         <!-- Secondary accent -->
         <item name="colorSecondary">@color/app_primary</item>
-        <item name="colorOnSecondary">@color/app_text</item>
+        <item name="colorOnSecondary">@color/app_on_primary</item>
 
         <!-- Material component surfaces -->
         <item name="colorSurface">@color/app_surface</item>

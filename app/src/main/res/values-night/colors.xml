@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Background -->
+    <color name="app_background">#202020</color>
+    <color name="app_surface">#303030</color>
+
+    <!-- Cyan accent -->
+    <color name="app_primary">#08A4A7</color>
+    <color name="app_on_primary">#202020</color>
+
+    <!-- Text -->
+    <color name="app_text">#E0E0E0</color>
+    <color name="app_text_secondary">#AAAAAA</color>
+
+    <!-- Borders -->
+    <color name="app_outline">#505050</color>
+
+    <!-- Shapes -->
+    <color name="app_circle">#65D0F4</color>
+
+</resources>

@@ -3,6 +3,7 @@ package com.siit.recipeapp;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
@@ -14,6 +15,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        int themeMode = getSharedPreferences("app_settings", MODE_PRIVATE)
+                .getInt("theme_mode", AppCompatDelegate.MODE_NIGHT_YES);
+
+        AppCompatDelegate.setDefaultNightMode(themeMode);
+
         //Android Studio Default
         super.onCreate(savedInstanceState);
         WindowCompat.enableEdgeToEdge(getWindow());
