@@ -1,9 +1,33 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
+
     <!-- Base application theme. -->
     <style name="Base.Theme.RecipeApp" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+        <!-- Main accent color (cyan) -->
+        <item name="colorPrimary">@color/app_primary</item>
+        <item name="colorOnPrimary">@color/app_text</item>
+
+        <!-- Secondary accent -->
+        <item name="colorSecondary">@color/app_primary</item>
+        <item name="colorOnSecondary">@color/app_text</item>
+
+        <!-- Material component surfaces -->
+        <item name="colorSurface">@color/app_surface</item>
+        <item name="colorOnSurface">@color/app_text</item>
+
+        <!-- Borders -->
+        <item name="colorOutline">@color/app_outline</item>
+
+        <!-- Application background -->
+        <item name="android:windowBackground">@color/app_background</item>
+        <item name="android:colorBackground">@color/app_background</item>
+
+        <!-- Default text colors -->
+        <item name="android:textColorPrimary">@color/app_text</item>
+        <item name="android:textColorSecondary">@color/app_text_secondary</item>
+
     </style>
 
     <style name="Theme.RecipeApp" parent="Base.Theme.RecipeApp" />
+
 </resources>
