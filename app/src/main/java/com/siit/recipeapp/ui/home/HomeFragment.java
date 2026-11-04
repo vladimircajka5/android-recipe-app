@@ -1,4 +1,4 @@
-package com.siit.recipeapp.ui.auth;
+package com.siit.recipeapp.ui.home;
 
 import android.os.Bundle;
 
@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.siit.recipeapp.R;
+import com.siit.recipeapp.ui.auth.LoginFragment;
 
 public class HomeFragment extends Fragment {
 

@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.siit.recipeapp.R;
+import com.siit.recipeapp.ui.home.HomeFragment;
 
 public class LoginFragment extends Fragment {
 
