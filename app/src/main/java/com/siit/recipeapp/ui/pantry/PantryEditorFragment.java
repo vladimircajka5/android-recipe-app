@@ -18,6 +18,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputLayout;
 import com.siit.recipeapp.R;
+import com.siit.recipeapp.ui.preview.PantryPreviewData;
+import com.siit.recipeapp.ui.preview.PantryPreviewViewModel;
 import com.siit.recipeapp.data.model.ingredient.Ingredient;
 import com.siit.recipeapp.data.model.ingredient.MeasurementUnit;
 import com.siit.recipeapp.data.model.pantry.PantryItem;
@@ -65,7 +67,7 @@ public final class PantryEditorFragment extends Fragment {
         units.clear(); units.addAll(PantryPreviewData.UNITS);
         PantryItem current = null;
         if (editing) {
-            for (PantryItem item : preview.getItems().getValue()) {
+            for (PantryItem item : preview.getItems()) {
                 if (itemId.equals(item.getId())) current = item;
             }
         }
