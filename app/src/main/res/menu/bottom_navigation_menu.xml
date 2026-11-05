@@ -13,6 +13,11 @@
         android:enabled="false" />
 
     <item
+        android:id="@+id/nav_pantry"
+        android:icon="@drawable/ic_nav_pantry"
+        android:title="@string/pantry_title" />
+
+    <item
         android:id="@+id/nav_profile"
         android:icon="@drawable/ic_nav_profile"
         android:title="@string/nav_profile" />
