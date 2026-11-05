@@ -133,7 +133,41 @@
 
 
     <!-- Tarini Stringovi -->
+
+
+
     <!-- Cajkini Stringovi -->
 
+    <!-- Pantry -->
+    <string name="pantry_title">My pantry</string>
+    <string name="pantry_development_notice">Demo pantry with sample data. Changes reset when the app restarts.</string>
+    <string name="pantry_search_hint">Search ingredients or brands</string>
+    <string name="pantry_add_title">Add ingredient</string>
+    <string name="pantry_edit_title">Edit pantry item</string>
+    <string name="pantry_empty">Your pantry is empty. Add an ingredient to get started.</string>
+    <string name="pantry_no_matches">No pantry items match your search.</string>
+    <string name="pantry_missing_item">This pantry item is no longer available. Return to your pantry.</string>
+    <string name="pantry_brand_value">Brand: %1$s</string>
+    <string name="pantry_quantity_unknown">Quantity not specified</string>
+    <string name="pantry_expiry_value">Expires: %1$s</string>
+    <string name="pantry_expired_value">Expired: %1$s</string>
+    <string name="pantry_tap_to_edit">Tap to edit or remove</string>
+    <string name="pantry_editor_description">Choose an ingredient from the catalog. Brand, quantity and expiry are optional.</string>
+    <string name="pantry_ingredient_hint">Ingredient (required)</string>
+    <string name="pantry_brand_hint">Brand (optional)</string>
+    <string name="pantry_quantity_hint">Quantity (optional)</string>
+    <string name="pantry_unit_label">Measurement unit</string>
+    <string name="pantry_no_unit">Not specified</string>
+    <string name="pantry_expiry_label">Expiry date (optional)</string>
+    <string name="pantry_choose_date">Choose expiry date</string>
+    <string name="pantry_clear_date">Clear expiry date</string>
+    <string name="pantry_save">Save ingredient</string>
+    <string name="pantry_cancel">Cancel</string>
+    <string name="pantry_delete">Remove ingredient</string>
+    <string name="pantry_delete_title">Remove this pantry item?</string>
+    <string name="pantry_delete_message">This removes the item from your pantry.</string>
+    <string name="pantry_select_ingredient">Choose an ingredient from the catalog suggestions.</string>
+    <string name="pantry_quantity_invalid">Enter a number greater than zero, or leave quantity empty.</string>
+    <string name="pantry_quantity_needs_unit">Choose a measurement unit for this quantity.</string>
 
 </resources>
