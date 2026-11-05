@@ -77,9 +77,15 @@ public class ProfileFragment extends Fragment {
 
         // Favorites
         btnFavorites.setOnClickListener(v -> {
+            RecipeListFragment fragment = new RecipeListFragment();
+
+            Bundle args = new Bundle();
+            args.putBoolean(RecipeListFragment.ARG_FAVORITES, true);
+            fragment.setArguments(args);
+
             getParentFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fragment_container, new RecipeListFragment())
+                    .replace(R.id.fragment_container, fragment)
                     .addToBackStack(null)
                     .commit();
         });

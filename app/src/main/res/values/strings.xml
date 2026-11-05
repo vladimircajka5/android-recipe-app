@@ -71,12 +71,13 @@
     <string name="forgot_password_cancel">Cancel</string>
 
     <!-- Recipe List -->
-    <string name="recipe_list_title">Recipes</string>
+    <string name="recipe_list_title">My Recipes</string>
     <string name="recipe_list_subtitle">Browse your recipes and favorites.</string>
     <string name="recipe_list_my_recipes">My Recipes</string>
     <string name="recipe_list_favorites">Favorites</string>
     <string name="recipe_list_create">Create Recipe</string>
     <string name="recipe_list_empty">No recipes yet.</string>
+    <string name="recipe_list_empty_favorites">You do not have any favorite recipes yet.</string>
 
     <!-- Recipe Detail -->
     <string name="recipe_detail_title">Recipe Details</string>
@@ -127,7 +128,7 @@
 
     <!-- Bottom Navigation -->
     <string name="nav_home">Home</string>
-    <string name="nav_recipes">Recipes</string>
+    <string name="nav_my_recipes">My Recipes</string>
     <string name="nav_profile">Profile</string>
 
 
