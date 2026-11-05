@@ -13,7 +13,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.siit.recipeapp.R;
+import com.siit.recipeapp.ui.auth.ChangePasswordFragment;
 import com.siit.recipeapp.ui.auth.LoginFragment;
+import com.siit.recipeapp.ui.recipe.RecipeListFragment;
 
 public class ProfileFragment extends Fragment {
 
@@ -26,8 +28,12 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         Button btnLogout = view.findViewById(R.id.btn_profile_logout);
+        Button btnEdit = view.findViewById(R.id.btn_profile_edit);
+        Button btnChangePassword = view.findViewById(R.id.btn_profile_change_password);
+        Button btnRecipes = view.findViewById(R.id.btn_profile_recipes);
+        Button btnFavorites = view.findViewById(R.id.btn_profile_favorites);
 
-
+        // Logout
         btnLogout.setOnClickListener(v -> {
             FragmentManager fm = getParentFragmentManager();
 
@@ -41,6 +47,43 @@ public class ProfileFragment extends Fragment {
                     .replace(R.id.fragment_container, new LoginFragment())
                     .commit();
         });
+
+        // Edit Profile
+        btnEdit.setOnClickListener(v -> {
+            getParentFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, new EditProfileFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
+
+        // Change Password
+        btnChangePassword.setOnClickListener(v -> {
+            getParentFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, new ChangePasswordFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
+
+        // My Recipes
+        btnRecipes.setOnClickListener(v -> {
+            getParentFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, new RecipeListFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
+
+        // Favorites
+        btnFavorites.setOnClickListener(v -> {
+            getParentFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, new RecipeListFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
+
 
     }
 

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.profile.EditProfileFragment">
+
+    <include layout="@layout/bg_circles_soft" />
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintWidth_max="520dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp"
+            android:paddingVertical="24dp">
+
+            <TextView
+                style="@style/AppTitle"
+                android:id="@+id/tv_edit_profile_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/edit_profile_title" />
+
+            <TextView
+                android:id="@+id/tv_edit_profile_username"
+
+                style="@style/AppSubtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/edit_profile_username_label" />
+
+            <ImageView
+                android:id="@+id/iv_edit_profile_avatar"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:layout_gravity="center_horizontal"
+                android:contentDescription="@string/edit_profile_avatar_description"
+                android:scaleType="centerCrop"
+                tools:src="@tools:sample/avatars" />
+
+            <Button
+                style="@style/SecondaryButton"
+                android:id="@+id/btn_edit_profile_photo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/edit_profile_photo" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_edit_profile_country"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/AppInput"
+                android:hint="@string/edit_profile_country" >
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_edit_profile_country"
+                    style="@style/AppEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_edit_profile_region"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/AppInput"
+                android:hint="@string/edit_profile_region">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_edit_profile_region"
+                    style="@style/AppEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_edit_profile_city"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/AppInput"
+                android:hint="@string/edit_profile_city" >
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_edit_profile_city"
+                    style="@style/AppEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til_edit_profile_bio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/AppInput"
+                android:gravity="top|start">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_edit_profile_bio"
+                    style="@style/AppEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/edit_profile_bio"
+                    android:inputType="textMultiLine"
+                    android:minLines="3" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/btn_edit_profile_cancel"
+                style="@style/SecondaryButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/edit_profile_cancel" />
+
+            <Button
+                style="@style/PrimaryButton"
+                android:id="@+id/btn_edit_profile_save"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/edit_profile_save" />
+
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
