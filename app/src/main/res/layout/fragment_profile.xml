@@ -6,6 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".ui.profile.ProfileFragment">
 
+    <include layout="@layout/bg_circles_strong" />
+
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"

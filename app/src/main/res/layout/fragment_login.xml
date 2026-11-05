@@ -102,6 +102,24 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+
+            <TextView
+                android:id="@+id/tv_login_forgot_password"
+                style="@style/AppText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="8dp"
+                android:gravity="start"
+                android:text="@string/login_forgot_password"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="12sp"
+                app:layout_constraintWidth_max="280dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/til_login_password" />
+
+
             <Button
                 android:id="@+id/btn_login_lsumbit"
                 style="@style/SecondaryButton"
@@ -113,7 +131,20 @@
                 app:layout_constraintWidth_max="280dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/til_login_password" />
+                app:layout_constraintTop_toBottomOf="@id/tv_login_forgot_password" />
+
+            <Button
+                android:id="@+id/btn_login_guest"
+                style="@style/SecondaryButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="24dp"
+                android:layout_marginTop="10dp"
+                android:text="@string/login_guest"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btn_login_lsumbit"
+                app:layout_constraintWidth_max="280dp" />
 
             <Button
                 android:id="@+id/btn_login_register"
@@ -121,13 +152,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="24dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="10dp"
                 android:text="@string/login_register"
-                app:layout_constraintWidth_max="280dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/btn_login_lsumbit"
+                app:layout_constraintTop_toBottomOf="@+id/btn_login_guest"
+                app:layout_constraintWidth_max="280dp"
                 tools:ignore="TextContrastCheck" />
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

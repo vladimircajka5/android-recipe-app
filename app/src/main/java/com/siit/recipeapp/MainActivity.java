@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNavigation = findViewById(R.id.bottom_navigation);
 
-        // Prilagodjavanje prostora sistemskim trakama
+        // Prilagodjavanje sistemskim trakama
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
 
@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Uklanja obojenu pozadinu iza aktivne ikonice
+        // Ukloni obojenu pozadinu iza aktivne ikonice
         bottomNavigation.setItemActiveIndicatorEnabled(false);
 
         // Promena tabova
@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
 
-        // Prikazivanje ili sakrivanje navigacije
+        // Prikazi ili sakrij navigaciju u zavisnosti od ekrana
         getSupportFragmentManager().registerFragmentLifecycleCallbacks(
                 new FragmentManager.FragmentLifecycleCallbacks() {
 
@@ -98,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
                                 isAuthScreen ? View.GONE : View.VISIBLE
                         );
 
-                        // Ponovo izracunaj razmake kada se meni pojavi ili nestane
                         ViewCompat.requestApplyInsets(findViewById(R.id.main));
 
                         if (fragment instanceof HomeFragment) {
@@ -115,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
                 false
         );
 
-        // Pocetni Login ekran
+        // Pocetni ekran
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
