@@ -1,4 +1,3 @@
-
 package com.siit.recipeapp;
 
 import android.os.Bundle;
@@ -20,6 +19,10 @@ import com.siit.recipeapp.ui.auth.RegisterFragment;
 import com.siit.recipeapp.ui.auth.ForgotPasswordFragment;
 import com.siit.recipeapp.ui.home.HomeFragment;
 import com.siit.recipeapp.ui.profile.ProfileFragment;
+import com.siit.recipeapp.ui.shopping.ShoppingListsFragment;
+import com.siit.recipeapp.ui.shopping.ShoppingDetailFragment;
+import com.siit.recipeapp.ui.shopping.ShoppingListEditorFragment;
+import com.siit.recipeapp.ui.shopping.ShoppingItemEditorFragment;
 import com.siit.recipeapp.ui.pantry.PantryFragment;
 import com.siit.recipeapp.ui.pantry.PantryEditorFragment;
 
@@ -68,10 +71,13 @@ public class MainActivity extends AppCompatActivity {
                 fragment = new ProfileFragment();
             } else if (item.getItemId() == R.id.nav_pantry) {
                 fragment = new PantryFragment();
+            } else if (item.getItemId() == R.id.nav_shopping) {
+                fragment = new ShoppingListsFragment();
             } else {
                 return false;
             }
 
+            getSupportFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.fragment_container, fragment)
@@ -112,6 +118,9 @@ public class MainActivity extends AppCompatActivity {
                             bottomNavigation.getMenu()
                                     .findItem(R.id.nav_profile)
                                     .setChecked(true);
+                        } else if (fragment instanceof ShoppingListsFragment || fragment instanceof ShoppingDetailFragment
+                                || fragment instanceof ShoppingListEditorFragment || fragment instanceof ShoppingItemEditorFragment) {
+                            bottomNavigation.getMenu().findItem(R.id.nav_shopping).setChecked(true);
                         } else if (fragment instanceof PantryFragment || fragment instanceof PantryEditorFragment) {
                             bottomNavigation.getMenu().findItem(R.id.nav_pantry).setChecked(true);
                         }

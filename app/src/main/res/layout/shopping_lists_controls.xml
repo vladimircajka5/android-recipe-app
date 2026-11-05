@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+    <TextView android:text="@string/shopping_title" android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/AppTitle" android:accessibilityHeading="true"/>
+    <TextView android:text="@string/shopping_demo_notice" android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/AppTextSecondary" android:layout_marginTop="8dp"/>
+    <com.google.android.material.button.MaterialButton android:id="@+id/shopping_new_list" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/shopping_new_list" style="@style/PrimaryButton"/>
+</LinearLayout>
