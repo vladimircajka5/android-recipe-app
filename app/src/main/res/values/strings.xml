@@ -123,6 +123,11 @@
     <string name="cooking_next">Next</string>
     <string name="cooking_finish">Finish Cooking</string>
 
+    <!-- Bottom Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_recipes">Recipes</string>
+    <string name="nav_profile">Profile</string>
+
 
 
     <!-- Tarini Stringovi -->
