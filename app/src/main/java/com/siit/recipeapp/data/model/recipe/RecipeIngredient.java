@@ -1,5 +1,12 @@
 package com.siit.recipeapp.data.model.recipe;
 
+ // Ingredient - zajednicka namirnica iz kataloga, npr brasno
+
+ // RecipeIngredient - namirnica u konkretnom receptu, npr:
+ // ingredientId: brasno
+ // quantity: 500
+ // unitId: g
+
 public class RecipeIngredient {
 
     // Graf
