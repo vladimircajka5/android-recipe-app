@@ -40,7 +40,6 @@
     <string name="profile_recipes_section">My Recipes</string>
     <string name="profile_settings_section">Account Settings</string>
 
-
     <!-- EditProfile Fragment -->
     <string name="edit_profile_title">Edit Profile</string>
     <string name="edit_profile_photo">Change Photo</string>
@@ -68,6 +67,62 @@
     <string name="forgot_password_email">Email Address</string>
     <string name="forgot_password_submit">Send Reset Email</string>
     <string name="forgot_password_cancel">Cancel</string>
+
+    <!-- Recipe List -->
+    <string name="recipe_list_title">Recipes</string>
+    <string name="recipe_list_subtitle">Browse your recipes and favorites.</string>
+    <string name="recipe_list_my_recipes">My Recipes</string>
+    <string name="recipe_list_favorites">Favorites</string>
+    <string name="recipe_list_create">Create Recipe</string>
+    <string name="recipe_list_empty">No recipes yet.</string>
+
+    <!-- Recipe Detail -->
+    <string name="recipe_detail_title">Recipe Details</string>
+    <string name="recipe_detail_photo_description">Recipe photo</string>
+    <string name="recipe_detail_servings_title">Servings</string>
+    <string name="recipe_detail_decrease">−</string>
+    <string name="recipe_detail_increase">+</string>
+    <string name="recipe_detail_decrease_description">Decrease servings</string>
+    <string name="recipe_detail_increase_description">Increase servings</string>
+    <string name="recipe_detail_ingredients_title">Ingredients</string>
+    <string name="recipe_detail_steps_title">Preparation Steps</string>
+    <string name="recipe_detail_cook">Start Cooking</string>
+    <string name="recipe_detail_favorite">Favorite</string>
+    <string name="recipe_detail_modify">Modify Recipe</string>
+    <string name="recipe_detail_manage_title">Manage Recipe</string>
+    <string name="recipe_detail_edit">Edit Recipe</string>
+    <string name="recipe_detail_delete">Delete Recipe</string>
+
+    <!-- Recipe Editor -->
+    <string name="recipe_editor_title">Recipe Editor</string>
+    <string name="recipe_editor_subtitle">Create or edit your recipe.</string>
+    <string name="recipe_editor_name">Recipe Name</string>
+    <string name="recipe_editor_description">Description</string>
+    <string name="recipe_editor_servings">Number of Servings</string>
+    <string name="recipe_editor_photo_title">Recipe Photos and Videos</string>
+    <string name="recipe_editor_photo_description">Main recipe photo</string>
+    <string name="recipe_editor_main_photo">Choose Main Photo</string>
+    <string name="recipe_editor_add_photo">Add Photo</string>
+    <string name="recipe_editor_add_video">Add Video</string>
+    <string name="recipe_editor_ingredients_title">Ingredients</string>
+    <string name="recipe_editor_add_ingredient">Add Ingredient</string>
+    <string name="recipe_editor_steps_title">Preparation Steps</string>
+    <string name="recipe_editor_add_step">Add Step</string>
+    <string name="recipe_editor_save">Save Recipe</string>
+    <string name="recipe_editor_cancel">Cancel</string>
+
+    <!-- Cooking Mode -->
+    <string name="cooking_title">Cooking Mode</string>
+    <string name="cooking_photo_description">Current preparation step photo</string>
+    <string name="cooking_timer_title">Step Timer</string>
+    <string name="cooking_timer_start">Start</string>
+    <string name="cooking_timer_pause">Pause</string>
+    <string name="cooking_timer_reset">Reset</string>
+    <string name="cooking_navigation_hint">Swipe or wave to move between steps. Hold your hand near the sensor for more than 3 seconds to go back.</string>
+    <string name="cooking_previous">Previous</string>
+    <string name="cooking_next">Next</string>
+    <string name="cooking_finish">Finish Cooking</string>
+
 
 
     <!-- Tarini Stringovi -->
