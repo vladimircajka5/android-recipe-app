@@ -20,6 +20,8 @@ import com.siit.recipeapp.ui.auth.RegisterFragment;
 import com.siit.recipeapp.ui.auth.ForgotPasswordFragment;
 import com.siit.recipeapp.ui.home.HomeFragment;
 import com.siit.recipeapp.ui.profile.ProfileFragment;
+import com.siit.recipeapp.ui.pantry.PantryFragment;
+import com.siit.recipeapp.ui.pantry.PantryEditorFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -64,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
                 fragment = new HomeFragment();
             } else if (item.getItemId() == R.id.nav_profile) {
                 fragment = new ProfileFragment();
+            } else if (item.getItemId() == R.id.nav_pantry) {
+                fragment = new PantryFragment();
             } else {
                 return false;
             }
@@ -108,6 +112,8 @@ public class MainActivity extends AppCompatActivity {
                             bottomNavigation.getMenu()
                                     .findItem(R.id.nav_profile)
                                     .setChecked(true);
+                        } else if (fragment instanceof PantryFragment || fragment instanceof PantryEditorFragment) {
+                            bottomNavigation.getMenu().findItem(R.id.nav_pantry).setChecked(true);
                         }
                     }
                 },
