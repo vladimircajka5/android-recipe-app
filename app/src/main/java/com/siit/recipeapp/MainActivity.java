@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         int themeMode = getSharedPreferences("app_settings", MODE_PRIVATE)
-                .getInt("theme_mode", AppCompatDelegate.MODE_NIGHT_YES);
+                .getInt("theme_mode", AppCompatDelegate.MODE_NIGHT_NO);
 
         AppCompatDelegate.setDefaultNightMode(themeMode);
 

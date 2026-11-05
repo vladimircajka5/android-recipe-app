@@ -6,138 +6,164 @@
     android:layout_height="match_parent"
     tools:context=".ui.profile.ProfileFragment">
 
-    <TextView
-        style="@style/AppTitle"
-        android:id="@+id/tv_profile_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/profile_title"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
+    <View
+        android:id="@+id/view_profile_circle_1"
+        android:layout_width="222dp"
+        android:layout_height="208dp"
+        android:alpha="0.15"
+        android:background="@drawable/bg_circle"
+        android:translationX="-60dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.042" />
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <ImageView
-        android:id="@+id/iv_profile_avatar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="27dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.522"
+    <View
+        android:id="@+id/view_profile_circle_2"
+        android:layout_width="153dp"
+        android:layout_height="156dp"
+        android:alpha="0.15"
+        android:background="@drawable/bg_circle"
+        android:translationX="60dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintWidth_max="520dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_profile_title"
-        tools:src="@tools:sample/avatars" />
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <TextView
-        style="@style/AppText"
-        android:id="@+id/tv_profile_username"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="@string/profile_username"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/iv_profile_avatar" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp"
+            android:paddingVertical="24dp">
 
-    <TextView
-        android:id="@+id/tv_profile_region"
-        style="@style/AppText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="@string/profile_region"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_profile_username" />
+            <TextView
+                android:id="@+id/tv_profile_title"
+                style="@style/AppTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/profile_title" />
 
-    <TextView
-        style="@style/AppText"
-        android:id="@+id/tv_profile_bio"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/profile_bio"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_profile_region" />
+            <ImageView
+                android:id="@+id/iv_profile_avatar"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="24dp"
+                android:contentDescription="@string/profile_avatar_description"
+                android:scaleType="centerCrop"
+                tools:src="@tools:sample/avatars" />
 
-    <TextView
-        style="@style/AppText"
-        android:id="@+id/tv_profile_recipe_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/profile_recipe_count"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_profile_bio" />
+            <TextView
+                android:id="@+id/tv_profile_username"
+                style="@style/AppSubtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:text="@string/profile_username" />
 
-    <Button
-        android:id="@+id/btn_profile_recipes"
+            <TextView
+                android:id="@+id/tv_profile_region"
+                style="@style/AppText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="@string/profile_region" />
 
-        style="@style/SecondaryButton"
-        android:layout_width="166dp"
-        android:layout_height="63dp"
-        android:layout_marginTop="20dp"
-        android:text="@string/profile_recipes"
-        app:layout_constraintEnd_toStartOf="@+id/btn_profile_favorites"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_profile_recipe_count" />
+            <TextView
+                android:id="@+id/tv_profile_bio"
+                style="@style/AppText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:text="@string/profile_bio" />
 
-    <Button
-        style="@style/SecondaryButton"
+            <TextView
+                android:id="@+id/tv_profile_recipe_count"
+                style="@style/AppText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:text="@string/profile_recipe_count" />
 
-        android:id="@+id/btn_profile_favorites"
-        android:layout_width="161dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="40dp"
-        android:text="@string/profile_favorites"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_profile_recipe_count" />
+            <TextView
+                android:id="@+id/tv_profile_recipes_title"
+                style="@style/AppSubtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:text="@string/profile_recipes_section" />
 
-    <Button
-        style="@style/SecondaryButton"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
 
-        android:id="@+id/btn_profile_edit"
-        android:layout_width="177dp"
-        android:layout_height="57dp"
-        android:layout_marginTop="4dp"
-        android:text="@string/profile_edit"
-        app:layout_constraintEnd_toStartOf="@+id/btn_profile_change_password"
-        app:layout_constraintHorizontal_bias="0.516"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_profile_recipes" />
+                <Button
+                    android:id="@+id/btn_profile_recipes"
+                    style="@style/SecondaryButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/profile_recipes" />
 
-    <Button
-        style="@style/SecondaryButton"
+                <Button
+                    android:id="@+id/btn_profile_favorites"
+                    style="@style/SecondaryButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/profile_favorites" />
 
+            </LinearLayout>
 
-        android:id="@+id/btn_profile_change_password"
-        android:layout_width="168dp"
-        android:layout_height="53dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="28dp"
-        android:text="@string/profile_change_password"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_profile_favorites" />
+            <TextView
+                android:id="@+id/tv_profile_settings_title"
+                style="@style/AppSubtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:text="@string/profile_settings_section" />
 
-    <Button
-        android:id="@+id/btn_profile_logout"
+            <Button
+                android:id="@+id/btn_profile_edit"
+                style="@style/PrimaryButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/profile_edit" />
 
-        style="@style/SecondaryButton"
-        android:layout_width="348dp"
-        android:layout_height="49dp"
-        android:layout_marginTop="20dp"
-        android:text="@string/profile_logout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_profile_edit" />
+            <Button
+                android:id="@+id/btn_profile_change_password"
+                style="@style/SecondaryButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/profile_change_password" />
+
+            <Button
+                android:id="@+id/btn_profile_logout"
+                style="@style/SecondaryButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:text="@string/profile_logout" />
+
+        </LinearLayout>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
