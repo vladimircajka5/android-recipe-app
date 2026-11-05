@@ -17,6 +17,9 @@
         android:icon="@drawable/ic_nav_pantry"
         android:title="@string/pantry_title" />
 
+    <item android:id="@+id/nav_shopping" android:icon="@drawable/ic_nav_shopping"
+        android:title="@string/shopping_title" />
+
     <item
         android:id="@+id/nav_profile"
         android:icon="@drawable/ic_nav_profile"
