@@ -82,7 +82,7 @@
     <string name="recipe_detail_title">Recipe Details</string>
     <string name="recipe_detail_photo_description">Recipe photo</string>
     <string name="recipe_detail_servings_title">Servings</string>
-    <string name="recipe_detail_decrease">−</string>
+    <string name="recipe_detail_decrease">Ã¢Ë†â€™</string>
     <string name="recipe_detail_increase">+</string>
     <string name="recipe_detail_decrease_description">Decrease servings</string>
     <string name="recipe_detail_increase_description">Increase servings</string>
@@ -169,5 +169,51 @@
     <string name="pantry_select_ingredient">Choose an ingredient from the catalog suggestions.</string>
     <string name="pantry_quantity_invalid">Enter a number greater than zero, or leave quantity empty.</string>
     <string name="pantry_quantity_needs_unit">Choose a measurement unit for this quantity.</string>
+
+
+    <!-- Shopping lists -->
+    <string name="shopping_created_value">Created: %1$s</string>
+    <string name="shopping_title">Shopping</string>
+    <string name="shopping_demo_notice">Demo lists with sample data. Changes reset when the app restarts.</string>
+    <string name="shopping_temporary_notice">Demo only. Lists stay active after purchase; archiving comes later.</string>
+    <string name="shopping_new_list">Create list</string>
+    <string name="shopping_edit_list">Edit list</string>
+    <string name="shopping_delete_list">Delete list</string>
+    <string name="shopping_delete_list_message">Delete this list and all its items?</string>
+    <string name="shopping_delete">Delete</string>
+    <string name="shopping_cancel">Cancel</string>
+    <string name="shopping_save">Save list</string>
+    <string name="shopping_name">List name (required)</string>
+    <string name="shopping_name_required">Enter a list name.</string>
+    <string name="shopping_empty">No shopping lists yet. Create a list to get started.</string>
+    <string name="shopping_missing_list">This list is no longer available. Return to your shopping lists.</string>
+    <string name="shopping_items_empty">This list is empty. Add an ingredient to get started.</string>
+    <string name="shopping_progress">Purchased: %1$d / %2$d</string>
+    <string name="shopping_planned_value">Planned: %1$s</string>
+    <string name="shopping_open_list">Tap to open list</string>
+    <string name="shopping_add_item">Add item</string>
+    <string name="shopping_mark_all">Mark all purchased</string>
+    <string name="shopping_back">Back to lists</string>
+    <string name="shopping_edit_item_hint">Tap the quantity area to edit or remove. Use the checkbox to mark purchased.</string>
+    <string name="shopping_date_label">Planned purchase date and time (optional)</string>
+    <string name="shopping_choose_date">Choose date and time</string>
+    <string name="shopping_clear_date">Clear planned date</string>
+    <string name="shopping_reminder_notice">Planning only: reminders and notifications will be added later.</string>
+    <string name="shopping_item_missing_item">This item or its shopping list is no longer available.</string>
+    <string name="shopping_item_edit_title">Edit shopping item</string>
+    <string name="shopping_item_quantity_hint">Quantity (required)</string>
+    <string name="shopping_item_delete_message">This removes the item from this shopping list.</string>
+    <string name="shopping_item_quantity_invalid">Enter a quantity greater than zero.</string>
+    <string name="shopping_item_select_ingredient">Choose an ingredient from the catalog suggestions.</string>
+    <string name="shopping_item_quantity_needs_unit">Choose a measurement unit.</string>
+    <string name="shopping_item_editor_description">Choose a catalog ingredient and enter a positive quantity with a measurement unit.</string>
+    <string name="shopping_item_delete_title">Remove this shopping item?</string>
+    <string name="shopping_item_cancel">Cancel</string>
+    <string name="shopping_item_unit_label">Measurement unit</string>
+    <string name="shopping_item_no_unit">Not specified</string>
+    <string name="shopping_item_save">Save item</string>
+    <string name="shopping_item_add_title">Add shopping item</string>
+    <string name="shopping_item_delete">Remove item</string>
+    <string name="shopping_item_ingredient_hint">Ingredient (required)</string>
 
 </resources>
