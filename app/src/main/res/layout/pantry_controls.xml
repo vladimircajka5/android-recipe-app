@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content"
+        style="@style/AppTitle" android:text="@string/pantry_title" android:accessibilityHeading="true" />
+    <TextView android:id="@+id/pantry_notice" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:layout_marginTop="8dp" style="@style/AppTextSecondary" />
+    <EditText android:id="@+id/pantry_filter" android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:minHeight="48dp" android:layout_marginTop="16dp"
+        android:hint="@string/pantry_search_hint" android:inputType="text" android:imeOptions="actionDone"
+        android:singleLine="true" android:importantForAutofill="no" style="@style/AppEditText" />
+    <com.google.android.material.button.MaterialButton android:id="@+id/pantry_add"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:layout_marginTop="12dp" style="@style/PrimaryButton" android:text="@string/pantry_add_title" />
+</LinearLayout>
