@@ -16,7 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.siit.recipeapp.R;
 import com.siit.recipeapp.ui.preview.PantryPreviewData;
-import com.siit.recipeapp.ui.preview.PantryPreviewViewModel;
+import com.siit.recipeapp.ui.pantry.PantryViewModel;
 import com.siit.recipeapp.data.model.ingredient.Ingredient;
 import com.siit.recipeapp.data.model.ingredient.MeasurementUnit;
 import com.siit.recipeapp.data.model.pantry.PantryItem;
@@ -32,7 +32,7 @@ public final class PantryFragment extends Fragment {
     private final Map<String, Ingredient> ingredients = new HashMap<>();
     private final Map<String, MeasurementUnit> units = new HashMap<>();
     private final PantryAdapter adapter = new PantryAdapter();
-    private PantryPreviewViewModel preview;
+    private PantryViewModel viewModel;
 
     public PantryFragment() { super(R.layout.fragment_pantry); }
 
@@ -52,13 +52,13 @@ public final class PantryFragment extends Fragment {
         for (Ingredient ingredient : PantryPreviewData.INGREDIENTS) ingredients.put(ingredient.getId(), ingredient);
         units.clear();
         for (MeasurementUnit unit : PantryPreviewData.UNITS) units.put(unit.getId(), unit);
-        preview = new ViewModelProvider(requireActivity()).get(PantryPreviewViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity(), new PantryViewModelFactory()).get(PantryViewModel.class);
     }
 
     @Override public void onResume() {
         super.onResume();
         items.clear();
-        items.addAll(preview.getItems());
+        items.addAll(viewModel.getItems());
         updateVisible();
     }
 

@@ -186,7 +186,15 @@
     <string name="shopping_created_value">Created: %1$s</string>
     <string name="shopping_title">Shopping</string>
     <string name="shopping_demo_notice">Demo lists with sample data. Changes reset when the app restarts.</string>
-    <string name="shopping_temporary_notice">Demo only. Lists stay active after purchase; archiving comes later.</string>
+    <string name="shopping_temporary_notice">Completed non-permanent lists are archived automatically. Permanent lists stay active until you archive them.</string>
+    <string name="shopping_archive_notice">Archive a list manually at any time. Archived lists are read-only; you can reactivate or copy them.</string>
+    <string name="shopping_permanent_label">Keep this list active after all items are purchased</string>
+    <string name="shopping_show_archived">View archived lists</string>
+    <string name="shopping_show_active">View active lists</string>
+    <string name="shopping_archive_empty">No archived shopping lists.</string>
+    <string name="shopping_archive_action">Archive list</string>
+    <string name="shopping_reactivate_action">Reactivate list</string>
+    <string name="shopping_copy_action">Create new list from this one</string>
     <string name="shopping_new_list">Create list</string>
     <string name="shopping_edit_list">Edit list</string>
     <string name="shopping_delete_list">Delete list</string>

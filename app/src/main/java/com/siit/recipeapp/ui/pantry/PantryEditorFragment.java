@@ -19,7 +19,7 @@ import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputLayout;
 import com.siit.recipeapp.R;
 import com.siit.recipeapp.ui.preview.PantryPreviewData;
-import com.siit.recipeapp.ui.preview.PantryPreviewViewModel;
+import com.siit.recipeapp.ui.pantry.PantryViewModel;
 import com.siit.recipeapp.data.model.ingredient.Ingredient;
 import com.siit.recipeapp.data.model.ingredient.MeasurementUnit;
 import com.siit.recipeapp.data.model.pantry.PantryItem;
@@ -34,7 +34,7 @@ public final class PantryEditorFragment extends Fragment {
     private final List<MeasurementUnit> units = new ArrayList<>();
     private String selectedIngredientId;
     private String boundIngredientId;
-    private PantryPreviewViewModel preview;
+    private PantryViewModel viewModel;
     private LocalDate expirationDate;
     private String itemId;
     private boolean editing;
@@ -43,7 +43,7 @@ public final class PantryEditorFragment extends Fragment {
     public PantryEditorFragment() { super(R.layout.fragment_pantry_editor); }
 
     @Override public void onViewCreated(@NonNull View root, @Nullable Bundle state) {
-        preview = new ViewModelProvider(requireActivity()).get(PantryPreviewViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity(), new PantryViewModelFactory()).get(PantryViewModel.class);
         String existingId = getArguments() == null ? null : getArguments().getString(ARG_ITEM_ID);
         editing = existingId != null;
         itemId = state != null ? state.getString("draft_id") : existingId;
@@ -66,7 +66,7 @@ public final class PantryEditorFragment extends Fragment {
         units.clear(); units.addAll(PantryPreviewData.UNITS);
         PantryItem current = null;
         if (editing) {
-            for (PantryItem item : preview.getItems()) {
+            for (PantryItem item : viewModel.getItems()) {
                 if (itemId.equals(item.getId())) current = item;
             }
         }
@@ -152,13 +152,13 @@ public final class PantryEditorFragment extends Fragment {
         String brand = ((EditText) root.findViewById(R.id.pantry_brand)).getText().toString().trim();
         if (brand.isEmpty()) brand = null;
         PantryItem item = new PantryItem(itemId, PantryPreviewData.OWNER_ID, selectedIngredientId, brand, quantity, unitId, expirationDate);
-        preview.previewItem(item);
+        viewModel.saveItem(item);
         getParentFragmentManager().popBackStack();
     }
 
     private void delete() {
         if (getView() == null || !loaded) return;
-        preview.removeItem(itemId);
+        viewModel.removeItem(itemId);
         getParentFragmentManager().popBackStack();
     }
 

@@ -3,4 +3,5 @@
     <TextView android:text="@string/shopping_title" android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/AppTitle" android:accessibilityHeading="true"/>
     <TextView android:text="@string/shopping_demo_notice" android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/AppTextSecondary" android:layout_marginTop="8dp"/>
     <com.google.android.material.button.MaterialButton android:id="@+id/shopping_new_list" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/shopping_new_list" style="@style/PrimaryButton"/>
+    <com.google.android.material.button.MaterialButton android:id="@+id/shopping_toggle_archived" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/shopping_show_archived" style="@style/SecondaryButton"/>
 </LinearLayout>
