@@ -14,7 +14,7 @@ public final class ShoppingPreviewData {
         LocalDateTime now = LocalDateTime.now();
         return List.of(
                 new ShoppingList("weekly", OWNER_ID, "Weekly groceries", now, null, true, ShoppingListStatus.ACTIVE),
-                new ShoppingList("dinner", OWNER_ID, "Dinner ingredients", now, now.plusDays(1), true, ShoppingListStatus.ACTIVE));
+                new ShoppingList("dinner", OWNER_ID, "Dinner ingredients", now, now.plusDays(1), false, ShoppingListStatus.ACTIVE));
     }
 
     public static List<ShoppingListItem> initialItems() {

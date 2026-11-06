@@ -16,7 +16,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputLayout;
 import com.siit.recipeapp.R;
-import com.siit.recipeapp.ui.preview.ShoppingPreviewViewModel;
+import com.siit.recipeapp.ui.shopping.ShoppingViewModel;
 import com.siit.recipeapp.data.model.ingredient.Ingredient;
 import com.siit.recipeapp.data.model.ingredient.MeasurementUnit;
 import com.siit.recipeapp.data.model.shopping.ShoppingListItem;
@@ -31,7 +31,7 @@ public final class ShoppingItemEditorFragment extends Fragment {
     private final List<MeasurementUnit> units = new ArrayList<>();
     private String selectedIngredientId;
     private String boundIngredientId;
-    private ShoppingPreviewViewModel preview;
+    private ShoppingViewModel viewModel;
     private String listId;
     private String itemId;
     private boolean editing;
@@ -40,7 +40,7 @@ public final class ShoppingItemEditorFragment extends Fragment {
     public ShoppingItemEditorFragment() { super(R.layout.fragment_shopping_item_editor); }
 
     @Override public void onViewCreated(@NonNull View root, @Nullable Bundle state) {
-        preview = new ViewModelProvider(requireActivity()).get(ShoppingPreviewViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity(), new ShoppingViewModelFactory()).get(ShoppingViewModel.class);
         listId = requireArguments().getString(ShoppingScreenHelper.LIST_ID);
         String existingId = requireArguments().getString(ShoppingScreenHelper.ITEM_ID);
         editing = existingId != null;
@@ -57,11 +57,11 @@ public final class ShoppingItemEditorFragment extends Fragment {
         units.clear(); units.addAll(IngredientPreviewCatalog.UNITS);
         ShoppingListItem current = null;
         if (editing) {
-            for (ShoppingListItem item : preview.itemsFor(listId)) {
+            for (ShoppingListItem item : viewModel.itemsFor(listId)) {
                 if (itemId.equals(item.getId())) current = item;
             }
         }
-        if (preview.findList(listId) == null || (editing && (current == null || !listId.equals(current.getShoppingListId())))) {
+        if (viewModel.findList(listId) == null || (editing && (current == null || !listId.equals(current.getShoppingListId())))) {
             error(root, R.string.shopping_item_missing_item);
             root.findViewById(R.id.shopping_item_save).setEnabled(false);
             root.findViewById(R.id.shopping_item_delete).setEnabled(false);
@@ -135,18 +135,18 @@ public final class ShoppingItemEditorFragment extends Fragment {
         if (unitId == null) {
             quantityInput.setError(getString(R.string.shopping_item_quantity_needs_unit)); return;
         }
-        if (preview.findList(listId) == null) { error(root, R.string.shopping_missing_list); return; }
-        ShoppingListItem existing = editing ? preview.findItem(itemId) : null;
+        if (viewModel.findList(listId) == null) { error(root, R.string.shopping_missing_list); return; }
+        ShoppingListItem existing = editing ? viewModel.findItem(itemId) : null;
         if (editing && existing == null) { error(root, R.string.shopping_item_missing_item); return; }
         ShoppingListItem item = new ShoppingListItem(itemId, listId, selectedIngredientId, quantity, unitId,
                 existing != null && existing.isPurchased());
-        preview.saveItem(item);
+        viewModel.saveItem(item);
         getParentFragmentManager().popBackStack();
     }
 
     private void delete() {
         if (getView() == null || !loaded) return;
-        preview.removeItem(itemId);
+        viewModel.removeItem(itemId);
         getParentFragmentManager().popBackStack();
     }
 

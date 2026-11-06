@@ -16,6 +16,7 @@
             <com.google.android.material.textfield.TextInputLayout android:id="@+id/shopping_name_input" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" style="@style/AppInput" android:hint="@string/shopping_name">
                 <com.google.android.material.textfield.TextInputEditText android:id="@+id/shopping_name" android:layout_width="match_parent" android:layout_height="wrap_content" android:singleLine="true" android:inputType="textCapSentences" android:importantForAutofill="no" style="@style/AppEditText"/>
             </com.google.android.material.textfield.TextInputLayout>
+            <CheckBox android:id="@+id/shopping_permanent" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/shopping_permanent_label" android:layout_marginTop="12dp"/>
             <TextView android:text="@string/shopping_date_label" android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/AppText"/>
             <com.google.android.material.button.MaterialButton android:id="@+id/shopping_date" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/shopping_choose_date" style="@style/SecondaryButton"/>
             <com.google.android.material.button.MaterialButton android:id="@+id/shopping_clear_date" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/shopping_clear_date" style="@style/Widget.Material3.Button.TextButton"/>

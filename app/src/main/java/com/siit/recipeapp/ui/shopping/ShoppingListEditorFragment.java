@@ -6,6 +6,7 @@ import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,14 +16,14 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.siit.recipeapp.R;
 import com.siit.recipeapp.ui.preview.ShoppingPreviewData;
-import com.siit.recipeapp.ui.preview.ShoppingPreviewViewModel;
+import com.siit.recipeapp.ui.shopping.ShoppingViewModel;
 import com.siit.recipeapp.data.model.shopping.ShoppingList;
 import com.siit.recipeapp.data.model.shopping.ShoppingListStatus;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public final class ShoppingListEditorFragment extends Fragment {
-    private ShoppingPreviewViewModel preview;
+    private ShoppingViewModel viewModel;
     private String listId;
     private boolean editing;
     private LocalDateTime planned;
@@ -32,12 +33,12 @@ public final class ShoppingListEditorFragment extends Fragment {
     public ShoppingListEditorFragment() { super(R.layout.fragment_shopping_list_editor); }
 
     @Override public void onViewCreated(@NonNull View root, @Nullable Bundle state) {
-        preview = new ViewModelProvider(requireActivity()).get(ShoppingPreviewViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity(), new ShoppingViewModelFactory()).get(ShoppingViewModel.class);
         String existingId = requireArguments().getString(ShoppingScreenHelper.LIST_ID);
         editing = existingId != null;
         listId = state == null ? existingId : state.getString("draft_id", existingId);
         if (listId == null) listId = UUID.randomUUID().toString();
-        ShoppingList current = editing ? preview.findList(listId) : null;
+        ShoppingList current = editing ? viewModel.findList(listId) : null;
         ((TextView) root.findViewById(R.id.shopping_editor_title)).setText(editing ? R.string.shopping_edit_list : R.string.shopping_new_list);
         root.findViewById(R.id.shopping_cancel).setOnClickListener(v -> getParentFragmentManager().popBackStack());
         if (editing && current == null) {
@@ -48,6 +49,7 @@ public final class ShoppingListEditorFragment extends Fragment {
             return;
         }
         ((EditText) root.findViewById(R.id.shopping_name)).setText(current == null ? "" : current.getName());
+        ((CheckBox) root.findViewById(R.id.shopping_permanent)).setChecked(current != null && current.isPermanent());
         planned = state == null ? current == null ? null : current.getPlannedPurchaseAt()
                 : state.getString("planned") == null ? null : LocalDateTime.parse(state.getString("planned"));
         updateDate(root);
@@ -68,11 +70,13 @@ public final class ShoppingListEditorFragment extends Fragment {
             TextInputLayout input = root.findViewById(R.id.shopping_name_input);
             input.setError(null);
             if (name.isEmpty()) { input.setError(getString(R.string.shopping_name_required)); return; }
-            ShoppingList existing = editing ? preview.findList(listId) : null;
+            ShoppingList existing = editing ? viewModel.findList(listId) : null;
             if (editing && existing == null) return;
-            preview.saveList(new ShoppingList(listId, existing == null ? ShoppingPreviewData.OWNER_ID : existing.getOwnerId(),
+            viewModel.saveList(new ShoppingList(listId, existing == null ? ShoppingPreviewData.OWNER_ID : existing.getOwnerId(),
                     name, existing == null ? LocalDateTime.now() : existing.getCreatedAt(), planned,
-                    existing == null || existing.isPermanent(), existing == null ? ShoppingListStatus.ACTIVE : existing.getStatus()));
+                    ((CheckBox) root.findViewById(R.id.shopping_permanent)).isChecked(),
+                    existing == null ? ShoppingListStatus.ACTIVE : existing.getStatus()));
+            viewModel.archiveCompletedListIfNeeded(listId);
             getParentFragmentManager().popBackStack();
         });
     }
