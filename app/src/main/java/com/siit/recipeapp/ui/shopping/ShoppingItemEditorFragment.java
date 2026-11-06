@@ -21,7 +21,6 @@ import com.siit.recipeapp.data.model.ingredient.Ingredient;
 import com.siit.recipeapp.data.model.ingredient.MeasurementUnit;
 import com.siit.recipeapp.data.model.shopping.ShoppingListItem;
 import com.siit.recipeapp.ui.preview.IngredientPreviewCatalog;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -101,7 +100,7 @@ public final class ShoppingItemEditorFragment extends Fragment {
         if (state != null) ingredient.setText(state.getString("ingredient_text", ""), false);
         setUnit(spinner, selectedUnit);
         ((EditText) root.findViewById(R.id.shopping_item_quantity)).setText(state != null ? state.getString("quantity")
-                : item == null || item.getQuantity() == null ? "" : item.getQuantity().toPlainString());
+                : item == null ? "" : Double.toString(item.getQuantity()));
         boundIngredientId = selectedIngredientId;
         ingredient.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
@@ -126,12 +125,12 @@ public final class ShoppingItemEditorFragment extends Fragment {
         if (selectedIngredientId == null) {
             ingredientInput.setError(getString(R.string.shopping_item_select_ingredient)); return;
         }
-        BigDecimal quantity;
+        double quantity;
         String raw = ((EditText) root.findViewById(R.id.shopping_item_quantity)).getText().toString().trim();
         if (raw.isEmpty()) { quantityInput.setError(getString(R.string.shopping_item_quantity_invalid)); return; }
-        try { quantity = new BigDecimal(raw.replace(',', '.')); }
+        try { quantity = Double.parseDouble(raw.replace(',', '.')); }
         catch (NumberFormatException invalid) { quantityInput.setError(getString(R.string.shopping_item_quantity_invalid)); return; }
-        if (quantity.signum() <= 0) { quantityInput.setError(getString(R.string.shopping_item_quantity_invalid)); return; }
+        if (!Double.isFinite(quantity) || quantity <= 0) { quantityInput.setError(getString(R.string.shopping_item_quantity_invalid)); return; }
         String unitId = selectedUnit(root);
         if (unitId == null) {
             quantityInput.setError(getString(R.string.shopping_item_quantity_needs_unit)); return;

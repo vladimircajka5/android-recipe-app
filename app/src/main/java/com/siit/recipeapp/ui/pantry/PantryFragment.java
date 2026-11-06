@@ -110,7 +110,7 @@ public final class PantryFragment extends Fragment {
             brand.setText(item.getBrand() == null ? "" : getString(R.string.pantry_brand_value, item.getBrand()));
             MeasurementUnit unit = units.get(item.getUnitId());
             String amount = item.getQuantity() == null ? getString(R.string.pantry_quantity_unknown)
-                    : item.getQuantity().toPlainString() + " " + (unit == null ? "" : unit.getAbbreviation());
+                    : Double.toString(item.getQuantity()) + " " + (unit == null ? "" : unit.getAbbreviation());
             ((TextView) row.findViewById(R.id.pantry_item_quantity)).setText(amount);
             TextView expiry = row.findViewById(R.id.pantry_item_expiry);
             expiry.setVisibility(item.getExpirationDate() == null ? View.GONE : View.VISIBLE);

@@ -23,7 +23,6 @@ import com.siit.recipeapp.ui.preview.PantryPreviewViewModel;
 import com.siit.recipeapp.data.model.ingredient.Ingredient;
 import com.siit.recipeapp.data.model.ingredient.MeasurementUnit;
 import com.siit.recipeapp.data.model.pantry.PantryItem;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -111,7 +110,7 @@ public final class PantryEditorFragment extends Fragment {
         setUnit(spinner, selectedUnit);
         ((EditText) root.findViewById(R.id.pantry_brand)).setText(state != null ? state.getString("brand") : item == null ? "" : item.getBrand());
         ((EditText) root.findViewById(R.id.pantry_quantity)).setText(state != null ? state.getString("quantity")
-                : item == null || item.getQuantity() == null ? "" : item.getQuantity().toPlainString());
+                : item == null || item.getQuantity() == null ? "" : Double.toString(item.getQuantity()));
         String expiry = state != null ? state.getString("expiry") : item == null || item.getExpirationDate() == null ? null : item.getExpirationDate().toString();
         expirationDate = expiry == null ? null : LocalDate.parse(expiry);
         updateDate(root);
@@ -139,12 +138,12 @@ public final class PantryEditorFragment extends Fragment {
         if (selectedIngredientId == null) {
             ingredientInput.setError(getString(R.string.pantry_select_ingredient)); return;
         }
-        BigDecimal quantity = null;
+        Double quantity = null;
         String raw = ((EditText) root.findViewById(R.id.pantry_quantity)).getText().toString().trim();
         if (!raw.isEmpty()) {
-            try { quantity = new BigDecimal(raw.replace(',', '.')); }
+            try { quantity = Double.parseDouble(raw.replace(',', '.')); }
             catch (NumberFormatException invalid) { quantityInput.setError(getString(R.string.pantry_quantity_invalid)); return; }
-            if (quantity.signum() <= 0) { quantityInput.setError(getString(R.string.pantry_quantity_invalid)); return; }
+            if (!Double.isFinite(quantity) || quantity <= 0) { quantityInput.setError(getString(R.string.pantry_quantity_invalid)); return; }
         }
         String unitId = selectedUnit(root);
         if (quantity != null && unitId == null) {

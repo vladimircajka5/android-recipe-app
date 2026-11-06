@@ -41,6 +41,6 @@ final class ShoppingScreenHelper {
         for (MeasurementUnit unit : IngredientPreviewCatalog.UNITS) {
             if (unit.getId().equals(item.getUnitId())) label = unit.getAbbreviation();
         }
-        return item.getQuantity().toPlainString() + " " + label;
+        return Double.toString(item.getQuantity()) + " " + label;
     }
 }
