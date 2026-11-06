@@ -22,11 +22,6 @@
     <string name="register_email_hint">Enter your email</string>
     <string name="register_password_hint">Enter password</string>
 
-    <!-- Home Fragment -->
-    <string name="home_title">This is HOME my Nigga</string>
-    <string name="home_subtitle">This is subtitle</string>
-    <string name="home_profile">My Profile</string>
-
     <!-- Profile Fragment -->
     <string name="profile_title">My Profile</string>
     <string name="profile_username">testname</string>
@@ -41,6 +36,7 @@
     <string name="profile_avatar_description">User profile picture</string>
     <string name="profile_recipes_section">My Recipes</string>
     <string name="profile_settings_section">Account Settings</string>
+    <string name="profile_light_theme">Light theme</string>
 
     <!-- EditProfile Fragment -->
     <string name="edit_profile_title">Edit Profile</string>
@@ -145,6 +141,11 @@
 
     <!-- Tarini Stringovi -->
 
+    <!-- Home Fragment -->
+    <string name="home_title">This is HOME my Nigga</string>
+    <string name="home_subtitle">This is subtitle</string>
+    <string name="home_other_user_profile">Other User Profile</string>
+
 
     <!-- Cajkini Stringovi -->
 
@@ -225,7 +226,5 @@
     <string name="shopping_item_add_title">Add shopping item</string>
     <string name="shopping_item_delete">Remove item</string>
     <string name="shopping_item_ingredient_hint">Ingredient (required)</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>
