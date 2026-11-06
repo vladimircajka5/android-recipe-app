@@ -3,13 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/RecipeCard"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="16dp"
-    android:clickable="true"
-    android:focusable="true"
-    app:cardCornerRadius="18dp"
-    app:cardElevation="3dp">
+    android:layout_height="wrap_content">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -17,67 +13,45 @@
 
         <ImageView
             android:id="@+id/iv_recipe_card_image"
+            style="@style/RecipeCardImage"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="?attr/colorSurfaceVariant"
-            android:scaleType="centerCrop"
             android:contentDescription="@null"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:src="@tools:sample/backgrounds/scenic" />
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <ImageButton
             android:id="@+id/btn_recipe_card_favorite"
+            style="@style/RecipeCardFavoriteButton"
             android:layout_width="44dp"
             android:layout_height="44dp"
-            android:layout_margin="14dp"
-            android:padding="10dp"
-            android:background="@drawable/ic_recipe_favorite_background"
-            android:src="@drawable/ic_recipe_favorite_outline"
-            app:tint="?attr/colorOnSurface"
             android:contentDescription="@string/recipe_card_add_favorite"
             app:layout_constraintTop_toTopOf="@id/iv_recipe_card_image"
             app:layout_constraintEnd_toEndOf="@id/iv_recipe_card_image" />
 
         <LinearLayout
+            style="@style/RecipeCardTextContainer"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:orientation="vertical"
-            android:gravity="start"
             app:layout_constraintBottom_toBottomOf="@id/iv_recipe_card_image"
             app:layout_constraintStart_toStartOf="@id/iv_recipe_card_image"
             app:layout_constraintEnd_toEndOf="@id/iv_recipe_card_image">
 
             <TextView
                 android:id="@+id/tv_recipe_card_title"
+                style="@style/RecipeCardTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="12dp"
-                android:paddingVertical="7dp"
-                android:background="?attr/colorPrimary"
-                android:textColor="?attr/colorOnPrimary"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:maxLines="2"
-                android:ellipsize="end"
                 tools:text="Homemade Pancakes" />
 
             <TextView
                 android:id="@+id/tv_recipe_card_description"
+                style="@style/RecipeCardDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:paddingHorizontal="12dp"
-                android:paddingVertical="6dp"
-                android:background="?attr/colorSecondary"
-                android:textColor="?attr/colorOnSecondary"
-                android:textSize="14sp"
-                android:maxLines="2"
-                android:ellipsize="end"
-                tools:text="PANCAKES BROOOOOO" />
+                tools:text="Soft and fluffy pancakes with fresh fruit." />
 
         </LinearLayout>
 

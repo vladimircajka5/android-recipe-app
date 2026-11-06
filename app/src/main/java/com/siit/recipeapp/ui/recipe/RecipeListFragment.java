@@ -1,3 +1,4 @@
+
 package com.siit.recipeapp.ui.recipe;
 
 import android.content.res.ColorStateList;
@@ -10,6 +11,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.color.MaterialColors;
@@ -18,7 +21,6 @@ import com.siit.recipeapp.R;
 
 public class RecipeListFragment extends Fragment {
 
-    // Argument koji odredjuje pocetni prikaz liste
     public static final String ARG_FAVORITES = "favorites";
 
     // Svojstva
@@ -68,7 +70,15 @@ public class RecipeListFragment extends Fragment {
                     .commit();
         });
 
-        // Postavi izgled dugmadi pri otvaranju ekrana
+        // Povezivanje liste sa adapterom
+        RecyclerView rvRecipes = view.findViewById(R.id.rv_recipe_list);
+
+        rvRecipes.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        RecipeCardAdapter adapter = new RecipeCardAdapter();
+
+        rvRecipes.setAdapter(adapter);
+
         updateMode(view);
     }
 
@@ -79,9 +89,11 @@ public class RecipeListFragment extends Fragment {
         MaterialButton btnFavorites = view.findViewById(R.id.btn_recipe_list_favorites);
         FloatingActionButton btnCreate = view.findViewById(R.id.btn_recipe_list_create);
         TextView tvEmpty = view.findViewById(R.id.tv_recipe_list_empty);
+        RecyclerView rvRecipes = view.findViewById(R.id.rv_recipe_list);
 
         // Preuzimanje boja iz trenutne teme
-        int primary = MaterialColors.getColor(view, androidx.appcompat.R.attr.colorPrimary);
+        int primary = MaterialColors.getColor(view,
+                androidx.appcompat.R.attr.colorPrimary);
 
         int onPrimary = MaterialColors.getColor(view,
                 com.google.android.material.R.attr.colorOnPrimary);
@@ -89,7 +101,7 @@ public class RecipeListFragment extends Fragment {
         int surface = MaterialColors.getColor(view,
                 com.google.android.material.R.attr.colorSurface);
 
-        // Pretvaranje 1dp u piksele za debljinu okvira
+        // Pretvaranje 1dp u piksele
         int stroke = Math.round(getResources().getDisplayMetrics().density);
 
         if (favorites) {
@@ -105,8 +117,10 @@ public class RecipeListFragment extends Fragment {
             btnFavorites.setTextColor(onPrimary);
             btnFavorites.setStrokeWidth(0);
 
-            // Promeni poruku i sakrij dugme za kreiranje
+            // Sakrij probni recept i dugme za kreiranje
             tvEmpty.setText(R.string.recipe_list_empty_favorites);
+            tvEmpty.setVisibility(View.VISIBLE);
+            rvRecipes.setVisibility(View.GONE);
             btnCreate.setVisibility(View.GONE);
 
         } else {
@@ -122,13 +136,14 @@ public class RecipeListFragment extends Fragment {
             btnFavorites.setStrokeColor(ColorStateList.valueOf(primary));
             btnFavorites.setStrokeWidth(stroke);
 
-            // Prikazi poruku i dugme za kreiranje
-            tvEmpty.setText(R.string.recipe_list_empty);
+            // Prikazi probni recept i dugme za kreiranje
+            tvEmpty.setVisibility(View.GONE);
+            rvRecipes.setVisibility(View.VISIBLE);
             btnCreate.setVisibility(View.VISIBLE);
         }
     }
 
-    // Cuvanje izabranog prikaza pri ponovnom kreiranju fragmenta
+    // Cuvanje izabranog prikaza
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
