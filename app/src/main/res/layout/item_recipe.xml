@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/RecipeCard"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/iv_recipe_card_image"
+            style="@style/RecipeCardImage"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:contentDescription="@null"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <ImageButton
+            android:id="@+id/btn_recipe_card_favorite"
+            style="@style/RecipeCardFavoriteButton"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:contentDescription="@string/recipe_card_add_favorite"
+            app:layout_constraintTop_toTopOf="@id/iv_recipe_card_image"
+            app:layout_constraintEnd_toEndOf="@id/iv_recipe_card_image" />
+
+        <LinearLayout
+            style="@style/RecipeCardTextContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@id/iv_recipe_card_image"
+            app:layout_constraintStart_toStartOf="@id/iv_recipe_card_image"
+            app:layout_constraintEnd_toEndOf="@id/iv_recipe_card_image">
+
+            <TextView
+                android:id="@+id/tv_recipe_card_title"
+                style="@style/RecipeCardTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Homemade Pancakes" />
+
+            <TextView
+                android:id="@+id/tv_recipe_card_description"
+                style="@style/RecipeCardDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Soft and fluffy pancakes with fresh fruit." />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

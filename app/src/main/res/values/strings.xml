@@ -22,11 +22,6 @@
     <string name="register_email_hint">Enter your email</string>
     <string name="register_password_hint">Enter password</string>
 
-    <!-- Home Fragment -->
-    <string name="home_title">This is HOME my Nigga</string>
-    <string name="home_subtitle">This is subtitle</string>
-    <string name="home_profile">My Profile</string>
-
     <!-- Profile Fragment -->
     <string name="profile_title">My Profile</string>
     <string name="profile_username">testname</string>
@@ -41,6 +36,7 @@
     <string name="profile_avatar_description">User profile picture</string>
     <string name="profile_recipes_section">My Recipes</string>
     <string name="profile_settings_section">Account Settings</string>
+    <string name="profile_light_theme">Light theme</string>
 
     <!-- EditProfile Fragment -->
     <string name="edit_profile_title">Edit Profile</string>
@@ -71,12 +67,13 @@
     <string name="forgot_password_cancel">Cancel</string>
 
     <!-- Recipe List -->
-    <string name="recipe_list_title">Recipes</string>
+    <string name="recipe_list_title">My Recipes</string>
     <string name="recipe_list_subtitle">Browse your recipes and favorites.</string>
     <string name="recipe_list_my_recipes">My Recipes</string>
     <string name="recipe_list_favorites">Favorites</string>
     <string name="recipe_list_create">Create Recipe</string>
     <string name="recipe_list_empty">No recipes yet.</string>
+    <string name="recipe_list_empty_favorites">You do not have any favorite recipes yet.</string>
 
     <!-- Recipe Detail -->
     <string name="recipe_detail_title">Recipe Details</string>
@@ -125,15 +122,29 @@
     <string name="cooking_next">Next</string>
     <string name="cooking_finish">Finish Cooking</string>
 
+    <!-- Recipe Card -->
+    <string name="recipe_card_add_favorite">Add to favorites</string>
+    <string name="recipe_card_remove_favorite">Remove from favorites</string>
+
+    <!-- User Recipes -->
+    <string name="user_recipes_avatar">Profile picture</string>
+    <string name="user_recipes_username_placeholder">Username</string>
+    <string name="user_recipes_region_placeholder">Region</string>
+    <string name="user_recipes_count">%1$d recipes</string>
+    <string name="user_recipes_empty">This user has no recipes yet.</string>
+
     <!-- Bottom Navigation -->
     <string name="nav_home">Home</string>
-    <string name="nav_recipes">Recipes</string>
+    <string name="nav_my_recipes">My Recipes</string>
     <string name="nav_profile">Profile</string>
-
 
 
     <!-- Tarini Stringovi -->
 
+    <!-- Home Fragment -->
+    <string name="home_title">This is HOME my Nigga</string>
+    <string name="home_subtitle">This is subtitle</string>
+    <string name="home_other_user_profile">Other User Profile</string>
 
 
     <!-- Cajkini Stringovi -->

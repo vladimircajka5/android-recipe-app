@@ -1,9 +1,11 @@
 package com.siit.recipeapp.ui.profile;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -12,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.google.android.material.materialswitch.MaterialSwitch;
 import com.siit.recipeapp.R;
 import com.siit.recipeapp.ui.auth.ChangePasswordFragment;
 import com.siit.recipeapp.ui.auth.LoginFragment;
@@ -77,12 +80,52 @@ public class ProfileFragment extends Fragment {
 
         // Favorites
         btnFavorites.setOnClickListener(v -> {
+            RecipeListFragment fragment = new RecipeListFragment();
+
+            Bundle args = new Bundle();
+            args.putBoolean(RecipeListFragment.ARG_FAVORITES, true);
+            fragment.setArguments(args);
+
             getParentFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fragment_container, new RecipeListFragment())
+                    .replace(R.id.fragment_container, fragment)
                     .addToBackStack(null)
                     .commit();
         });
+
+
+
+        // Promena teme
+        MaterialSwitch switchTheme = view.findViewById(R.id.switch_profile_theme);
+
+        int themeMode = requireActivity()
+                .getSharedPreferences("app_settings", Context.MODE_PRIVATE)
+                .getInt("theme_mode", AppCompatDelegate.MODE_NIGHT_YES);
+
+        // Prikazi trenutno izabranu temu
+        switchTheme.setChecked(themeMode == AppCompatDelegate.MODE_NIGHT_NO);
+
+        switchTheme.setOnCheckedChangeListener((buttonView, isChecked) -> {
+
+            int mode;
+
+            if (isChecked) {
+                mode = AppCompatDelegate.MODE_NIGHT_NO;
+            } else {
+                mode = AppCompatDelegate.MODE_NIGHT_YES;
+            }
+
+            // Sacuvaj izbor teme
+            requireActivity()
+                    .getSharedPreferences("app_settings", Context.MODE_PRIVATE)
+                    .edit()
+                    .putInt("theme_mode", mode)
+                    .apply();
+
+            // Primeni novu temu
+            AppCompatDelegate.setDefaultNightMode(mode);
+        });
+
 
 
     }
