@@ -126,6 +126,10 @@
     <string name="cooking_next">Next</string>
     <string name="cooking_finish">Finish Cooking</string>
 
+    <!-- Recipe Card -->
+    <string name="recipe_card_add_favorite">Add to favorites</string>
+    <string name="recipe_card_remove_favorite">Remove from favorites</string>
+
     <!-- Bottom Navigation -->
     <string name="nav_home">Home</string>
     <string name="nav_my_recipes">My Recipes</string>
