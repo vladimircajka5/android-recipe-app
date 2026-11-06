@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="horizontal" android:padding="16dp" android:baselineAligned="false">
-    <ScrollView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:fillViewport="true" android:clipToPadding="false">
-        <include layout="@layout/shopping_lists_controls"/>
-    </ScrollView>
-    <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="2" android:layout_marginStart="16dp">
-        <TextView android:id="@+id/shopping_empty" android:text="@string/shopping_empty" android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/AppText" android:visibility="gone" android:accessibilityLiveRegion="polite" android:gravity="center"/>
-        <ListView android:id="@+id/shopping_lists" android:layout_width="match_parent" android:layout_height="match_parent" android:clipToPadding="false" android:paddingBottom="16dp" android:divider="@color/app_outline" android:dividerHeight="1dp"/>
-    </FrameLayout>
-</LinearLayout>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/bg_circles_strong" />
+
+    <LinearLayout android:layout_width="0dp" android:layout_height="0dp" android:orientation="horizontal" android:padding="16dp" android:baselineAligned="false"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+        <ScrollView android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:fillViewport="true" android:clipToPadding="false">
+            <include layout="@layout/shopping_lists_controls"/>
+        </ScrollView>
+        <FrameLayout android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="2" android:layout_marginStart="16dp">
+            <TextView android:id="@+id/shopping_empty" android:text="@string/shopping_empty" android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/AppText" android:visibility="gone" android:accessibilityLiveRegion="polite" android:gravity="center"/>
+            <ListView android:id="@+id/shopping_lists" android:layout_width="match_parent" android:layout_height="match_parent" android:clipToPadding="false" android:paddingBottom="16dp" android:divider="@color/app_outline" android:dividerHeight="1dp"/>
+        </FrameLayout>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

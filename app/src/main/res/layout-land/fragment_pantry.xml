@@ -1,23 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:orientation="horizontal" android:padding="16dp"
-    android:baselineAligned="false">
-    <ScrollView android:layout_width="0dp" android:layout_height="match_parent"
-        android:layout_weight="1" android:fillViewport="true"
-        android:clipToPadding="false" android:paddingBottom="16dp">
-        <include layout="@layout/pantry_controls" />
-    </ScrollView>
-    <LinearLayout android:layout_width="0dp" android:layout_height="match_parent"
-        android:layout_weight="2" android:layout_marginStart="24dp"
-        android:orientation="vertical">
-        <TextView android:id="@+id/pantry_message" android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:gravity="center"
-            style="@style/AppText" android:accessibilityLiveRegion="polite"
-            android:visibility="gone" />
-        <ListView android:id="@+id/pantry_list" android:layout_width="match_parent"
-            android:layout_height="0dp" android:layout_weight="1"
-            android:divider="@color/app_outline" android:dividerHeight="1dp"
-            android:clipToPadding="false" android:paddingBottom="16dp" />
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/bg_circles_strong" />
+
+    <LinearLayout
+        android:layout_width="0dp" android:layout_height="0dp"
+        android:orientation="horizontal" android:padding="16dp"
+        android:baselineAligned="false"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+        <ScrollView android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:fillViewport="true"
+            android:clipToPadding="false" android:paddingBottom="16dp">
+            <include layout="@layout/pantry_controls" />
+        </ScrollView>
+        <LinearLayout android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="2" android:layout_marginStart="24dp"
+            android:orientation="vertical">
+            <TextView android:id="@+id/pantry_message" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:gravity="center"
+                style="@style/AppText" android:accessibilityLiveRegion="polite"
+                android:visibility="gone" />
+            <ListView android:id="@+id/pantry_list" android:layout_width="match_parent"
+                android:layout_height="0dp" android:layout_weight="1"
+                android:divider="@color/app_outline" android:dividerHeight="1dp"
+                android:clipToPadding="false" android:paddingBottom="16dp" />
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
