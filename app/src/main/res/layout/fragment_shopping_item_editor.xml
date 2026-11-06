@@ -1,19 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true">
-    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp">
-        <TextView android:id="@+id/shopping_item_editor_title" android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/AppTitle" android:accessibilityHeading="true"/>
-        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" style="@style/AppTextSecondary" android:text="@string/shopping_item_editor_description"/>
-        <com.google.android.material.textfield.TextInputLayout android:id="@+id/shopping_item_ingredient_input" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="20dp" style="@style/AppInput" android:hint="@string/shopping_item_ingredient_hint" app:endIconMode="dropdown_menu">
-            <com.google.android.material.textfield.MaterialAutoCompleteTextView android:id="@+id/shopping_item_ingredient" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="textCapWords" android:completionThreshold="1" android:singleLine="true" android:importantForAutofill="no" style="@style/AppEditText"/>
-        </com.google.android.material.textfield.TextInputLayout>
-        <com.google.android.material.textfield.TextInputLayout android:id="@+id/shopping_item_quantity_input" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" style="@style/AppInput" android:hint="@string/shopping_item_quantity_hint">
-            <com.google.android.material.textfield.TextInputEditText android:id="@+id/shopping_item_quantity" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="numberDecimal" android:singleLine="true" android:importantForAutofill="no" style="@style/AppEditText"/>
-        </com.google.android.material.textfield.TextInputLayout>
-        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:labelFor="@id/shopping_item_unit" style="@style/AppText" android:text="@string/shopping_item_unit_label"/>
-        <Spinner android:id="@+id/shopping_item_unit" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp"/>
-        <TextView android:id="@+id/shopping_item_editor_error" android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/AppText" android:visibility="gone" android:layout_marginTop="12dp" android:accessibilityLiveRegion="polite"/>
-        <com.google.android.material.button.MaterialButton android:id="@+id/shopping_item_save" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="20dp" android:text="@string/shopping_item_save" style="@style/PrimaryButton"/>
-        <com.google.android.material.button.MaterialButton android:id="@+id/shopping_item_cancel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/shopping_item_cancel" style="@style/SecondaryButton"/>
-        <com.google.android.material.button.MaterialButton android:id="@+id/shopping_item_delete" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/shopping_item_delete" style="@style/Widget.Material3.Button.TextButton"/>
-    </LinearLayout>
-</ScrollView>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/bg_circles_strong" />
+
+    <ScrollView android:layout_width="0dp" android:layout_height="0dp" android:fillViewport="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp">
+            <TextView android:id="@+id/shopping_item_editor_title" android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/AppTitle" android:accessibilityHeading="true"/>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" style="@style/AppTextSecondary" android:text="@string/shopping_item_editor_description"/>
+            <com.google.android.material.textfield.TextInputLayout android:id="@+id/shopping_item_ingredient_input" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="20dp" style="@style/AppInput" android:hint="@string/shopping_item_ingredient_hint" app:endIconMode="dropdown_menu">
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView android:id="@+id/shopping_item_ingredient" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="textCapWords" android:completionThreshold="1" android:singleLine="true" android:importantForAutofill="no" style="@style/AppEditText"/>
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputLayout android:id="@+id/shopping_item_quantity_input" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" style="@style/AppInput" android:hint="@string/shopping_item_quantity_hint">
+                <com.google.android.material.textfield.TextInputEditText android:id="@+id/shopping_item_quantity" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="numberDecimal" android:singleLine="true" android:importantForAutofill="no" style="@style/AppEditText"/>
+            </com.google.android.material.textfield.TextInputLayout>
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:labelFor="@id/shopping_item_unit" style="@style/AppText" android:text="@string/shopping_item_unit_label"/>
+            <Spinner android:id="@+id/shopping_item_unit" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp"/>
+            <TextView android:id="@+id/shopping_item_editor_error" android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/AppText" android:visibility="gone" android:layout_marginTop="12dp" android:accessibilityLiveRegion="polite"/>
+            <com.google.android.material.button.MaterialButton android:id="@+id/shopping_item_save" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="20dp" android:text="@string/shopping_item_save" style="@style/PrimaryButton"/>
+            <com.google.android.material.button.MaterialButton android:id="@+id/shopping_item_cancel" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/shopping_item_cancel" style="@style/SecondaryButton"/>
+            <com.google.android.material.button.MaterialButton android:id="@+id/shopping_item_delete" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/shopping_item_delete" style="@style/Widget.Material3.Button.TextButton"/>
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
