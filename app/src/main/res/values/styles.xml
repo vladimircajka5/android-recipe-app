@@ -136,4 +136,15 @@
         <item name="android:tint">?attr/colorOnSurface</item>
     </style>
 
+    <!-- Bottom Navigation -->
+    <style name="AppBottomBar" parent="Widget.Material3.BottomNavigationView">
+        <item name="backgroundTint">@color/navigation_bar_background</item>
+    </style>
+
+    <!-- User Recipes -->
+    <style name="UserRecipesAvatar">
+        <item name="android:background">?attr/colorSurface</item>
+        <item name="android:scaleType">centerCrop</item>
+    </style>
+
 </resources>

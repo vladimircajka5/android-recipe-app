@@ -23,4 +23,7 @@
     <!-- Shapes -->
     <color name="app_circle">#E6A4A8</color>
 
+    <!-- Navigation -->
+    <color name="navigation_bar_background">#F0F0F0</color>
+
 </resources>
