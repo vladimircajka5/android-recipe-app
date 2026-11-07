@@ -1,6 +1,6 @@
 package com.siit.recipeapp.data.model.ingredient;
 
-/** A unit label; this milestone does not infer mass/volume/count conversions. */
+
 public final class MeasurementUnit {
     private final String id;
     private final String name;
