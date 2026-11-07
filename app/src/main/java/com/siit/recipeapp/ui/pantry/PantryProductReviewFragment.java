@@ -96,6 +96,8 @@ public final class PantryProductReviewFragment extends Fragment {
             Ingredient candidate = ingredients.get(i);
             String candidateName = candidate.getName().toLowerCase(Locale.ROOT);
             if (normalized.equals(candidateName) || normalized.contains(candidateName) || candidateName.contains(normalized)) {
+                spinner.setSelection(i + 1);
+                selectedIngredientId = candidate.getId();
 
                 ((TextView) root.findViewById(R.id.product_suggestion)).setText(
                         getString(R.string.product_suggested_match, candidate.getName()));
