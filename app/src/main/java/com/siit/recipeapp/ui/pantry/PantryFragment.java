@@ -19,6 +19,7 @@ import com.siit.recipeapp.ui.preview.PantryPreviewData;
 import com.siit.recipeapp.ui.pantry.PantryViewModel;
 import com.siit.recipeapp.data.model.ingredient.Ingredient;
 import com.siit.recipeapp.data.model.ingredient.MeasurementUnit;
+import com.siit.recipeapp.data.model.ingredient.Product;
 import com.siit.recipeapp.data.model.pantry.PantryItem;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ public final class PantryFragment extends Fragment {
     private final List<PantryItem> items = new ArrayList<>();
     private final Map<String, Ingredient> ingredients = new HashMap<>();
     private final Map<String, MeasurementUnit> units = new HashMap<>();
+    private final Map<String, Product> products = new HashMap<>();
     private final PantryAdapter adapter = new PantryAdapter();
     private PantryViewModel viewModel;
 
@@ -41,6 +43,7 @@ public final class PantryFragment extends Fragment {
         list.setAdapter(adapter);
         list.setOnItemClickListener((parent, row, position, id) -> openEditor(adapter.visible.get(position).getId()));
         view.findViewById(R.id.pantry_add).setOnClickListener(v -> openEditor(null));
+        view.findViewById(R.id.pantry_scan).setOnClickListener(v -> openScanner());
         EditText filter = view.findViewById(R.id.pantry_filter);
         filter.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
@@ -48,17 +51,21 @@ public final class PantryFragment extends Fragment {
             @Override public void afterTextChanged(Editable s) { }
         });
         ((TextView) view.findViewById(R.id.pantry_notice)).setText(R.string.pantry_development_notice);
+        viewModel = new ViewModelProvider(requireActivity(), new PantryViewModelFactory()).get(PantryViewModel.class);
         ingredients.clear();
-        for (Ingredient ingredient : PantryPreviewData.INGREDIENTS) ingredients.put(ingredient.getId(), ingredient);
+        for (Ingredient ingredient : viewModel.getIngredients()) ingredients.put(ingredient.getId(), ingredient);
         units.clear();
         for (MeasurementUnit unit : PantryPreviewData.UNITS) units.put(unit.getId(), unit);
-        viewModel = new ViewModelProvider(requireActivity(), new PantryViewModelFactory()).get(PantryViewModel.class);
     }
 
     @Override public void onResume() {
         super.onResume();
         items.clear();
         items.addAll(viewModel.getItems());
+        ingredients.clear();
+        for (Ingredient ingredient : viewModel.getIngredients()) ingredients.put(ingredient.getId(), ingredient);
+        products.clear();
+        for (Product product : viewModel.getProducts()) products.put(product.getId(), product);
         updateVisible();
     }
 
@@ -85,6 +92,11 @@ public final class PantryFragment extends Fragment {
         text.setText(message); text.setVisibility(View.VISIBLE);
     }
 
+    private void openScanner() {
+        getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, new BarcodeScannerFragment())
+                .addToBackStack("pantry-scanner").commit();
+    }
+
     private void openEditor(String id) {
         PantryEditorFragment editor = new PantryEditorFragment();
         Bundle args = new Bundle(); args.putString(PantryEditorFragment.ARG_ITEM_ID, id);
@@ -109,7 +121,16 @@ public final class PantryFragment extends Fragment {
             brand.setVisibility(item.getBrand() == null ? View.GONE : View.VISIBLE);
             brand.setText(item.getBrand() == null ? "" : getString(R.string.pantry_brand_value, item.getBrand()));
             MeasurementUnit unit = units.get(item.getUnitId());
-            String amount = item.getQuantity() == null ? getString(R.string.pantry_quantity_unknown)
+            String amount;
+            Product product = item.getProductId() == null ? null : products.get(item.getProductId());
+            if (product != null) {
+                String count = item.getQuantity() == null ? "1" : (item.getQuantity() % 1.0 == 0 ? Long.toString(item.getQuantity().longValue()) : Double.toString(item.getQuantity()));
+                if (product.getPackageQuantity() == null) amount = getString(R.string.pantry_package_count, count);
+                else {
+                    MeasurementUnit packageUnit = units.get(product.getUnitId());
+                    amount = getString(R.string.pantry_package_amount, count, Double.toString(product.getPackageQuantity()), packageUnit == null ? "" : packageUnit.getAbbreviation());
+                }
+            } else amount = item.getQuantity() == null ? getString(R.string.pantry_quantity_unknown)
                     : Double.toString(item.getQuantity()) + " " + (unit == null ? "" : unit.getAbbreviation());
             ((TextView) row.findViewById(R.id.pantry_item_quantity)).setText(amount);
             TextView expiry = row.findViewById(R.id.pantry_item_expiry);

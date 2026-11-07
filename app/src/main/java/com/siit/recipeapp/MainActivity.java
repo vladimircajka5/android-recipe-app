@@ -26,6 +26,8 @@ import com.siit.recipeapp.ui.shopping.ShoppingListEditorFragment;
 import com.siit.recipeapp.ui.shopping.ShoppingItemEditorFragment;
 import com.siit.recipeapp.ui.pantry.PantryFragment;
 import com.siit.recipeapp.ui.pantry.PantryEditorFragment;
+import com.siit.recipeapp.ui.pantry.BarcodeScannerFragment;
+import com.siit.recipeapp.ui.pantry.PantryProductReviewFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -129,7 +131,8 @@ public class MainActivity extends AppCompatActivity {
                         } else if (fragment instanceof ShoppingListsFragment || fragment instanceof ShoppingDetailFragment
                                 || fragment instanceof ShoppingListEditorFragment || fragment instanceof ShoppingItemEditorFragment) {
                             bottomNavigation.getMenu().findItem(R.id.nav_shopping).setChecked(true);
-                        } else if (fragment instanceof PantryFragment || fragment instanceof PantryEditorFragment) {
+                        } else if (fragment instanceof PantryFragment || fragment instanceof PantryEditorFragment
+                                || fragment instanceof BarcodeScannerFragment || fragment instanceof PantryProductReviewFragment) {
                             bottomNavigation.getMenu().findItem(R.id.nav_pantry).setChecked(true);
                         }
                     }
