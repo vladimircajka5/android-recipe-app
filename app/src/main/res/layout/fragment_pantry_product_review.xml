@@ -1,9 +1,165 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true"><LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp">
-<TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/product_review_title" style="@style/AppTitle"/><TextView android:id="@+id/product_review_result" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" style="@style/AppTextSecondary"/>
-<EditText android:id="@+id/product_barcode" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:hint="@string/product_barcode_hint" android:inputType="number" android:singleLine="true" style="@style/AppEditText"/><EditText android:id="@+id/product_name" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="@string/product_name_hint" android:inputType="textCapSentences" android:singleLine="true" style="@style/AppEditText"/><EditText android:id="@+id/product_brand" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="@string/product_brand_hint" android:inputType="textCapWords" android:singleLine="true" style="@style/AppEditText"/>
-<TextView android:id="@+id/product_suggestion" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" style="@style/AppTextSecondary"/><LinearLayout android:id="@+id/product_ingredient_input" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"><TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/product_select_ingredient_hint" style="@style/AppTextSecondary"/><Spinner android:id="@+id/product_ingredient" android:layout_width="match_parent" android:layout_height="wrap_content"/></LinearLayout>
-<com.google.android.material.checkbox.MaterialCheckBox android:id="@+id/product_create_ingredient" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/product_create_ingredient"/><LinearLayout android:id="@+id/product_category_input" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:visibility="gone"><TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/product_category_hint" style="@style/AppTextSecondary"/><Spinner android:id="@+id/product_category" android:layout_width="match_parent" android:layout_height="wrap_content"/></LinearLayout>
-<EditText android:id="@+id/product_quantity" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="@string/product_quantity_hint" android:inputType="numberDecimal" android:singleLine="true" style="@style/AppEditText"/><TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/pantry_unit_label" style="@style/AppTextSecondary"/><Spinner android:id="@+id/product_unit" android:layout_width="match_parent" android:layout_height="wrap_content"/>
-<com.google.android.material.button.MaterialButton android:id="@+id/product_date" android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/SecondaryButton" android:text="@string/pantry_choose_date"/><com.google.android.material.button.MaterialButton android:id="@+id/product_clear_date" android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/SecondaryButton" android:text="@string/pantry_clear_date" android:visibility="gone"/><com.google.android.material.button.MaterialButton android:id="@+id/product_save" android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/PrimaryButton" android:text="@string/product_save"/><com.google.android.material.button.MaterialButton android:id="@+id/product_cancel" android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/SecondaryButton" android:text="@string/pantry_cancel"/>
-</LinearLayout></ScrollView>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/bg_circles_strong" />
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/product_review_title"
+                style="@style/AppTitle" />
+
+            <TextView
+                android:id="@+id/product_review_result"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                style="@style/AppTextSecondary" />
+
+            <EditText
+                android:id="@+id/product_barcode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:hint="@string/product_barcode_hint"
+                android:inputType="number"
+                android:singleLine="true"
+                style="@style/AppEditText" />
+
+            <EditText
+                android:id="@+id/product_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/product_name_hint"
+                android:inputType="textCapSentences"
+                android:singleLine="true"
+                style="@style/AppEditText" />
+
+            <EditText
+                android:id="@+id/product_brand"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/product_brand_hint"
+                android:inputType="textCapWords"
+                android:singleLine="true"
+                style="@style/AppEditText" />
+
+            <TextView
+                android:id="@+id/product_suggestion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                style="@style/AppTextSecondary" />
+
+            <LinearLayout
+                android:id="@+id/product_ingredient_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/product_select_ingredient_hint"
+                    style="@style/AppTextSecondary" />
+
+                <Spinner
+                    android:id="@+id/product_ingredient"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/product_create_ingredient"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/product_create_ingredient" />
+
+            <LinearLayout
+                android:id="@+id/product_category_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/product_category_hint"
+                    style="@style/AppTextSecondary" />
+
+                <Spinner
+                    android:id="@+id/product_category"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/product_quantity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/product_quantity_hint"
+                android:inputType="numberDecimal"
+                android:singleLine="true"
+                style="@style/AppEditText" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/pantry_unit_label"
+                style="@style/AppTextSecondary" />
+
+            <Spinner
+                android:id="@+id/product_unit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/product_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/SecondaryButton"
+                android:text="@string/pantry_choose_date" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/product_clear_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/SecondaryButton"
+                android:text="@string/pantry_clear_date"
+                android:visibility="gone" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/product_save"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/PrimaryButton"
+                android:text="@string/product_save" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/product_cancel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/SecondaryButton"
+                android:text="@string/pantry_cancel" />
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
