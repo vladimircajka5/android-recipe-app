@@ -2,7 +2,7 @@ package com.siit.recipeapp.data.model.ingredient;
 
 import java.util.Objects;
 
-/** Catalog identity. Stock quantity belongs to PantryItem, not to this entity. */
+
 public final class Ingredient {
     private final String id;
     private final String name;

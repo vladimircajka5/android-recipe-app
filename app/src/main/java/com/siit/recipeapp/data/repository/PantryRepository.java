@@ -5,6 +5,7 @@ import java.util.List;
 
 public interface PantryRepository {
     List<PantryItem> getItems();
+    PantryItem findItemByProductId(String productId);
     void saveItem(PantryItem item);
     void removeItem(String itemId);
 }

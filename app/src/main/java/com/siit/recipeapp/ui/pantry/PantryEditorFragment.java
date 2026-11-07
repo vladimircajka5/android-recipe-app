@@ -39,6 +39,11 @@ public final class PantryEditorFragment extends Fragment {
     private String itemId;
     private boolean editing;
     private boolean loaded;
+    private String currentProductId() {
+        if (viewModel == null) return null;
+        for (PantryItem item : viewModel.getItems()) if (itemId.equals(item.getId())) return item.getProductId();
+        return null;
+    }
 
     public PantryEditorFragment() { super(R.layout.fragment_pantry_editor); }
 
@@ -62,7 +67,7 @@ public final class PantryEditorFragment extends Fragment {
             }, date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth()).show();
         });
         root.findViewById(R.id.pantry_clear_date).setOnClickListener(v -> { expirationDate = null; updateDate(root); });
-        ingredients.clear(); ingredients.addAll(PantryPreviewData.INGREDIENTS);
+        ingredients.clear(); ingredients.addAll(viewModel.getIngredients());
         units.clear(); units.addAll(PantryPreviewData.UNITS);
         PantryItem current = null;
         if (editing) {
@@ -108,6 +113,10 @@ public final class PantryEditorFragment extends Fragment {
         for (Ingredient entry : ingredients) if (entry.getId().equals(selectedIngredientId)) ingredient.setText(entry.getName(), false);
         if (state != null) ingredient.setText(state.getString("ingredient_text", ""), false);
         setUnit(spinner, selectedUnit);
+        if (item != null && item.getProductId() != null) {
+            ingredient.setEnabled(false);
+            spinner.setEnabled(false);
+        }
         ((EditText) root.findViewById(R.id.pantry_brand)).setText(state != null ? state.getString("brand") : item == null ? "" : item.getBrand());
         ((EditText) root.findViewById(R.id.pantry_quantity)).setText(state != null ? state.getString("quantity")
                 : item == null || item.getQuantity() == null ? "" : Double.toString(item.getQuantity()));
@@ -151,7 +160,7 @@ public final class PantryEditorFragment extends Fragment {
         }
         String brand = ((EditText) root.findViewById(R.id.pantry_brand)).getText().toString().trim();
         if (brand.isEmpty()) brand = null;
-        PantryItem item = new PantryItem(itemId, PantryPreviewData.OWNER_ID, selectedIngredientId, brand, quantity, unitId, expirationDate);
+        PantryItem item = new PantryItem(itemId, PantryPreviewData.OWNER_ID, selectedIngredientId, editing ? currentProductId() : null, brand, quantity, unitId, expirationDate);
         viewModel.saveItem(item);
         getParentFragmentManager().popBackStack();
     }
