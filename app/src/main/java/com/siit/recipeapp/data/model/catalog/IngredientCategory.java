@@ -6,7 +6,7 @@ import java.util.Objects;
 
 public final class IngredientCategory {
     private final String id;
-    private String name;
+    private final String name;
     private final String description;
 
     public IngredientCategory(String id, String name, String description){
