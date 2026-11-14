@@ -1,6 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.google.services) apply false
+}
+
+if (file("google-services.json").exists()) {
+    apply(plugin = "com.google.gms.google-services")
 }
 
 android {
@@ -53,7 +56,7 @@ dependencies {
     // Firebase services
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
-    implementation(libs.firebase.storage)
+    //implementation(libs.firebase.storage)
 
     // Room (for local data and offline mode)
     implementation(libs.room.runtime)
