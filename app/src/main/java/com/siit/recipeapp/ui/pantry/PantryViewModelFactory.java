@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.siit.recipeapp.RecipeApplication;
 import com.siit.recipeapp.data.local.LocalDataSeeder;
 import com.siit.recipeapp.data.local.RecipeDatabase;
 import com.siit.recipeapp.data.repository.room.RoomIngredientRepository;
@@ -25,7 +26,7 @@ public final class PantryViewModelFactory implements ViewModelProvider.Factory {
         if (modelClass == PantryViewModel.class) {
             RecipeDatabase database = RecipeDatabase.getInstance(context);
             LocalDataSeeder.seed(database);
-
+            ((RecipeApplication) context.getApplicationContext()).syncSignedInUser();
 
             PantryViewModel viewModel = getViewModel(database);
             return modelClass.cast(viewModel);
