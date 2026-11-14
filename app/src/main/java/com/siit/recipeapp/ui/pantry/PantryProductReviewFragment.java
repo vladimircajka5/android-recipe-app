@@ -43,7 +43,7 @@ public final class PantryProductReviewFragment extends Fragment {
     public PantryProductReviewFragment() { super(R.layout.fragment_pantry_product_review); }
 
     @Override public void onViewCreated(@NonNull View root, @Nullable Bundle state) {
-        viewModel = new ViewModelProvider(requireActivity(), new PantryViewModelFactory()).get(PantryViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity(), new PantryViewModelFactory(requireContext())).get(PantryViewModel.class);
         ingredients.addAll(viewModel.getIngredients());
         units.addAll(PantryPreviewData.UNITS);
         Bundle args = getArguments() == null ? Bundle.EMPTY : getArguments();
