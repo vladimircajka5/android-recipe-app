@@ -43,3 +43,5 @@ Packages are created as features are implemented.
 - Local changes are marked with SyncState.PENDING; remote synchronization can process those records when connectivity is available.
 - User-selected images are copied into app-internal storage and referenced by local URI. They are intentionally device-local because Firebase Storage is not available.
 - Recipe videos are represented by validated YouTube links rather than uploaded files.
+- Firestore synchronization writes pending pantry and shopping changes under the signed-in user's document and merges remote records using updatedAt.
+- Firebase Storage is not used. The Google Services Gradle plugin is applied only when a local google-services.json file is present.

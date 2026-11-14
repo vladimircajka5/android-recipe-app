@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.siit.recipeapp.RecipeApplication;
 import com.siit.recipeapp.data.local.LocalDataSeeder;
 import com.siit.recipeapp.data.local.RecipeDatabase;
 import com.siit.recipeapp.data.repository.inmemory.InMemoryShoppingRepository;
@@ -23,6 +24,8 @@ public final class ShoppingViewModelFactory implements ViewModelProvider.Factory
         if (modelClass == ShoppingViewModel.class) {
             RecipeDatabase database = RecipeDatabase.getInstance(context);
             LocalDataSeeder.seed(database);
+            ((RecipeApplication) context.getApplicationContext()).syncSignedInUser();
+
             ShoppingService service = new ShoppingService(new RoomShoppingRepository(database));
             return modelClass.cast(new ShoppingViewModel(service));
         }
