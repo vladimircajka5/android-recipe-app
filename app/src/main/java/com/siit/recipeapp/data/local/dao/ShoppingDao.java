@@ -25,6 +25,18 @@ public interface ShoppingDao {
     @Query("SELECT * FROM shopping_list_items WHERE shoppingListId = :listId")
     List<ShoppingListItemEntity> itemsFor(String listId);
 
+    @Query("SELECT * FROM shopping_lists WHERE syncState = 'PENDING'")
+    List<ShoppingListEntity> getPendingLists();
+
+    @Query("SELECT * FROM shopping_list_items WHERE syncState = 'PENDING'")
+    List<ShoppingListItemEntity> getPendingItems();
+
+    @Query("UPDATE shopping_lists SET syncState = 'SYNCED' WHERE id = :id")
+    void markListSynced(String id);
+
+    @Query("UPDATE shopping_list_items SET syncState = 'SYNCED' WHERE id = :id")
+    void markItemSynced(String id);
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void upsertList(ShoppingListEntity list);
 
