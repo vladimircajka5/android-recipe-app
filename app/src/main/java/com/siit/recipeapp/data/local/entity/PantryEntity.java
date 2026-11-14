@@ -1,5 +1,6 @@
 package com.siit.recipeapp.data.local.entity;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import com.siit.recipeapp.data.local.SyncState;
@@ -8,6 +9,7 @@ import java.time.LocalDate;
 @Entity(tableName = "pantry_items")
 public final class PantryEntity {
     @PrimaryKey
+    @NonNull
     public String id;
     public String ownerId;
     public String ingredientId;

@@ -1,11 +1,13 @@
 package com.siit.recipeapp.data.local.entity;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity(tableName = "products")
 public final class ProductEntity {
     @PrimaryKey
+    @NonNull
     public String id;
     public String barcode;
     public String brandName;
