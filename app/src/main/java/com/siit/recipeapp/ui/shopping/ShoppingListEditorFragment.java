@@ -33,7 +33,7 @@ public final class ShoppingListEditorFragment extends Fragment {
     public ShoppingListEditorFragment() { super(R.layout.fragment_shopping_list_editor); }
 
     @Override public void onViewCreated(@NonNull View root, @Nullable Bundle state) {
-        viewModel = new ViewModelProvider(requireActivity(), new ShoppingViewModelFactory()).get(ShoppingViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity(), new ShoppingViewModelFactory(requireContext())).get(ShoppingViewModel.class);
         String existingId = requireArguments().getString(ShoppingScreenHelper.LIST_ID);
         editing = existingId != null;
         listId = state == null ? existingId : state.getString("draft_id", existingId);

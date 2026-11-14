@@ -12,7 +12,9 @@ import android.widget.Toast;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
 import androidx.camera.core.CameraSelector;
+import androidx.camera.core.ExperimentalGetImage;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
@@ -57,7 +59,7 @@ public final class BarcodeScannerFragment extends Fragment {
     public BarcodeScannerFragment() { super(R.layout.fragment_barcode_scanner); }
 
     @Override public void onViewCreated(@NonNull View root, @Nullable Bundle state) {
-        viewModel = new ViewModelProvider(requireActivity(), new PantryViewModelFactory()).get(PantryViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity(), new PantryViewModelFactory(requireContext())).get(PantryViewModel.class);
         previewView = root.findViewById(R.id.barcode_preview);
         status = root.findViewById(R.id.barcode_status);
         root.findViewById(R.id.barcode_cancel).setOnClickListener(v -> getParentFragmentManager().popBackStack());
@@ -89,6 +91,7 @@ public final class BarcodeScannerFragment extends Fragment {
         }, ContextCompat.getMainExecutor(requireContext()));
     }
 
+    @OptIn(markerClass = ExperimentalGetImage.class)
     private void analyze(@NonNull ImageProxy proxy) {
         android.media.Image media = proxy.getImage();
         if (media == null || handled.get()) { proxy.close(); return; }

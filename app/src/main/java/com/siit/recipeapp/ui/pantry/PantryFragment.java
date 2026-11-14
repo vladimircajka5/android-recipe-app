@@ -51,7 +51,7 @@ public final class PantryFragment extends Fragment {
             @Override public void afterTextChanged(Editable s) { }
         });
         ((TextView) view.findViewById(R.id.pantry_notice)).setText(R.string.pantry_development_notice);
-        viewModel = new ViewModelProvider(requireActivity(), new PantryViewModelFactory()).get(PantryViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity(), new PantryViewModelFactory(requireContext())).get(PantryViewModel.class);
         ingredients.clear();
         for (Ingredient ingredient : viewModel.getIngredients()) ingredients.put(ingredient.getId(), ingredient);
         units.clear();

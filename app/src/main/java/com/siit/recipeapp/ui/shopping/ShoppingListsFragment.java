@@ -28,7 +28,7 @@ public final class ShoppingListsFragment extends Fragment {
     public ShoppingListsFragment() { super(R.layout.fragment_shopping_lists); }
 
     @Override public void onViewCreated(@NonNull View root, @Nullable Bundle state) {
-        viewModel = new ViewModelProvider(requireActivity(), new ShoppingViewModelFactory()).get(ShoppingViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity(), new ShoppingViewModelFactory(requireContext())).get(ShoppingViewModel.class);
         ListView list = root.findViewById(R.id.shopping_lists);
         list.setAdapter(adapter);
         list.setOnItemClickListener((parent, row, position, id) ->

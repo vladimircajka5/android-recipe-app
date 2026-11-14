@@ -48,7 +48,7 @@ public final class PantryEditorFragment extends Fragment {
     public PantryEditorFragment() { super(R.layout.fragment_pantry_editor); }
 
     @Override public void onViewCreated(@NonNull View root, @Nullable Bundle state) {
-        viewModel = new ViewModelProvider(requireActivity(), new PantryViewModelFactory()).get(PantryViewModel.class);
+        viewModel = new ViewModelProvider(requireActivity(), new PantryViewModelFactory(requireContext())).get(PantryViewModel.class);
         String existingId = getArguments() == null ? null : getArguments().getString(ARG_ITEM_ID);
         editing = existingId != null;
         itemId = state != null ? state.getString("draft_id") : existingId;
