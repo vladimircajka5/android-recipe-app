@@ -26,9 +26,12 @@ public final class ShoppingDetailFragment extends Fragment {
     private ShoppingViewModel viewModel;
     private String listId;
 
-    public ShoppingDetailFragment() { super(R.layout.fragment_shopping_detail); }
+    public ShoppingDetailFragment() {
+        super(R.layout.fragment_shopping_detail);
+    }
 
-    @Override public void onViewCreated(@NonNull View root, @Nullable Bundle state) {
+    @Override
+    public void onViewCreated(@NonNull View root, @Nullable Bundle state) {
         listId = requireArguments().getString(ShoppingScreenHelper.LIST_ID);
         viewModel = new ViewModelProvider(requireActivity(), new ShoppingViewModelFactory(requireContext())).get(ShoppingViewModel.class);
         ListView list = root.findViewById(R.id.shopping_items);
@@ -39,6 +42,11 @@ public final class ShoppingDetailFragment extends Fragment {
                 ShoppingScreenHelper.open(this, new ShoppingItemEditorFragment(), listId, items.get(position).getId());
             }
         });
+        setupListActions(root);
+
+    }
+
+    private void setupListActions(View root) {
         root.findViewById(R.id.shopping_add_item).setOnClickListener(v ->
                 ShoppingScreenHelper.open(this, new ShoppingItemEditorFragment(), listId, null));
         root.findViewById(R.id.shopping_edit_list).setOnClickListener(v ->
@@ -70,10 +78,10 @@ public final class ShoppingDetailFragment extends Fragment {
                             viewModel.removeList(listId);
                             getParentFragmentManager().popBackStack();
                         }).show());
-
     }
 
-    @Override public void onResume() {
+    @Override
+    public void onResume() {
         super.onResume();
         refresh(requireView());
     }
@@ -82,19 +90,13 @@ public final class ShoppingDetailFragment extends Fragment {
         ShoppingList list = viewModel.findList(listId);
         boolean exists = list != null;
         boolean archived = exists && list.getStatus() == ShoppingListStatus.ARCHIVED;
-        for (int id : new int[]{R.id.shopping_add_item, R.id.shopping_edit_list, R.id.shopping_delete_list}) {
-            root.findViewById(id).setEnabled(exists && !archived);
-        }
-        root.findViewById(R.id.shopping_add_item).setVisibility(archived ? View.GONE : View.VISIBLE);
-        root.findViewById(R.id.shopping_edit_list).setVisibility(archived ? View.GONE : View.VISIBLE);
-        root.findViewById(R.id.shopping_mark_all).setVisibility(archived ? View.GONE : View.VISIBLE);
-        root.findViewById(R.id.shopping_delete_list).setVisibility(archived ? View.GONE : View.VISIBLE);
-        root.findViewById(R.id.shopping_archive_list).setVisibility(exists && !archived ? View.VISIBLE : View.GONE);
-        root.findViewById(R.id.shopping_reactivate_list).setVisibility(archived ? View.VISIBLE : View.GONE);
-        root.findViewById(R.id.shopping_copy_list).setVisibility(archived ? View.VISIBLE : View.GONE);
+        updateListActions(root, exists, archived);
+
         ((TextView) root.findViewById(R.id.shopping_detail_title)).setText(exists ? list.getName() : getString(R.string.shopping_missing_list));
         items.clear();
-        if (exists) items.addAll(viewModel.itemsFor(listId));
+        if (exists) {
+            items.addAll(viewModel.itemsFor(listId));
+        }
         adapter.notifyDataSetChanged();
         int purchased = 0;
         for (ShoppingListItem item : items) if (item.isPurchased()) purchased++;
@@ -106,11 +108,34 @@ public final class ShoppingDetailFragment extends Fragment {
         empty.setText(exists ? R.string.shopping_items_empty : R.string.shopping_missing_list);
     }
 
+    private void updateListActions(View root, boolean exists, boolean archived) {
+        for (int id : new int[]{R.id.shopping_add_item, R.id.shopping_edit_list, R.id.shopping_delete_list}) {
+            root.findViewById(id).setEnabled(exists && !archived);
+        }
+        root.findViewById(R.id.shopping_add_item).setVisibility(archived ? View.GONE : View.VISIBLE);
+        root.findViewById(R.id.shopping_edit_list).setVisibility(archived ? View.GONE : View.VISIBLE);
+        root.findViewById(R.id.shopping_mark_all).setVisibility(archived ? View.GONE : View.VISIBLE);
+        root.findViewById(R.id.shopping_delete_list).setVisibility(archived ? View.GONE : View.VISIBLE);
+        root.findViewById(R.id.shopping_archive_list).setVisibility(exists && !archived ? View.VISIBLE : View.GONE);
+        root.findViewById(R.id.shopping_reactivate_list).setVisibility(archived ? View.VISIBLE : View.GONE);
+        root.findViewById(R.id.shopping_copy_list).setVisibility(archived ? View.VISIBLE : View.GONE);
+    }
+
     private final class ItemAdapter extends BaseAdapter {
-        @Override public int getCount() { return items.size(); }
-        @Override public Object getItem(int position) { return items.get(position); }
-        @Override public long getItemId(int position) { return position; }
-        @Override public View getView(int position, View recycled, ViewGroup parent) {
+        @Override
+        public int getCount() {
+            return items.size();
+        }
+        @Override
+        public Object getItem(int position) {
+            return items.get(position);
+        }
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+        @Override
+        public View getView(int position, View recycled, ViewGroup parent) {
             View row = recycled == null ? LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_shopping_ingredient, parent, false) : recycled;
             ShoppingListItem item = items.get(position);

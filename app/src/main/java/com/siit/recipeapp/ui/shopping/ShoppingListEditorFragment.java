@@ -16,7 +16,6 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputLayout;
 import com.siit.recipeapp.R;
 import com.siit.recipeapp.ui.preview.ShoppingPreviewData;
-import com.siit.recipeapp.ui.shopping.ShoppingViewModel;
 import com.siit.recipeapp.data.model.shopping.ShoppingList;
 import com.siit.recipeapp.data.model.shopping.ShoppingListStatus;
 import java.time.LocalDateTime;
@@ -30,14 +29,19 @@ public final class ShoppingListEditorFragment extends Fragment {
     private Dialog dateDialog;
     private Dialog timeDialog;
 
-    public ShoppingListEditorFragment() { super(R.layout.fragment_shopping_list_editor); }
+    public ShoppingListEditorFragment() {
+        super(R.layout.fragment_shopping_list_editor);
+    }
 
-    @Override public void onViewCreated(@NonNull View root, @Nullable Bundle state) {
+    @Override
+    public void onViewCreated(@NonNull View root, @Nullable Bundle state) {
         viewModel = new ViewModelProvider(requireActivity(), new ShoppingViewModelFactory(requireContext())).get(ShoppingViewModel.class);
         String existingId = requireArguments().getString(ShoppingScreenHelper.LIST_ID);
         editing = existingId != null;
         listId = state == null ? existingId : state.getString("draft_id", existingId);
-        if (listId == null) listId = UUID.randomUUID().toString();
+        if (listId == null) {
+            listId = UUID.randomUUID().toString();
+        }
         ShoppingList current = editing ? viewModel.findList(listId) : null;
         ((TextView) root.findViewById(R.id.shopping_editor_title)).setText(editing ? R.string.shopping_edit_list : R.string.shopping_new_list);
         root.findViewById(R.id.shopping_cancel).setOnClickListener(v -> getParentFragmentManager().popBackStack());
@@ -50,35 +54,48 @@ public final class ShoppingListEditorFragment extends Fragment {
         }
         ((EditText) root.findViewById(R.id.shopping_name)).setText(current == null ? "" : current.getName());
         ((CheckBox) root.findViewById(R.id.shopping_permanent)).setChecked(current != null && current.isPermanent());
-        planned = state == null ? current == null ? null : current.getPlannedPurchaseAt()
-                : state.getString("planned") == null ? null : LocalDateTime.parse(state.getString("planned"));
+        if (state == null) {
+            planned = current == null ? null : current.getPlannedPurchaseAt();
+        } else {
+            String savedDate = state.getString("planned");
+            planned = savedDate == null ? null : LocalDateTime.parse(savedDate);
+        }
         updateDate(root);
-        root.findViewById(R.id.shopping_date).setOnClickListener(v -> {
-            LocalDateTime initial = planned == null ? LocalDateTime.now().withSecond(0).withNano(0) : planned;
-            dateDialog = new DatePickerDialog(requireContext(), (picker, year, month, day) -> {
-                    timeDialog = new TimePickerDialog(requireContext(), (time, hour, minute) -> {
-                        planned = LocalDateTime.of(year, month + 1, day, hour, minute);
-                        updateDate(root);
-                    }, initial.getHour(), initial.getMinute(), android.text.format.DateFormat.is24HourFormat(requireContext()));
-                    timeDialog.show();
-                }, initial.getYear(), initial.getMonthValue() - 1, initial.getDayOfMonth());
-            dateDialog.show();
-        });
+        root.findViewById(R.id.shopping_date).setOnClickListener(v -> choosePlannedDate(root));
         root.findViewById(R.id.shopping_clear_date).setOnClickListener(v -> { planned = null; updateDate(root); });
-        root.findViewById(R.id.shopping_save).setOnClickListener(v -> {
-            String name = ((EditText) root.findViewById(R.id.shopping_name)).getText().toString().trim();
-            TextInputLayout input = root.findViewById(R.id.shopping_name_input);
-            input.setError(null);
-            if (name.isEmpty()) { input.setError(getString(R.string.shopping_name_required)); return; }
-            ShoppingList existing = editing ? viewModel.findList(listId) : null;
-            if (editing && existing == null) return;
-            viewModel.saveList(new ShoppingList(listId, existing == null ? ShoppingPreviewData.OWNER_ID : existing.getOwnerId(),
-                    name, existing == null ? LocalDateTime.now() : existing.getCreatedAt(), planned,
-                    ((CheckBox) root.findViewById(R.id.shopping_permanent)).isChecked(),
-                    existing == null ? ShoppingListStatus.ACTIVE : existing.getStatus()));
-            viewModel.archiveCompletedListIfNeeded(listId);
-            getParentFragmentManager().popBackStack();
-        });
+        root.findViewById(R.id.shopping_save).setOnClickListener(v -> saveList(root));
+    }
+
+    private void choosePlannedDate(View root) {
+        LocalDateTime initial = planned == null ? LocalDateTime.now().withSecond(0).withNano(0) : planned;
+        dateDialog = new DatePickerDialog(requireContext(), (picker, year, month, day) -> {
+                timeDialog = new TimePickerDialog(requireContext(), (time, hour, minute) -> {
+                    planned = LocalDateTime.of(year, month + 1, day, hour, minute);
+                    updateDate(root);
+                }, initial.getHour(), initial.getMinute(), android.text.format.DateFormat.is24HourFormat(requireContext()));
+                timeDialog.show();
+            }, initial.getYear(), initial.getMonthValue() - 1, initial.getDayOfMonth());
+        dateDialog.show();
+    }
+
+    private void saveList(View root) {
+        String name = ((EditText) root.findViewById(R.id.shopping_name)).getText().toString().trim();
+        TextInputLayout input = root.findViewById(R.id.shopping_name_input);
+        input.setError(null);
+        if (name.isEmpty()) {
+            input.setError(getString(R.string.shopping_name_required));
+            return;
+        }
+        ShoppingList existing = editing ? viewModel.findList(listId) : null;
+        if (editing && existing == null) {
+            return;
+        }
+        viewModel.saveList(new ShoppingList(listId, existing == null ? ShoppingPreviewData.OWNER_ID : existing.getOwnerId(),
+                name, existing == null ? LocalDateTime.now() : existing.getCreatedAt(), planned,
+                ((CheckBox) root.findViewById(R.id.shopping_permanent)).isChecked(),
+                existing == null ? ShoppingListStatus.ACTIVE : existing.getStatus()));
+        viewModel.archiveCompletedListIfNeeded(listId);
+        getParentFragmentManager().popBackStack();
     }
 
     private void updateDate(View root) {
@@ -87,15 +104,21 @@ public final class ShoppingListEditorFragment extends Fragment {
         root.findViewById(R.id.shopping_clear_date).setVisibility(planned == null ? View.GONE : View.VISIBLE);
     }
 
-    @Override public void onSaveInstanceState(@NonNull Bundle out) {
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle out) {
         super.onSaveInstanceState(out);
         out.putString("draft_id", listId);
         out.putString("planned", planned == null ? null : planned.toString());
     }
 
-    @Override public void onDestroyView() {
-        if (dateDialog != null) dateDialog.dismiss();
-        if (timeDialog != null) timeDialog.dismiss();
+    @Override
+    public void onDestroyView() {
+        if (dateDialog != null) {
+            dateDialog.dismiss();
+        }
+        if (timeDialog != null) {
+            timeDialog.dismiss();
+        }
         dateDialog = null;
         timeDialog = null;
         super.onDestroyView();

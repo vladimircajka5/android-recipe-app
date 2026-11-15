@@ -11,8 +11,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import com.google.android.material.button.MaterialButton;
 import com.siit.recipeapp.R;
-import com.siit.recipeapp.ui.shopping.ShoppingViewModel;
 import com.siit.recipeapp.data.model.shopping.ShoppingList;
 import com.siit.recipeapp.data.model.shopping.ShoppingListItem;
 import com.siit.recipeapp.data.model.shopping.ShoppingListStatus;
@@ -25,9 +25,12 @@ public final class ShoppingListsFragment extends Fragment {
     private ShoppingViewModel viewModel;
     private boolean showingArchived;
 
-    public ShoppingListsFragment() { super(R.layout.fragment_shopping_lists); }
+    public ShoppingListsFragment() {
+        super(R.layout.fragment_shopping_lists);
+    }
 
-    @Override public void onViewCreated(@NonNull View root, @Nullable Bundle state) {
+    @Override
+    public void onViewCreated(@NonNull View root, @Nullable Bundle state) {
         viewModel = new ViewModelProvider(requireActivity(), new ShoppingViewModelFactory(requireContext())).get(ShoppingViewModel.class);
         ListView list = root.findViewById(R.id.shopping_lists);
         list.setAdapter(adapter);
@@ -41,37 +44,57 @@ public final class ShoppingListsFragment extends Fragment {
         });
     }
 
-    @Override public void onResume() {
+    @Override
+    public void onResume() {
         super.onResume();
         refresh();
     }
 
     void showActiveLists() {
         showingArchived = false;
-        if (getView() != null) refresh();
+        if (getView() != null) {
+            refresh();
+        }
     }
 
     private void refresh() {
         View root = requireView();
-        lists.clear();
-        ShoppingListStatus visibleStatus = showingArchived ? ShoppingListStatus.ARCHIVED : ShoppingListStatus.ACTIVE;
-        for (ShoppingList list : viewModel.getLists()) {
-            if (list.getStatus() == visibleStatus) lists.add(list);
-        }
+        reloadVisibleLists();
         adapter.notifyDataSetChanged();
+
         ((TextView) root.findViewById(R.id.shopping_empty)).setText(
                 showingArchived ? R.string.shopping_archive_empty : R.string.shopping_empty);
-        ((com.google.android.material.button.MaterialButton) root.findViewById(R.id.shopping_toggle_archived))
-                .setText(showingArchived ? R.string.shopping_show_active : R.string.shopping_show_archived);
+        MaterialButton toggle = root.findViewById(R.id.shopping_toggle_archived);
+        toggle.setText(showingArchived ? R.string.shopping_show_active : R.string.shopping_show_archived);
         root.findViewById(R.id.shopping_empty).setVisibility(lists.isEmpty() ? View.VISIBLE : View.GONE);
         root.findViewById(R.id.shopping_lists).setVisibility(lists.isEmpty() ? View.GONE : View.VISIBLE);
     }
 
+    private void reloadVisibleLists() {
+        lists.clear();
+        ShoppingListStatus visibleStatus = showingArchived ? ShoppingListStatus.ARCHIVED : ShoppingListStatus.ACTIVE;
+        for (ShoppingList list : viewModel.getLists()) {
+            if (list.getStatus() == visibleStatus) {
+                lists.add(list);
+            }
+        }
+    }
+
     private final class ShoppingAdapter extends BaseAdapter {
-        @Override public int getCount() { return lists.size(); }
-        @Override public Object getItem(int position) { return lists.get(position); }
-        @Override public long getItemId(int position) { return position; }
-        @Override public View getView(int position, View recycled, ViewGroup parent) {
+        @Override
+        public int getCount() {
+            return lists.size();
+        }
+        @Override
+        public Object getItem(int position) {
+            return lists.get(position);
+        }
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+        @Override
+        public View getView(int position, View recycled, ViewGroup parent) {
             View row = recycled == null ? LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_shopping_list, parent, false) : recycled;
             ShoppingList list = lists.get(position);
