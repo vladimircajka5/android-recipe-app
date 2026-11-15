@@ -16,7 +16,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.siit.recipeapp.R;
 import com.siit.recipeapp.ui.preview.PantryPreviewData;
-import com.siit.recipeapp.ui.pantry.PantryViewModel;
 import com.siit.recipeapp.data.model.ingredient.Ingredient;
 import com.siit.recipeapp.data.model.ingredient.MeasurementUnit;
 import com.siit.recipeapp.data.model.ingredient.Product;
@@ -36,20 +35,13 @@ public final class PantryFragment extends Fragment {
     private final PantryAdapter adapter = new PantryAdapter();
     private PantryViewModel viewModel;
 
-    public PantryFragment() { super(R.layout.fragment_pantry); }
+    public PantryFragment() {
+        super(R.layout.fragment_pantry);
+    }
 
-    @Override public void onViewCreated(@NonNull View view, @Nullable Bundle state) {
-        ListView list = view.findViewById(R.id.pantry_list);
-        list.setAdapter(adapter);
-        list.setOnItemClickListener((parent, row, position, id) -> openEditor(adapter.visible.get(position).getId()));
-        view.findViewById(R.id.pantry_add).setOnClickListener(v -> openEditor(null));
-        view.findViewById(R.id.pantry_scan).setOnClickListener(v -> openScanner());
-        EditText filter = view.findViewById(R.id.pantry_filter);
-        filter.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) { updateVisible(); }
-            @Override public void afterTextChanged(Editable s) { }
-        });
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle state) {
+        setupListControls(view);
         ((TextView) view.findViewById(R.id.pantry_notice)).setText(R.string.pantry_development_notice);
         viewModel = new ViewModelProvider(requireActivity(), new PantryViewModelFactory(requireContext())).get(PantryViewModel.class);
         ingredients.clear();
@@ -61,6 +53,25 @@ public final class PantryFragment extends Fragment {
             items.clear();
             items.addAll(updatedItems);
             updateVisible();
+        });
+    }
+
+    private void setupListControls(View view) {
+        ListView list = view.findViewById(R.id.pantry_list);
+        list.setAdapter(adapter);
+        list.setOnItemClickListener((parent, row, position, id) -> openEditor(adapter.visible.get(position).getId()));
+        view.findViewById(R.id.pantry_add).setOnClickListener(v -> openEditor(null));
+        view.findViewById(R.id.pantry_scan).setOnClickListener(v -> openScanner());
+        EditText filter = view.findViewById(R.id.pantry_filter);
+        filter.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                updateVisible();
+            }
+            @Override
+            public void afterTextChanged(Editable s) { }
         });
     }
 
@@ -83,25 +94,32 @@ public final class PantryFragment extends Fragment {
 
     private void updateVisible() {
         View root = getView();
-        if (root == null) return;
+        if (root == null) {
+            return;
+        }
         String query = ((EditText) root.findViewById(R.id.pantry_filter)).getText().toString().trim().toLowerCase(Locale.ROOT);
         adapter.visible.clear();
         for (PantryItem item : items) {
             Ingredient ingredient = ingredients.get(item.getIngredientId());
             String searchable = (ingredient == null ? "" : ingredient.getName()) + " "
                     + (item.getBrand() == null ? "" : item.getBrand());
-            if (searchable.toLowerCase(Locale.ROOT).contains(query)) adapter.visible.add(item);
+            if (searchable.toLowerCase(Locale.ROOT).contains(query)) {
+                adapter.visible.add(item);
+            }
         }
         adapter.notifyDataSetChanged();
         boolean empty = adapter.visible.isEmpty();
         root.findViewById(R.id.pantry_list).setVisibility(empty ? View.GONE : View.VISIBLE);
         root.findViewById(R.id.pantry_message).setVisibility(empty ? View.VISIBLE : View.GONE);
-        if (empty) showMessage(root, items.isEmpty() ? R.string.pantry_empty : R.string.pantry_no_matches);
+        if (empty) {
+            showMessage(root, items.isEmpty() ? R.string.pantry_empty : R.string.pantry_no_matches);
+        }
     }
 
     private void showMessage(View root, int message) {
         TextView text = root.findViewById(R.id.pantry_message);
-        text.setText(message); text.setVisibility(View.VISIBLE);
+        text.setText(message);
+        text.setVisibility(View.VISIBLE);
     }
 
     private void openScanner() {
@@ -111,19 +129,56 @@ public final class PantryFragment extends Fragment {
 
     private void openEditor(String id) {
         PantryEditorFragment editor = new PantryEditorFragment();
-        Bundle args = new Bundle(); args.putString(PantryEditorFragment.ARG_ITEM_ID, id);
+        Bundle args = new Bundle();
+        args.putString(PantryEditorFragment.ARG_ITEM_ID, id);
         editor.setArguments(args);
         getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, editor)
                 .addToBackStack("pantry-editor").commit();
     }
 
 
+    private String formatQuantity(PantryItem item) {
+        Double quantity = item.getQuantity();
+        Product product = item.getProductId() == null ? null : products.get(item.getProductId());
+        if (product == null) {
+            if (quantity == null) {
+                return getString(R.string.pantry_quantity_unknown);
+            }
+            MeasurementUnit unit = units.get(item.getUnitId());
+            return quantity + " " + (unit == null ? "" : unit.getAbbreviation());
+        }
+
+        String count = "1";
+        if (quantity != null) {
+            count = quantity % 1.0 == 0
+                    ? Long.toString(quantity.longValue()) : Double.toString(quantity);
+        }
+        if (product.getPackageQuantity() == null) {
+            return getString(R.string.pantry_package_count, count);
+        }
+
+        MeasurementUnit packageUnit = units.get(product.getUnitId());
+        String abbreviation = packageUnit == null ? "" : packageUnit.getAbbreviation();
+        return getString(R.string.pantry_package_amount, count,
+                Double.toString(product.getPackageQuantity()), abbreviation);
+    }
+
     private final class PantryAdapter extends BaseAdapter {
         private final List<PantryItem> visible = new ArrayList<>();
-        @Override public int getCount() { return visible.size(); }
-        @Override public Object getItem(int position) { return visible.get(position); }
-        @Override public long getItemId(int position) { return position; }
-        @Override public View getView(int position, View recycled, ViewGroup parent) {
+        @Override
+        public int getCount() {
+            return visible.size();
+        }
+        @Override
+        public Object getItem(int position) {
+            return visible.get(position);
+        }
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+        @Override
+        public View getView(int position, View recycled, ViewGroup parent) {
             View row = recycled == null ? LayoutInflater.from(parent.getContext()).inflate(R.layout.item_pantry, parent, false) : recycled;
             PantryItem item = visible.get(position);
             Ingredient ingredient = ingredients.get(item.getIngredientId());
@@ -132,19 +187,8 @@ public final class PantryFragment extends Fragment {
             TextView brand = row.findViewById(R.id.pantry_item_brand);
             brand.setVisibility(item.getBrand() == null ? View.GONE : View.VISIBLE);
             brand.setText(item.getBrand() == null ? "" : getString(R.string.pantry_brand_value, item.getBrand()));
-            MeasurementUnit unit = units.get(item.getUnitId());
-            String amount;
-            Product product = item.getProductId() == null ? null : products.get(item.getProductId());
-            if (product != null) {
-                String count = item.getQuantity() == null ? "1" : (item.getQuantity() % 1.0 == 0 ? Long.toString(item.getQuantity().longValue()) : Double.toString(item.getQuantity()));
-                if (product.getPackageQuantity() == null) amount = getString(R.string.pantry_package_count, count);
-                else {
-                    MeasurementUnit packageUnit = units.get(product.getUnitId());
-                    amount = getString(R.string.pantry_package_amount, count, Double.toString(product.getPackageQuantity()), packageUnit == null ? "" : packageUnit.getAbbreviation());
-                }
-            } else amount = item.getQuantity() == null ? getString(R.string.pantry_quantity_unknown)
-                    : Double.toString(item.getQuantity()) + " " + (unit == null ? "" : unit.getAbbreviation());
-            ((TextView) row.findViewById(R.id.pantry_item_quantity)).setText(amount);
+            TextView quantity = row.findViewById(R.id.pantry_item_quantity);
+            quantity.setText(formatQuantity(item));
             TextView expiry = row.findViewById(R.id.pantry_item_expiry);
             expiry.setVisibility(item.getExpirationDate() == null ? View.GONE : View.VISIBLE);
             if (item.getExpirationDate() != null) expiry.setText(getString(

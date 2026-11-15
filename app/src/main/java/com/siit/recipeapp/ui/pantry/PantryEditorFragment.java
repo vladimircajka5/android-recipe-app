@@ -40,14 +40,19 @@ public final class PantryEditorFragment extends Fragment {
     private boolean editing;
     private boolean loaded;
     private String currentProductId() {
-        if (viewModel == null) return null;
+        if (viewModel == null) {
+            return null;
+        }
         for (PantryItem item : viewModel.getItems()) if (itemId.equals(item.getId())) return item.getProductId();
         return null;
     }
 
-    public PantryEditorFragment() { super(R.layout.fragment_pantry_editor); }
+    public PantryEditorFragment() {
+        super(R.layout.fragment_pantry_editor);
+    }
 
-    @Override public void onViewCreated(@NonNull View root, @Nullable Bundle state) {
+    @Override
+    public void onViewCreated(@NonNull View root, @Nullable Bundle state) {
         viewModel = new ViewModelProvider(requireActivity(), new PantryViewModelFactory(requireContext())).get(PantryViewModel.class);
 
         String existingId = getArguments() == null ? null : getArguments().getString(ARG_ITEM_ID);
@@ -55,41 +60,25 @@ public final class PantryEditorFragment extends Fragment {
         editing = existingId != null;
 
         itemId = state != null ? state.getString("draft_id") : existingId;
-        if (itemId == null) itemId = UUID.randomUUID().toString();
-
-        saveDraftId = state == null ? null : state.getString("save_draft_id");
-        if (saveDraftId == null) {
-            saveDraftId = UUID.randomUUID().toString();
+        if (itemId == null) {
+            itemId = UUID.randomUUID().toString();
         }
-        ((TextView) root.findViewById(R.id.pantry_editor_title)).setText(editing ? R.string.pantry_edit_title : R.string.pantry_add_title);
 
-        root.findViewById(R.id.pantry_cancel).setOnClickListener(v -> getParentFragmentManager().popBackStack());
+        restoreSaveDraftId(state);
+        setupEditorActions(root);
 
-        root.findViewById(R.id.pantry_save).setOnClickListener(v -> save());
+        ingredients.clear();
+        ingredients.addAll(viewModel.getIngredients());
 
-        root.findViewById(R.id.pantry_delete).setVisibility(editing ? View.VISIBLE : View.GONE);
-
-        root.findViewById(R.id.pantry_delete).setOnClickListener(v -> new MaterialAlertDialogBuilder(requireContext())
-                .setTitle(R.string.pantry_delete_title).setMessage(R.string.pantry_delete_message)
-                .setNegativeButton(R.string.pantry_cancel, null).setPositiveButton(R.string.pantry_delete, (dialog, which) -> delete()).show());
-
-        root.findViewById(R.id.pantry_date).setOnClickListener(v -> {
-            LocalDate date = expirationDate == null ? LocalDate.now() : expirationDate;
-            new DatePickerDialog(requireContext(), (picker, year, month, day) -> {
-                expirationDate = LocalDate.of(year, month + 1, day); updateDate(root);
-            }, date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth()).show();
-        });
-
-        root.findViewById(R.id.pantry_clear_date).setOnClickListener(v -> { expirationDate = null; updateDate(root); });
-
-        ingredients.clear(); ingredients.addAll(viewModel.getIngredients());
-
-        units.clear(); units.addAll(PantryPreviewData.UNITS);
+        units.clear();
+        units.addAll(PantryPreviewData.UNITS);
 
         PantryItem current = null;
         if (editing) {
             for (PantryItem item : viewModel.getItems()) {
-                if (itemId.equals(item.getId())) current = item;
+                if (itemId.equals(item.getId())) {
+                    current = item;
+                }
             }
         }
         if (editing && current == null) {
@@ -105,6 +94,37 @@ public final class PantryEditorFragment extends Fragment {
                 getViewLifecycleOwner(),
                 result -> renderSaveResult(root, result)
         );
+    }
+
+    private void restoreSaveDraftId(Bundle state) {
+        saveDraftId = state == null ? null : state.getString("save_draft_id");
+        if (saveDraftId == null) {
+            saveDraftId = UUID.randomUUID().toString();
+        }
+    }
+
+    private void setupEditorActions(View root) {
+        ((TextView) root.findViewById(R.id.pantry_editor_title)).setText(editing ? R.string.pantry_edit_title : R.string.pantry_add_title);
+
+        root.findViewById(R.id.pantry_cancel).setOnClickListener(v -> getParentFragmentManager().popBackStack());
+
+        root.findViewById(R.id.pantry_save).setOnClickListener(v -> save());
+
+        root.findViewById(R.id.pantry_delete).setVisibility(editing ? View.VISIBLE : View.GONE);
+
+        root.findViewById(R.id.pantry_delete).setOnClickListener(v -> new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.pantry_delete_title).setMessage(R.string.pantry_delete_message)
+                .setNegativeButton(R.string.pantry_cancel, null).setPositiveButton(R.string.pantry_delete, (dialog, which) -> delete()).show());
+
+        root.findViewById(R.id.pantry_date).setOnClickListener(v -> {
+            LocalDate date = expirationDate == null ? LocalDate.now() : expirationDate;
+            new DatePickerDialog(requireContext(), (picker, year, month, day) -> {
+                expirationDate = LocalDate.of(year, month + 1, day);
+                updateDate(root);
+            }, date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth()).show();
+        });
+
+        root.findViewById(R.id.pantry_clear_date).setOnClickListener(v -> { expirationDate = null; updateDate(root); });
     }
 
     @Override
@@ -141,10 +161,13 @@ public final class PantryEditorFragment extends Fragment {
         }
     }
 
-    @Override public void onViewStateRestored(@Nullable Bundle state) {
+    @Override
+    public void onViewStateRestored(@Nullable Bundle state) {
         super.onViewStateRestored(state);
         // Restoring the text field can trigger its watcher; restore only a valid selection.
-        if (!loaded) return;
+        if (!loaded) {
+            return;
+        }
         EditText field = requireView().findViewById(R.id.pantry_ingredient);
         for (Ingredient ingredient : ingredients) {
             if (ingredient.getId().equals(boundIngredientId)
@@ -255,33 +278,45 @@ public final class PantryEditorFragment extends Fragment {
 
     private void save() {
         View root = getView();
-        if (root == null || !loaded) return;
+        if (root == null || !loaded) {
+            return;
+        }
         TextInputLayout ingredientInput = root.findViewById(R.id.pantry_ingredient_input);
         TextInputLayout quantityInput = root.findViewById(R.id.pantry_quantity_input);
-        ingredientInput.setError(null); quantityInput.setError(null);
+        ingredientInput.setError(null);
+        quantityInput.setError(null);
         if (selectedIngredientId == null) {
-            ingredientInput.setError(getString(R.string.pantry_select_ingredient)); return;
+            ingredientInput.setError(getString(R.string.pantry_select_ingredient));
+            return;
         }
         Double quantity = null;
         String raw = ((EditText) root.findViewById(R.id.pantry_quantity)).getText().toString().trim();
         if (!raw.isEmpty()) {
             try { quantity = Double.parseDouble(raw.replace(',', '.')); }
             catch (NumberFormatException invalid) { quantityInput.setError(getString(R.string.pantry_quantity_invalid)); return; }
-            if (!Double.isFinite(quantity) || quantity <= 0) { quantityInput.setError(getString(R.string.pantry_quantity_invalid)); return; }
+            if (!Double.isFinite(quantity) || quantity <= 0) {
+                quantityInput.setError(getString(R.string.pantry_quantity_invalid));
+                return;
+            }
         }
         String unitId = selectedUnit(root);
         if (quantity != null && unitId == null) {
-            quantityInput.setError(getString(R.string.pantry_quantity_needs_unit)); return;
+            quantityInput.setError(getString(R.string.pantry_quantity_needs_unit));
+            return;
         }
         String brand = ((EditText) root.findViewById(R.id.pantry_brand)).getText().toString().trim();
-        if (brand.isEmpty()) brand = null;
+        if (brand.isEmpty()) {
+            brand = null;
+        }
         PantryItem item = new PantryItem(itemId, PantryPreviewData.OWNER_ID, selectedIngredientId, editing ? currentProductId() : null, brand, quantity, unitId, expirationDate);
         root.findViewById(R.id.pantry_editor_error).setVisibility(View.GONE);
         viewModel.saveManualItem(saveDraftId, item);
     }
 
     private void delete() {
-        if (getView() == null || !loaded) return;
+        if (getView() == null || !loaded) {
+            return;
+        }
         viewModel.removeItem(itemId);
         getParentFragmentManager().popBackStack();
     }
@@ -304,15 +339,19 @@ public final class PantryEditorFragment extends Fragment {
 
     private void error(View root, int text) {
         TextView error = root.findViewById(R.id.pantry_editor_error);
-        error.setText(text); error.setVisibility(View.VISIBLE);
+        error.setText(text);
+        error.setVisibility(View.VISIBLE);
     }
 
-    @Override public void onSaveInstanceState(@NonNull Bundle out) {
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle out) {
         super.onSaveInstanceState(out);
         View root = getView();
         out.putString("draft_id", itemId);
         out.putString("save_draft_id", saveDraftId);
-        if (root == null || !loaded) return;
+        if (root == null || !loaded) {
+            return;
+        }
         out.putBoolean("draft_ready", true);
         out.putString("ingredient_id", selectedIngredientId);
         out.putString("ingredient_text", ((EditText) root.findViewById(R.id.pantry_ingredient)).getText().toString());
@@ -322,5 +361,9 @@ public final class PantryEditorFragment extends Fragment {
         out.putString("expiry", expirationDate == null ? null : expirationDate.toString());
     }
 
-    @Override public void onDestroyView() { loaded = false; super.onDestroyView(); }
+    @Override
+    public void onDestroyView() {
+        loaded = false;
+        super.onDestroyView();
+    }
 }
