@@ -155,42 +155,101 @@ public final class PantryEditorFragment extends Fragment {
     }
 
     private void bind(View root, PantryItem item, Bundle state) {
-        MaterialAutoCompleteTextView ingredient = root.findViewById(R.id.pantry_ingredient);
-        ingredient.setAdapter(new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, ingredients));
-        List<String> labels = new ArrayList<>(); labels.add(getString(R.string.pantry_no_unit));
-        for (MeasurementUnit unit : units) labels.add(unit.toString());
-        Spinner spinner = root.findViewById(R.id.pantry_unit);
-        ArrayAdapter<String> unitAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, labels);
-        unitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(unitAdapter);
-        if (state != null && !state.getBoolean("draft_ready")) state = null;
-        selectedIngredientId = state != null ? state.getString("ingredient_id") : item == null ? null : item.getIngredientId();
-        String selectedUnit = state != null ? state.getString("unit_id") : item == null ? null : item.getUnitId();
-        for (Ingredient entry : ingredients) if (entry.getId().equals(selectedIngredientId)) ingredient.setText(entry.getName(), false);
-        if (state != null) ingredient.setText(state.getString("ingredient_text", ""), false);
-        setUnit(spinner, selectedUnit);
-        if (item != null && item.getProductId() != null) {
-            ingredient.setEnabled(false);
-            spinner.setEnabled(false);
+        MaterialAutoCompleteTextView ingredientField = root.findViewById(R.id.pantry_ingredient);
+        Spinner unitSpinner = root.findViewById(R.id.pantry_unit);
+
+        ingredientField.setAdapter(new ArrayAdapter<>(
+                requireContext(), android.R.layout.simple_dropdown_item_1line, ingredients));
+        setupUnitSpinner(unitSpinner);
+
+        if (state != null && state.getBoolean("draft_ready")) {
+            restoreDraft(root, ingredientField, unitSpinner, state);
+        } else {
+            showItem(root, ingredientField, unitSpinner, item);
         }
-        ((EditText) root.findViewById(R.id.pantry_brand)).setText(state != null ? state.getString("brand") : item == null ? "" : item.getBrand());
-        ((EditText) root.findViewById(R.id.pantry_quantity)).setText(state != null ? state.getString("quantity")
-                : item == null || item.getQuantity() == null ? "" : Double.toString(item.getQuantity()));
-        String expiry = state != null ? state.getString("expiry") : item == null || item.getExpirationDate() == null ? null : item.getExpirationDate().toString();
-        expirationDate = expiry == null ? null : LocalDate.parse(expiry);
+
+        boolean canChangeIngredient = item == null || item.getProductId() == null;
+        ingredientField.setEnabled(canChangeIngredient);
+        unitSpinner.setEnabled(canChangeIngredient);
+
         updateDate(root);
         boundIngredientId = selectedIngredientId;
-        ingredient.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+        listenForIngredientChanges(root, ingredientField, unitSpinner);
+    }
+
+    private void setupUnitSpinner(Spinner spinner) {
+        List<String> labels = new ArrayList<>();
+        labels.add(getString(R.string.pantry_no_unit));
+        for (MeasurementUnit unit : units) {
+            labels.add(unit.toString());
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                requireContext(), android.R.layout.simple_spinner_item, labels);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+    }
+
+    private void restoreDraft(
+            View root, MaterialAutoCompleteTextView ingredientField,
+            Spinner unitSpinner, Bundle draft) {
+        selectedIngredientId = draft.getString("ingredient_id");
+        ingredientField.setText(draft.getString("ingredient_text", ""), false);
+        setUnit(unitSpinner, draft.getString("unit_id"));
+
+        EditText brandField = root.findViewById(R.id.pantry_brand);
+        EditText quantityField = root.findViewById(R.id.pantry_quantity);
+        brandField.setText(draft.getString("brand"));
+        quantityField.setText(draft.getString("quantity"));
+
+        String savedExpiry = draft.getString("expiry");
+        expirationDate = savedExpiry == null ? null : LocalDate.parse(savedExpiry);
+    }
+
+    private void showItem(
+            View root, MaterialAutoCompleteTextView ingredientField,
+            Spinner unitSpinner, PantryItem item) {
+        EditText brandField = root.findViewById(R.id.pantry_brand);
+        EditText quantityField = root.findViewById(R.id.pantry_quantity);
+
+        selectedIngredientId = item == null ? null : item.getIngredientId();
+        for (Ingredient ingredient : ingredients) {
+            if (ingredient.getId().equals(selectedIngredientId)) {
+                ingredientField.setText(ingredient.getName(), false);
+                break;
+            }
+        }
+
+        setUnit(unitSpinner, item == null ? null : item.getUnitId());
+        brandField.setText(item == null ? "" : item.getBrand());
+
+        Double quantity = item == null ? null : item.getQuantity();
+        quantityField.setText(quantity == null ? "" : Double.toString(quantity));
+        expirationDate = item == null ? null : item.getExpirationDate();
+    }
+
+    private void listenForIngredientChanges(
+            View root, MaterialAutoCompleteTextView ingredientField, Spinner unitSpinner) {
+        ingredientField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence text, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence text, int start, int before, int count) {
                 selectedIngredientId = null;
             }
-            @Override public void afterTextChanged(Editable s) { }
+
+            @Override
+            public void afterTextChanged(Editable text) { }
         });
-        ingredient.setOnItemClickListener((parent, row, position, id) -> {
+
+        ingredientField.setOnItemClickListener((parent, row, position, id) -> {
             Ingredient chosen = (Ingredient) parent.getItemAtPosition(position);
-            selectedIngredientId = chosen.getId(); setUnit(spinner, chosen.getDefaultUnitId());
-            ((TextInputLayout) root.findViewById(R.id.pantry_ingredient_input)).setError(null);
+            selectedIngredientId = chosen.getId();
+            setUnit(unitSpinner, chosen.getDefaultUnitId());
+
+            TextInputLayout input = root.findViewById(R.id.pantry_ingredient_input);
+            input.setError(null);
         });
     }
 
