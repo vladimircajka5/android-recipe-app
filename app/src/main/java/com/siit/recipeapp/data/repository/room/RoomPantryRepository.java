@@ -7,8 +7,10 @@ import com.siit.recipeapp.data.local.entity.PantryEntity;
 import com.siit.recipeapp.data.model.pantry.PantryItem;
 import com.siit.recipeapp.data.repository.PantryRepository;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Transformations;
+
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public final class RoomPantryRepository implements PantryRepository {
@@ -21,9 +23,21 @@ public final class RoomPantryRepository implements PantryRepository {
 
     @Override
     public List<PantryItem> getItems() {
-        List<PantryItem> result = new ArrayList<>();
-        for (PantryEntity item : database.pantryDao().getAll()) {
-            result.add(EntityMapper.pantry(item));
+        return mapItems(database.pantryDao().getAll());
+    }
+
+    @Override
+    public LiveData<List<PantryItem>> observeItems() {
+        return Transformations.map(
+                database.pantryDao().observeAll(),
+                RoomPantryRepository::mapItems
+        );
+    }
+
+    private static List<PantryItem> mapItems(List<PantryEntity> entities) {
+        List<PantryItem> result = new ArrayList<>(entities.size());
+        for (PantryEntity entity : entities) {
+            result.add(EntityMapper.pantry(entity));
         }
         return result;
     }

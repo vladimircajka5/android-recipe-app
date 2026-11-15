@@ -5,6 +5,7 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.lifecycle.LiveData;
 import com.siit.recipeapp.data.local.entity.PantryEntity;
 import java.util.List;
 
@@ -12,6 +13,9 @@ import java.util.List;
 public interface PantryDao {
     @Query("SELECT * FROM pantry_items ORDER BY expirationDate IS NULL, expirationDate")
     List<PantryEntity> getAll();
+
+    @Query("SELECT * FROM pantry_items ORDER BY expirationDate IS NULL, expirationDate")
+    LiveData<List<PantryEntity>> observeAll();
 
     @Query("SELECT * FROM pantry_items WHERE productId = :productId LIMIT 1")
     PantryEntity findByProductId(String productId);

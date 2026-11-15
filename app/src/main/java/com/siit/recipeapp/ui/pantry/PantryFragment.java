@@ -56,16 +56,28 @@ public final class PantryFragment extends Fragment {
         for (Ingredient ingredient : viewModel.getIngredients()) ingredients.put(ingredient.getId(), ingredient);
         units.clear();
         for (MeasurementUnit unit : PantryPreviewData.UNITS) units.put(unit.getId(), unit);
+
+        viewModel.observeItems().observe(getViewLifecycleOwner(), updatedItems -> {
+            items.clear();
+            items.addAll(updatedItems);
+            updateVisible();
+        });
     }
 
-    @Override public void onResume() {
+    @Override
+    public void onResume() {
         super.onResume();
-        items.clear();
-        items.addAll(viewModel.getItems());
+
         ingredients.clear();
-        for (Ingredient ingredient : viewModel.getIngredients()) ingredients.put(ingredient.getId(), ingredient);
+        for (Ingredient ingredient : viewModel.getIngredients()) {
+            ingredients.put(ingredient.getId(), ingredient);
+        }
+
         products.clear();
-        for (Product product : viewModel.getProducts()) products.put(product.getId(), product);
+        for (Product product : viewModel.getProducts()) {
+            products.put(product.getId(), product);
+        }
+
         updateVisible();
     }
 
