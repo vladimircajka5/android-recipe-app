@@ -9,10 +9,8 @@ import androidx.lifecycle.ViewModelProvider;
 import com.siit.recipeapp.RecipeApplication;
 import com.siit.recipeapp.data.local.LocalDataSeeder;
 import com.siit.recipeapp.data.local.RecipeDatabase;
-import com.siit.recipeapp.data.repository.inmemory.InMemoryShoppingRepository;
 import com.siit.recipeapp.data.repository.room.RoomShoppingRepository;
 import com.siit.recipeapp.domain.service.ShoppingService;
-import com.siit.recipeapp.ui.preview.ShoppingPreviewData;
 
 public final class ShoppingViewModelFactory implements ViewModelProvider.Factory {
     private final Context context;
