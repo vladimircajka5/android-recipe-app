@@ -1,6 +1,7 @@
 package com.siit.recipeapp.ui.pantry;
 
 import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.LiveData;
 import com.siit.recipeapp.data.model.ingredient.Ingredient;
 import com.siit.recipeapp.data.model.ingredient.Product;
 import com.siit.recipeapp.data.model.pantry.PantryItem;
@@ -13,13 +14,18 @@ public final class PantryViewModel extends ViewModel {
     private final PantryService pantryService;
     private final IngredientService ingredientService;
     private final ProductService productService;
+    private final LiveData<List<PantryItem>> observableItems;
 
     public PantryViewModel(PantryService pantryService, IngredientService ingredientService, ProductService productService) {
         this.pantryService = pantryService;
         this.ingredientService = ingredientService;
         this.productService = productService;
+        this.observableItems = pantryService.observeItems();
     }
     public List<PantryItem> getItems() { return pantryService.getItems(); }
+    public LiveData<List<PantryItem>> observeItems() {
+        return observableItems;
+    }
     public List<Ingredient> getIngredients() { return ingredientService.getIngredients(); }
     public List<Product> getProducts() { return productService.getProducts(); }
     public PantryItem findItemByProductId(String id) { return pantryService.findItemByProductId(id); }
