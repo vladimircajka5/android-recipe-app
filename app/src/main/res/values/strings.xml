@@ -180,6 +180,7 @@
     <string name="pantry_select_ingredient">Choose an ingredient from the catalog suggestions.</string>
     <string name="pantry_quantity_invalid">Enter a number greater than zero, or leave quantity empty.</string>
     <string name="pantry_quantity_needs_unit">Choose a measurement unit for this quantity.</string>
+    <string name="pantry_save_failed">Could not save this item. Please try again.</string>
 
 
     <!-- Shopping lists -->

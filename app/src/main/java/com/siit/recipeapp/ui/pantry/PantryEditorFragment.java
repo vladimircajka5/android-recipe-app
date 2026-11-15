@@ -19,7 +19,6 @@ import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputLayout;
 import com.siit.recipeapp.R;
 import com.siit.recipeapp.ui.preview.PantryPreviewData;
-import com.siit.recipeapp.ui.pantry.PantryViewModel;
 import com.siit.recipeapp.data.model.ingredient.Ingredient;
 import com.siit.recipeapp.data.model.ingredient.MeasurementUnit;
 import com.siit.recipeapp.data.model.pantry.PantryItem;
@@ -37,6 +36,7 @@ public final class PantryEditorFragment extends Fragment {
     private PantryViewModel viewModel;
     private LocalDate expirationDate;
     private String itemId;
+    private String saveDraftId;
     private boolean editing;
     private boolean loaded;
     private String currentProductId() {
@@ -49,26 +49,43 @@ public final class PantryEditorFragment extends Fragment {
 
     @Override public void onViewCreated(@NonNull View root, @Nullable Bundle state) {
         viewModel = new ViewModelProvider(requireActivity(), new PantryViewModelFactory(requireContext())).get(PantryViewModel.class);
+
         String existingId = getArguments() == null ? null : getArguments().getString(ARG_ITEM_ID);
+
         editing = existingId != null;
+
         itemId = state != null ? state.getString("draft_id") : existingId;
         if (itemId == null) itemId = UUID.randomUUID().toString();
+
+        saveDraftId = state == null ? null : state.getString("save_draft_id");
+        if (saveDraftId == null) {
+            saveDraftId = UUID.randomUUID().toString();
+        }
         ((TextView) root.findViewById(R.id.pantry_editor_title)).setText(editing ? R.string.pantry_edit_title : R.string.pantry_add_title);
+
         root.findViewById(R.id.pantry_cancel).setOnClickListener(v -> getParentFragmentManager().popBackStack());
+
         root.findViewById(R.id.pantry_save).setOnClickListener(v -> save());
+
         root.findViewById(R.id.pantry_delete).setVisibility(editing ? View.VISIBLE : View.GONE);
+
         root.findViewById(R.id.pantry_delete).setOnClickListener(v -> new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.pantry_delete_title).setMessage(R.string.pantry_delete_message)
                 .setNegativeButton(R.string.pantry_cancel, null).setPositiveButton(R.string.pantry_delete, (dialog, which) -> delete()).show());
+
         root.findViewById(R.id.pantry_date).setOnClickListener(v -> {
             LocalDate date = expirationDate == null ? LocalDate.now() : expirationDate;
             new DatePickerDialog(requireContext(), (picker, year, month, day) -> {
                 expirationDate = LocalDate.of(year, month + 1, day); updateDate(root);
             }, date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth()).show();
         });
+
         root.findViewById(R.id.pantry_clear_date).setOnClickListener(v -> { expirationDate = null; updateDate(root); });
+
         ingredients.clear(); ingredients.addAll(viewModel.getIngredients());
+
         units.clear(); units.addAll(PantryPreviewData.UNITS);
+
         PantryItem current = null;
         if (editing) {
             for (PantryItem item : viewModel.getItems()) {
@@ -83,6 +100,45 @@ public final class PantryEditorFragment extends Fragment {
         }
         bind(root, current, state);
         loaded = true;
+
+        viewModel.observeSaveResult().observe(
+                getViewLifecycleOwner(),
+                result -> renderSaveResult(root, result)
+        );
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        View root = getView();
+        if (root != null && loaded) {
+            renderSaveResult(root, viewModel.observeSaveResult().getValue());
+        }
+    }
+
+    private void renderSaveResult(View root, PantryViewModel.SaveResult result) {
+        boolean saving = result != null
+                && result.status == PantryViewModel.SaveStatus.SAVING;
+
+        root.findViewById(R.id.pantry_save).setEnabled(!saving);
+        root.findViewById(R.id.pantry_delete).setEnabled(!saving);
+        root.findViewById(R.id.pantry_cancel).setEnabled(!saving);
+
+        if (result == null || saving || !saveDraftId.equals(result.draftId)) {
+            return;
+        }
+
+        if (result.status == PantryViewModel.SaveStatus.FAILED) {
+            viewModel.clearSaveResult(saveDraftId);
+            error(root, R.string.pantry_save_failed);
+            return;
+        }
+
+        if (isResumed() && !getParentFragmentManager().isStateSaved()) {
+            viewModel.clearSaveResult(saveDraftId);
+            getParentFragmentManager().popBackStack();
+        }
     }
 
     @Override public void onViewStateRestored(@Nullable Bundle state) {
@@ -161,8 +217,8 @@ public final class PantryEditorFragment extends Fragment {
         String brand = ((EditText) root.findViewById(R.id.pantry_brand)).getText().toString().trim();
         if (brand.isEmpty()) brand = null;
         PantryItem item = new PantryItem(itemId, PantryPreviewData.OWNER_ID, selectedIngredientId, editing ? currentProductId() : null, brand, quantity, unitId, expirationDate);
-        viewModel.saveItem(item);
-        getParentFragmentManager().popBackStack();
+        root.findViewById(R.id.pantry_editor_error).setVisibility(View.GONE);
+        viewModel.saveManualItem(saveDraftId, item);
     }
 
     private void delete() {
@@ -196,6 +252,7 @@ public final class PantryEditorFragment extends Fragment {
         super.onSaveInstanceState(out);
         View root = getView();
         out.putString("draft_id", itemId);
+        out.putString("save_draft_id", saveDraftId);
         if (root == null || !loaded) return;
         out.putBoolean("draft_ready", true);
         out.putString("ingredient_id", selectedIngredientId);
