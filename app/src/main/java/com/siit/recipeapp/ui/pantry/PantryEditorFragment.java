@@ -19,7 +19,6 @@ import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 import com.google.android.material.textfield.TextInputLayout;
 import com.siit.recipeapp.R;
 import com.siit.recipeapp.ui.preview.PantryPreviewData;
-import com.siit.recipeapp.ui.pantry.PantryViewModel;
 import com.siit.recipeapp.data.model.ingredient.Ingredient;
 import com.siit.recipeapp.data.model.ingredient.MeasurementUnit;
 import com.siit.recipeapp.data.model.pantry.PantryItem;
@@ -37,6 +36,7 @@ public final class PantryEditorFragment extends Fragment {
     private PantryViewModel viewModel;
     private LocalDate expirationDate;
     private String itemId;
+    private String saveDraftId;
     private boolean editing;
     private boolean loaded;
     private String currentProductId() {
@@ -49,26 +49,43 @@ public final class PantryEditorFragment extends Fragment {
 
     @Override public void onViewCreated(@NonNull View root, @Nullable Bundle state) {
         viewModel = new ViewModelProvider(requireActivity(), new PantryViewModelFactory(requireContext())).get(PantryViewModel.class);
+
         String existingId = getArguments() == null ? null : getArguments().getString(ARG_ITEM_ID);
+
         editing = existingId != null;
+
         itemId = state != null ? state.getString("draft_id") : existingId;
         if (itemId == null) itemId = UUID.randomUUID().toString();
+
+        saveDraftId = state == null ? null : state.getString("save_draft_id");
+        if (saveDraftId == null) {
+            saveDraftId = UUID.randomUUID().toString();
+        }
         ((TextView) root.findViewById(R.id.pantry_editor_title)).setText(editing ? R.string.pantry_edit_title : R.string.pantry_add_title);
+
         root.findViewById(R.id.pantry_cancel).setOnClickListener(v -> getParentFragmentManager().popBackStack());
+
         root.findViewById(R.id.pantry_save).setOnClickListener(v -> save());
+
         root.findViewById(R.id.pantry_delete).setVisibility(editing ? View.VISIBLE : View.GONE);
+
         root.findViewById(R.id.pantry_delete).setOnClickListener(v -> new MaterialAlertDialogBuilder(requireContext())
                 .setTitle(R.string.pantry_delete_title).setMessage(R.string.pantry_delete_message)
                 .setNegativeButton(R.string.pantry_cancel, null).setPositiveButton(R.string.pantry_delete, (dialog, which) -> delete()).show());
+
         root.findViewById(R.id.pantry_date).setOnClickListener(v -> {
             LocalDate date = expirationDate == null ? LocalDate.now() : expirationDate;
             new DatePickerDialog(requireContext(), (picker, year, month, day) -> {
                 expirationDate = LocalDate.of(year, month + 1, day); updateDate(root);
             }, date.getYear(), date.getMonthValue() - 1, date.getDayOfMonth()).show();
         });
+
         root.findViewById(R.id.pantry_clear_date).setOnClickListener(v -> { expirationDate = null; updateDate(root); });
+
         ingredients.clear(); ingredients.addAll(viewModel.getIngredients());
+
         units.clear(); units.addAll(PantryPreviewData.UNITS);
+
         PantryItem current = null;
         if (editing) {
             for (PantryItem item : viewModel.getItems()) {
@@ -83,6 +100,45 @@ public final class PantryEditorFragment extends Fragment {
         }
         bind(root, current, state);
         loaded = true;
+
+        viewModel.observeSaveResult().observe(
+                getViewLifecycleOwner(),
+                result -> renderSaveResult(root, result)
+        );
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        View root = getView();
+        if (root != null && loaded) {
+            renderSaveResult(root, viewModel.observeSaveResult().getValue());
+        }
+    }
+
+    private void renderSaveResult(View root, PantryViewModel.SaveResult result) {
+        boolean saving = result != null
+                && result.status == PantryViewModel.SaveStatus.SAVING;
+
+        root.findViewById(R.id.pantry_save).setEnabled(!saving);
+        root.findViewById(R.id.pantry_delete).setEnabled(!saving);
+        root.findViewById(R.id.pantry_cancel).setEnabled(!saving);
+
+        if (result == null || saving || !saveDraftId.equals(result.draftId)) {
+            return;
+        }
+
+        if (result.status == PantryViewModel.SaveStatus.FAILED) {
+            viewModel.clearSaveResult(saveDraftId);
+            error(root, R.string.pantry_save_failed);
+            return;
+        }
+
+        if (isResumed() && !getParentFragmentManager().isStateSaved()) {
+            viewModel.clearSaveResult(saveDraftId);
+            getParentFragmentManager().popBackStack();
+        }
     }
 
     @Override public void onViewStateRestored(@Nullable Bundle state) {
@@ -99,42 +155,101 @@ public final class PantryEditorFragment extends Fragment {
     }
 
     private void bind(View root, PantryItem item, Bundle state) {
-        MaterialAutoCompleteTextView ingredient = root.findViewById(R.id.pantry_ingredient);
-        ingredient.setAdapter(new ArrayAdapter<>(requireContext(), android.R.layout.simple_dropdown_item_1line, ingredients));
-        List<String> labels = new ArrayList<>(); labels.add(getString(R.string.pantry_no_unit));
-        for (MeasurementUnit unit : units) labels.add(unit.toString());
-        Spinner spinner = root.findViewById(R.id.pantry_unit);
-        ArrayAdapter<String> unitAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, labels);
-        unitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(unitAdapter);
-        if (state != null && !state.getBoolean("draft_ready")) state = null;
-        selectedIngredientId = state != null ? state.getString("ingredient_id") : item == null ? null : item.getIngredientId();
-        String selectedUnit = state != null ? state.getString("unit_id") : item == null ? null : item.getUnitId();
-        for (Ingredient entry : ingredients) if (entry.getId().equals(selectedIngredientId)) ingredient.setText(entry.getName(), false);
-        if (state != null) ingredient.setText(state.getString("ingredient_text", ""), false);
-        setUnit(spinner, selectedUnit);
-        if (item != null && item.getProductId() != null) {
-            ingredient.setEnabled(false);
-            spinner.setEnabled(false);
+        MaterialAutoCompleteTextView ingredientField = root.findViewById(R.id.pantry_ingredient);
+        Spinner unitSpinner = root.findViewById(R.id.pantry_unit);
+
+        ingredientField.setAdapter(new ArrayAdapter<>(
+                requireContext(), android.R.layout.simple_dropdown_item_1line, ingredients));
+        setupUnitSpinner(unitSpinner);
+
+        if (state != null && state.getBoolean("draft_ready")) {
+            restoreDraft(root, ingredientField, unitSpinner, state);
+        } else {
+            showItem(root, ingredientField, unitSpinner, item);
         }
-        ((EditText) root.findViewById(R.id.pantry_brand)).setText(state != null ? state.getString("brand") : item == null ? "" : item.getBrand());
-        ((EditText) root.findViewById(R.id.pantry_quantity)).setText(state != null ? state.getString("quantity")
-                : item == null || item.getQuantity() == null ? "" : Double.toString(item.getQuantity()));
-        String expiry = state != null ? state.getString("expiry") : item == null || item.getExpirationDate() == null ? null : item.getExpirationDate().toString();
-        expirationDate = expiry == null ? null : LocalDate.parse(expiry);
+
+        boolean canChangeIngredient = item == null || item.getProductId() == null;
+        ingredientField.setEnabled(canChangeIngredient);
+        unitSpinner.setEnabled(canChangeIngredient);
+
         updateDate(root);
         boundIngredientId = selectedIngredientId;
-        ingredient.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+        listenForIngredientChanges(root, ingredientField, unitSpinner);
+    }
+
+    private void setupUnitSpinner(Spinner spinner) {
+        List<String> labels = new ArrayList<>();
+        labels.add(getString(R.string.pantry_no_unit));
+        for (MeasurementUnit unit : units) {
+            labels.add(unit.toString());
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                requireContext(), android.R.layout.simple_spinner_item, labels);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+    }
+
+    private void restoreDraft(
+            View root, MaterialAutoCompleteTextView ingredientField,
+            Spinner unitSpinner, Bundle draft) {
+        selectedIngredientId = draft.getString("ingredient_id");
+        ingredientField.setText(draft.getString("ingredient_text", ""), false);
+        setUnit(unitSpinner, draft.getString("unit_id"));
+
+        EditText brandField = root.findViewById(R.id.pantry_brand);
+        EditText quantityField = root.findViewById(R.id.pantry_quantity);
+        brandField.setText(draft.getString("brand"));
+        quantityField.setText(draft.getString("quantity"));
+
+        String savedExpiry = draft.getString("expiry");
+        expirationDate = savedExpiry == null ? null : LocalDate.parse(savedExpiry);
+    }
+
+    private void showItem(
+            View root, MaterialAutoCompleteTextView ingredientField,
+            Spinner unitSpinner, PantryItem item) {
+        EditText brandField = root.findViewById(R.id.pantry_brand);
+        EditText quantityField = root.findViewById(R.id.pantry_quantity);
+
+        selectedIngredientId = item == null ? null : item.getIngredientId();
+        for (Ingredient ingredient : ingredients) {
+            if (ingredient.getId().equals(selectedIngredientId)) {
+                ingredientField.setText(ingredient.getName(), false);
+                break;
+            }
+        }
+
+        setUnit(unitSpinner, item == null ? null : item.getUnitId());
+        brandField.setText(item == null ? "" : item.getBrand());
+
+        Double quantity = item == null ? null : item.getQuantity();
+        quantityField.setText(quantity == null ? "" : Double.toString(quantity));
+        expirationDate = item == null ? null : item.getExpirationDate();
+    }
+
+    private void listenForIngredientChanges(
+            View root, MaterialAutoCompleteTextView ingredientField, Spinner unitSpinner) {
+        ingredientField.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence text, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence text, int start, int before, int count) {
                 selectedIngredientId = null;
             }
-            @Override public void afterTextChanged(Editable s) { }
+
+            @Override
+            public void afterTextChanged(Editable text) { }
         });
-        ingredient.setOnItemClickListener((parent, row, position, id) -> {
+
+        ingredientField.setOnItemClickListener((parent, row, position, id) -> {
             Ingredient chosen = (Ingredient) parent.getItemAtPosition(position);
-            selectedIngredientId = chosen.getId(); setUnit(spinner, chosen.getDefaultUnitId());
-            ((TextInputLayout) root.findViewById(R.id.pantry_ingredient_input)).setError(null);
+            selectedIngredientId = chosen.getId();
+            setUnit(unitSpinner, chosen.getDefaultUnitId());
+
+            TextInputLayout input = root.findViewById(R.id.pantry_ingredient_input);
+            input.setError(null);
         });
     }
 
@@ -161,8 +276,8 @@ public final class PantryEditorFragment extends Fragment {
         String brand = ((EditText) root.findViewById(R.id.pantry_brand)).getText().toString().trim();
         if (brand.isEmpty()) brand = null;
         PantryItem item = new PantryItem(itemId, PantryPreviewData.OWNER_ID, selectedIngredientId, editing ? currentProductId() : null, brand, quantity, unitId, expirationDate);
-        viewModel.saveItem(item);
-        getParentFragmentManager().popBackStack();
+        root.findViewById(R.id.pantry_editor_error).setVisibility(View.GONE);
+        viewModel.saveManualItem(saveDraftId, item);
     }
 
     private void delete() {
@@ -196,6 +311,7 @@ public final class PantryEditorFragment extends Fragment {
         super.onSaveInstanceState(out);
         View root = getView();
         out.putString("draft_id", itemId);
+        out.putString("save_draft_id", saveDraftId);
         if (root == null || !loaded) return;
         out.putBoolean("draft_ready", true);
         out.putString("ingredient_id", selectedIngredientId);
