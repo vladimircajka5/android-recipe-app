@@ -25,5 +25,13 @@ service cloud.firestore {
     match /users/{userId} {
       allow read, write: if ownsUserData(userId);
     }
+
+    match /usernames/{username} {
+          allow read: if signedIn();
+          allow create: if signedIn()
+            && !exists(/databases/$(database)/documents/usernames/$(username))
+            && request.resource.data.uid == request.auth.uid;
+          allow update, delete: if false;
+        }
   }
 }
