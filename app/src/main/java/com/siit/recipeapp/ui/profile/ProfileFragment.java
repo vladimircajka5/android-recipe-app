@@ -16,6 +16,7 @@ import android.widget.Button;
 
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.siit.recipeapp.R;
+import com.siit.recipeapp.RecipeApplication;
 import com.siit.recipeapp.ui.auth.ChangePasswordFragment;
 import com.siit.recipeapp.ui.auth.LoginFragment;
 import com.siit.recipeapp.ui.recipe.RecipeListFragment;
@@ -38,6 +39,7 @@ public class ProfileFragment extends Fragment {
 
         // Logout
         btnLogout.setOnClickListener(v -> {
+            ((RecipeApplication) requireContext().getApplicationContext()).auth().logout();
             FragmentManager fm = getParentFragmentManager();
 
             fm.popBackStack(
