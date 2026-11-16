@@ -45,3 +45,4 @@ Packages are created as features are implemented.
 - Recipe videos are represented by validated YouTube links rather than uploaded files.
 - Firestore synchronization writes pending pantry and shopping changes under the signed-in user's document and merges remote records using updatedAt.
 - Firebase Storage is not used. The Google Services Gradle plugin is applied only when a local google-services.json file is present.
+- Deletes use Firestore tombstone documents so another device can receive the deletion during a later synchronization.
