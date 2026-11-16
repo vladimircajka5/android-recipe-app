@@ -11,7 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.siit.recipeapp.R;
+import com.siit.recipeapp.RecipeApplication;
+import com.siit.recipeapp.domain.validation.AuthValidator;
 
 public class ForgotPasswordFragment extends Fragment {
 
@@ -37,9 +41,36 @@ public class ForgotPasswordFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         Button btnCancel = view.findViewById(R.id.btn_forgot_password_cancel);
+        Button btnSubmit = view.findViewById(R.id.btn_forgot_password_submit);
+        TextInputLayout emailLayout = view.findViewById(R.id.til_forgot_password_email);
+        TextInputEditText email = view.findViewById(R.id.et_forgot_password_email);
 
         btnCancel.setOnClickListener(v -> {
             getParentFragmentManager().popBackStack();
+        });
+        btnSubmit.setOnClickListener(v -> {
+            String address = email.getText() == null ? "" : email.getText().toString().trim();
+            emailLayout.setError(null);
+            if (!AuthValidator.isValidEmail(address)) {
+                emailLayout.setError("Enter a valid email address");
+                return;
+            }
+            btnSubmit.setEnabled(false);
+            ((RecipeApplication) requireContext().getApplicationContext()).auth()
+                    .sendPasswordReset(address, new com.siit.recipeapp.data.remote.AuthManager.Callback<>() {
+                        @Override public void onSuccess(Void value) {
+                            if (isAdded()) {
+                                btnSubmit.setEnabled(true);
+                                emailLayout.setError("Password reset email sent");
+                            }
+                        }
+                        @Override public void onError(@NonNull Exception error) {
+                            if (isAdded()) {
+                                btnSubmit.setEnabled(true);
+                                emailLayout.setError(error.getMessage());
+                            }
+                        }
+                    });
         });
     }
 }
