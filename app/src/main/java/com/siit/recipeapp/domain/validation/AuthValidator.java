@@ -8,18 +8,15 @@ public final class AuthValidator {
     }
 
     public static boolean isValidUsername(String username) {
-        return true;
-        //return username != null && username.matches("[^\\s@]+");
+        return username != null && username.matches("[A-Za-z0-9._-]{3,30}");
     }
 
     public static boolean isValidEmail(String email) {
-        return true;
-        //return email != null && email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$");
+        return email != null && email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$");
     }
 
     public static boolean isValidPassword(String password) {
-        return true;
-        //return password != null && password.length() >= MIN_PASSWORD_LENGTH;
+        return password != null && password.length() >= MIN_PASSWORD_LENGTH;
     }
 
     public static boolean passwordsMatch(String password, String confirmPassword) {
