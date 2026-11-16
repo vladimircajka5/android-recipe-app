@@ -10,10 +10,12 @@ import androidx.annotation.NonNull;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.siit.recipeapp.data.local.RecipeDatabase;
+import com.siit.recipeapp.data.remote.AuthManager;
 import com.siit.recipeapp.data.remote.FirestoreSyncManager;
 
 public final class RecipeApplication extends Application {
     private FirestoreSyncManager syncManager;
+    private AuthManager authManager;
 
     @Override
     public void onCreate() {
@@ -51,5 +53,10 @@ public final class RecipeApplication extends Application {
                 // A failed sync keeps PENDING rows for the next attempt.
             }
         });
+    }
+
+    public AuthManager auth() {
+        if (authManager == null) authManager = new AuthManager();
+        return authManager;
     }
 }
