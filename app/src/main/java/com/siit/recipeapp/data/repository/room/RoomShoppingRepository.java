@@ -5,6 +5,7 @@ import com.siit.recipeapp.data.local.RecipeDatabase;
 import com.siit.recipeapp.data.local.SyncState;
 import com.siit.recipeapp.data.local.entity.ShoppingListEntity;
 import com.siit.recipeapp.data.local.entity.ShoppingListItemEntity;
+import com.siit.recipeapp.data.local.entity.SyncTombstoneEntity;
 import com.siit.recipeapp.data.model.shopping.ShoppingList;
 import com.siit.recipeapp.data.model.shopping.ShoppingListItem;
 import com.siit.recipeapp.data.repository.ShoppingRepository;
@@ -60,11 +61,22 @@ public final class RoomShoppingRepository implements ShoppingRepository {
 
     @Override
     public void saveList(ShoppingList list) {
+        database.syncDao().deleteTombstone("shoppingLists/" + list.getId());
         database.shoppingDao().upsertList(EntityMapper.list(list, SyncState.PENDING));
     }
 
     @Override
     public void removeList(String id) {
+        ShoppingList list = findList(id);
+        if (list != null) {
+            database.syncDao().upsertTombstone(new SyncTombstoneEntity(
+                    list.getOwnerId(), "shoppingLists", id, System.currentTimeMillis()));
+        }
+        for (ShoppingListItem item : itemsFor(id)) {
+            database.syncDao().upsertTombstone(new SyncTombstoneEntity(
+                    list == null ? null : list.getOwnerId(), "shoppingItems",
+                    item.getId(), System.currentTimeMillis()));
+        }
         database.shoppingDao().deleteItemsForList(id);
         database.shoppingDao().deleteList(id);
     }
@@ -72,12 +84,20 @@ public final class RoomShoppingRepository implements ShoppingRepository {
     @Override
     public void saveItem(ShoppingListItem item) {
         if (findList(item.getShoppingListId()) != null) {
+            database.syncDao().deleteTombstone("shoppingItems/" + item.getId());
             database.shoppingDao().upsertItem(EntityMapper.item(item, SyncState.PENDING));
         }
     }
 
     @Override
     public void removeItem(String id) {
+        ShoppingListItem item = findItem(id);
+        ShoppingList list = item == null ? null : findList(item.getShoppingListId());
+        if (item != null) {
+            database.syncDao().upsertTombstone(new SyncTombstoneEntity(
+                    list == null ? null : list.getOwnerId(), "shoppingItems",
+                    item.getId(), System.currentTimeMillis()));
+        }
         database.shoppingDao().deleteItem(id);
     }
 }

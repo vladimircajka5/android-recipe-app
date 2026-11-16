@@ -4,6 +4,7 @@ import com.siit.recipeapp.data.local.EntityMapper;
 import com.siit.recipeapp.data.local.RecipeDatabase;
 import com.siit.recipeapp.data.local.SyncState;
 import com.siit.recipeapp.data.local.entity.PantryEntity;
+import com.siit.recipeapp.data.local.entity.SyncTombstoneEntity;
 import com.siit.recipeapp.data.model.pantry.PantryItem;
 import com.siit.recipeapp.data.repository.PantryRepository;
 
@@ -50,6 +51,7 @@ public final class RoomPantryRepository implements PantryRepository {
 
     @Override
     public void saveItem(PantryItem item) {
+        database.syncDao().deleteTombstone("pantry/"+item.getId());
         database.pantryDao().upsert(EntityMapper.pantry(item, SyncState.PENDING));
     }
 
@@ -60,6 +62,8 @@ public final class RoomPantryRepository implements PantryRepository {
                 .findFirst().orElse(null);
 
         if (item != null) {
+            database.syncDao().upsertTombstone(new SyncTombstoneEntity(
+                    item.ownerId, "pantry", item.id, System.currentTimeMillis()));
             database.pantryDao().delete(item);
         }
     }
