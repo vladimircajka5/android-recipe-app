@@ -29,6 +29,9 @@ public interface PantryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void upsert(PantryEntity item);
 
+    @Query("DELETE FROM pantry_items WHERE id = :id")
+    void deleteById(String id);
+
     @Delete
     void delete(PantryEntity item);
 }

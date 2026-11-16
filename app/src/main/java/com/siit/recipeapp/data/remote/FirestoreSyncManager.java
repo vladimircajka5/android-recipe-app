@@ -16,12 +16,16 @@ import com.siit.recipeapp.data.local.SyncState;
 import com.siit.recipeapp.data.local.entity.PantryEntity;
 import com.siit.recipeapp.data.local.entity.ShoppingListEntity;
 import com.siit.recipeapp.data.local.entity.ShoppingListItemEntity;
+import com.siit.recipeapp.data.local.entity.SyncTombstoneEntity;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public final class FirestoreSyncManager {
+    private interface TaskOperation {
+        com.google.android.gms.tasks.Task<Void> run();
+    }
     public interface Callback {
         void onComplete();
         void onError(@NonNull Exception exception);
@@ -54,22 +58,33 @@ public final class FirestoreSyncManager {
         List<PantryEntity> pantry = database.pantryDao().getPending();
         List<ShoppingListEntity> lists = database.shoppingDao().getPendingLists();
         List<ShoppingListItemEntity> items = database.shoppingDao().getPendingItems();
+        List<SyncTombstoneEntity> tombstones = database.syncDao().getTombstones();
+
 
         com.google.android.gms.tasks.Task<Void> task = com.google.android.gms.tasks.Tasks.forResult(null);
+        for (SyncTombstoneEntity tombstone : tombstones) {
+            task = next(task, () -> firestore
+                    .collection("users").document(userId)
+                    .collection(tombstone.collection)
+                    .document(tombstone.documentId)
+                    .set(tombstoneMap(tombstone)));
+            task = markAfter(task, () ->
+                    database.syncDao().deleteTombstone(tombstone.key));
+        }
         for (PantryEntity item : pantry) {
-            task = task.continueWithTask(ignored -> firestore
+            task = next(task, () -> firestore
                     .collection("users").document(userId).collection("pantry")
                     .document(item.id).set(pantryMap(item)));
             task = markAfter(task, () -> database.pantryDao().markSynced(item.id));
         }
         for (ShoppingListEntity list : lists) {
-            task = task.continueWithTask(ignored -> firestore
+            task = next(task, () -> firestore
                     .collection("users").document(userId).collection("shoppingLists")
                     .document(list.id).set(listMap(list)));
             task = markAfter(task, () -> database.shoppingDao().markListSynced(list.id));
         }
         for (ShoppingListItemEntity item : items) {
-            task = task.continueWithTask(ignored -> firestore
+            task = next(task, () -> firestore
                     .collection("users").document(userId).collection("shoppingItems")
                     .document(item.id).set(itemMap(item)));
             task = markAfter(task, () -> database.shoppingDao().markItemSynced(item.id));
@@ -79,11 +94,29 @@ public final class FirestoreSyncManager {
                 .addOnFailureListener(callback::onError);
     }
 
+    private com.google.android.gms.tasks.Task<Void> next(
+            com.google.android.gms.tasks.Task<Void> previous, TaskOperation operation) {
+        return previous.continueWithTask(result -> {
+            if (!result.isSuccessful()) {
+                return com.google.android.gms.tasks.Tasks.forException(
+                        result.getException() == null
+                                ? new IllegalStateException("Synchronization failed")
+                                : result.getException());
+            }
+            return operation.run();
+        });
+    }
     private com.google.android.gms.tasks.Task<Void> markAfter(
             com.google.android.gms.tasks.Task<Void> task, Runnable action) {
-        return task.continueWith(previous -> {
+        return task.continueWithTask(previous -> {
+            if (!previous.isSuccessful()) {
+                return com.google.android.gms.tasks.Tasks.forException(
+                        previous.getException() == null
+                                ? new IllegalStateException("Synchronization failed")
+                                : previous.getException());
+            }
             action.run();
-            return null;
+            return com.google.android.gms.tasks.Tasks.forResult(null);
         });
     }
 
@@ -107,6 +140,10 @@ public final class FirestoreSyncManager {
 
     private void mergePantry(QuerySnapshot snapshot) {
         for (DocumentSnapshot document : snapshot.getDocuments()) {
+            if (Boolean.TRUE.equals(document.getBoolean("deleted"))) {
+                deleteLocalPantryIfOlder(document);
+                continue;
+            }
             PantryEntity remote = pantryEntity(document);
             PantryEntity local = database.pantryDao().getAll().stream()
                     .filter(item -> item.id.equals(remote.id)).findFirst().orElse(null);
@@ -119,6 +156,10 @@ public final class FirestoreSyncManager {
 
     private void mergeLists(QuerySnapshot snapshot) {
         for (DocumentSnapshot document : snapshot.getDocuments()) {
+            if (Boolean.TRUE.equals(document.getBoolean("deleted"))) {
+                deleteLocalListIfOlder(document);
+                continue;
+            }
             ShoppingListEntity remote = listEntity(document);
             ShoppingListEntity local = database.shoppingDao().findList(remote.id);
             if (local == null || remote.updatedAt > local.updatedAt
@@ -130,6 +171,10 @@ public final class FirestoreSyncManager {
 
     private void mergeItems(QuerySnapshot snapshot) {
         for (DocumentSnapshot document : snapshot.getDocuments()) {
+            if (Boolean.TRUE.equals(document.getBoolean("deleted"))) {
+                deleteLocalListIfOlder(document);
+                continue;
+            }
             ShoppingListItemEntity remote = itemEntity(document);
             ShoppingListItemEntity local = database.shoppingDao().findItem(remote.id);
             if (local == null || remote.updatedAt > local.updatedAt
@@ -151,6 +196,37 @@ public final class FirestoreSyncManager {
         values.put("expirationDate", item.expirationDate == null ? null : item.expirationDate.toString());
         values.put("updatedAt", item.updatedAt);
         return values;
+    }
+
+    private Map<String, Object> tombstoneMap(SyncTombstoneEntity tombstone) {
+        Map<String, Object> values = new HashMap<>();
+        values.put("id", tombstone.documentId);
+        values.put("ownerId", tombstone.ownerId);
+        values.put("deleted", true);
+        values.put("updatedAt", tombstone.updatedAt);
+        return values;
+    }
+
+    private void deleteLocalPantryIfOlder(DocumentSnapshot document) {
+        PantryEntity local = database.pantryDao().getAll().stream()
+                .filter(item -> item.id.equals(document.getId())).findFirst().orElse(null);
+        if (local == null || local.updatedAt < longValue(document, "updatedAt")) {
+            database.pantryDao().deleteById(document.getId());
+        }
+    }
+
+    private void deleteLocalListIfOlder(DocumentSnapshot document) {
+        ShoppingListEntity local = database.shoppingDao().findList(document.getId());
+        if (local == null || local.updatedAt < longValue(document, "updatedAt")) {
+            database.shoppingDao().deleteListById(document.getId());
+        }
+    }
+
+    private void deleteLocalItemIfOlder(DocumentSnapshot document) {
+        ShoppingListItemEntity local = database.shoppingDao().findItem(document.getId());
+        if (local == null || local.updatedAt < longValue(document, "updatedAt")) {
+            database.shoppingDao().deleteItemById(document.getId());
+        }
     }
 
     private Map<String, Object> listMap(ShoppingListEntity list) {

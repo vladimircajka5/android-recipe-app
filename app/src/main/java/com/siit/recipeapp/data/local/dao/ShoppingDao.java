@@ -51,4 +51,10 @@ public interface ShoppingDao {
 
     @Query("DELETE FROM shopping_list_items WHERE shoppingListId = :listId")
     void deleteItemsForList(String listId);
+
+    @Query("DELETE FROM shopping_lists WHERE id = :id")
+    void deleteListById(String id);
+
+    @Query("DELETE FROM shopping_list_items WHERE id = :id")
+    void deleteItemById(String id);
 }
