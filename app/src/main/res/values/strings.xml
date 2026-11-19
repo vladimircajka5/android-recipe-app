@@ -13,7 +13,7 @@
     <string name="login_forgot_password">Forgot Password?</string>
     <string name="login_guest">Continue as Guest</string>
 
-    <string name="login_invalid_data">Enter your email and password.</string>
+    <string name="login_invalid_data">Enter your email or username and password.</string>
     <string name="login_failed">Invalid email or password, or login failed.</string>
     <string name="login_email_not_verified">Please verify your email before logging in.</string>
     <string name="login_success">Successfully logged in!</string>

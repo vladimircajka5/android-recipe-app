@@ -87,20 +87,19 @@ public class LoginFragment extends Fragment {
             // Sakrij prethodnu gresku
             tvError.setVisibility(View.GONE);
 
-            String email = etIdentifier.getText().toString().trim();
+            String identifier = etIdentifier.getText().toString().trim();
             String password = etPassword.getText().toString();
 
             // Provera unetih podataka
-            if (email.isEmpty() || password.isEmpty()) {
+            if (identifier.isEmpty() || password.isEmpty()) {
                 tvError.setText(R.string.login_invalid_data);
                 tvError.setVisibility(View.VISIBLE);
                 return;
             }
 
-            // Blokiraj dugme dok Firebase obradjuje zahtev
             btnLogin.setEnabled(false);
 
-            authRepository.login(email, password,
+            authRepository.login(identifier, password,
                     new AuthRepository.LoginCallback() {
 
                         @Override

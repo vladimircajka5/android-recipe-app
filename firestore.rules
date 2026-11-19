@@ -26,12 +26,25 @@ service cloud.firestore {
       allow read, write: if ownsUserData(userId);
     }
 
-    match /usernames/{username} {
-          allow read: if signedIn();
-          allow create: if signedIn()
-            && !exists(/databases/$(database)/documents/usernames/$(username))
-            && request.resource.data.uid == request.auth.uid;
-          allow update, delete: if false;
-        }
+    
+match /usernames/{username} {
+
+    // Dozvoljeno citanje pojedinacnog korisnickog imena
+    allow get: if true;
+
+    // Zabranjen pregled cele kolekcije
+    allow list: if false;
+
+    // Kreiranje rezervacije za sopstveni nalog
+    allow create: if signedIn()
+        && !exists(/databases/$(database)/documents/usernames/$(username))
+        && request.resource.data.keys().hasOnly(['uid', 'email'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.email == request.auth.token.email;
+
+    // Korisnicko ime se ne menja i ne brise
+    allow update, delete: if false;
+}
+
   }
 }

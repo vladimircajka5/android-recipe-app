@@ -74,6 +74,7 @@ public class FirebaseAuthRepository implements AuthRepository {
                     // Korisnicko ime
                     Map<String, Object> usernameData = new HashMap<>();
                     usernameData.put("uid", user.getUid());
+                    usernameData.put("email", user.getEmail());
 
                     // Korisnicki profil
                     Map<String, Object> userData = new HashMap<>();
@@ -136,9 +137,47 @@ public class FirebaseAuthRepository implements AuthRepository {
     }
 
 
+
+// ===== Prijava =====
+
     @Override
-    public void login(String email, String password,
-                      AuthRepository.LoginCallback callback) {
+    public void login(String identifier, String password,
+                      LoginCallback callback) {
+
+        String value = identifier.trim();
+
+        // Prijava preko emaila
+        if (value.contains("@")) {
+            loginWithEmail(value, password, callback);
+            return;
+        }
+
+        // Prijava preko korisnickog imena
+        String usernameKey = value.toLowerCase(Locale.ROOT);
+
+        firestore.collection("usernames")
+                .document(usernameKey)
+                .get()
+                .addOnSuccessListener(document -> {
+
+                    String email = document.getString("email");
+
+                    if (email == null || email.isEmpty()) {
+                        callback.onError("LOGIN_FAILED");
+                        return;
+                    }
+
+                    loginWithEmail(email, password, callback);
+                })
+                .addOnFailureListener(error -> {
+                    callback.onError("LOGIN_FAILED");
+                });
+    }
+
+
+    // Prijava u Firebase pomocu emaila
+    private void loginWithEmail(String email, String password,
+                                LoginCallback callback) {
 
         auth.signInWithEmailAndPassword(email, password)
                 .addOnSuccessListener(result -> {
@@ -169,6 +208,8 @@ public class FirebaseAuthRepository implements AuthRepository {
                     callback.onError("LOGIN_FAILED");
                 });
     }
+
+
 
     // Slanje emaila za resetovanje lozinke
     @Override

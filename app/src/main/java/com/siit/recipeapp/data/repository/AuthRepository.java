@@ -23,8 +23,8 @@ public interface AuthRepository {
         void onError(String message);
     }
 
-    // Prijava korisnika
-    void login(String email, String password, LoginCallback callback);
+    // Prijava preko emaila ili korisnickog imena
+    void login(String identifier, String password, LoginCallback callback);
 
 
     // ===== Odjava =====
