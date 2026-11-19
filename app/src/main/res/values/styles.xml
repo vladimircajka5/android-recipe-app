@@ -57,6 +57,11 @@
         <item name="android:textStyle">normal</item>
     </style>
 
+    <!-- Error Message -->
+    <style name="AppErrorText" parent="AppTextSecondary">
+        <item name="android:textColor">?attr/colorError</item>
+    </style>
+
 
     <!-- ==================== INPUT FIELDS ==================== -->
 

@@ -22,6 +22,14 @@
     <string name="register_email_hint">Enter your email</string>
     <string name="register_password_hint">Enter password</string>
 
+    <string name="register_verification_sent">Account created! Check your email to verify your account.</string>
+    <string name="register_verification_failed">Account created, but verification email could not be sent.</string>
+    <string name="register_failed">Registration failed: %1$s</string>
+
+    <string name="register_invalid_data">Please enter a valid username, email and password (at least 6 characters).</string>
+    <string name="register_username_taken">This username is already taken.</string>
+    <string name="register_failed_generic">Registration failed. Check your details and try again.</string>
+
     <!-- Profile Fragment -->
     <string name="profile_title">My Profile</string>
     <string name="profile_username">testname</string>
