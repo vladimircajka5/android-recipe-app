@@ -18,7 +18,7 @@ import com.siit.recipeapp.data.local.entity.SyncTombstoneEntity;
 
 @Database(entities = { PantryEntity.class, ShoppingListEntity.class, ShoppingListItemEntity.class,
         IngredientEntity.class, ProductEntity.class, SyncTombstoneEntity.class },
-        version = 2, exportSchema = false)
+        version = 3, exportSchema = false)
 @TypeConverters(Converters.class)
 public abstract class RecipeDatabase extends RoomDatabase {
     public abstract PantryDao pantryDao();
@@ -37,7 +37,7 @@ public abstract class RecipeDatabase extends RoomDatabase {
                                     context.getApplicationContext(),
                                     RecipeDatabase.class,
                                     "recipeapp.db")
-                            .addMigrations(MIGRATION_1_2)
+                            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                             .allowMainThreadQueries()
                             .build();
                 }
@@ -62,6 +62,35 @@ public abstract class RecipeDatabase extends RoomDatabase {
                             "updatedAt INTEGER NOT NULL, " +
                             "PRIMARY KEY(`key`))"
                     );
+                }
+            };
+
+    private static final androidx.room.migration.Migration MIGRATION_2_3 =
+            new androidx.room.migration.Migration(2, 3) {
+                @Override
+                public void migrate(
+                        @androidx.annotation.NonNull
+                        androidx.sqlite.db.SupportSQLiteDatabase database) {
+
+                    String[] tables = {
+                            "pantry_items",
+                            "shopping_lists",
+                            "shopping_list_items",
+                            "sync_tombstones"
+                    };
+
+                    for (String table : tables) {
+                        database.execSQL(
+                                "ALTER TABLE `" + table + "` " +
+                                        "ADD COLUMN localRevision " +
+                                        "TEXT NOT NULL DEFAULT ''"
+                        );
+
+                        database.execSQL(
+                                "UPDATE `" + table + "` " +
+                                        "SET localRevision = lower(hex(randomblob(16)))"
+                        );
+                    }
                 }
             };
 }

@@ -1,9 +1,12 @@
 package com.siit.recipeapp.data.local.entity;
 
 import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import com.siit.recipeapp.data.local.SyncState;
+
+import java.util.UUID;
 
 @Entity(tableName = "shopping_list_items")
 public final class ShoppingListItemEntity {
@@ -17,6 +20,9 @@ public final class ShoppingListItemEntity {
     public boolean purchased;
     public String syncState;
     public long updatedAt;
+    @NonNull
+    @ColumnInfo(defaultValue = "''")
+    public String localRevision = UUID.randomUUID().toString();
 
     public ShoppingListItemEntity() {}
 

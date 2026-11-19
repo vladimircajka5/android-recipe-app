@@ -1,10 +1,12 @@
 package com.siit.recipeapp.data.local.entity;
 
 import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import com.siit.recipeapp.data.local.SyncState;
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Entity(tableName = "pantry_items")
 public final class PantryEntity {
@@ -20,6 +22,9 @@ public final class PantryEntity {
     public LocalDate expirationDate;
     public String syncState;
     public long updatedAt;
+    @NonNull
+    @ColumnInfo(defaultValue = "''")
+    public String localRevision = UUID.randomUUID().toString();
 
     public PantryEntity() {}
 
