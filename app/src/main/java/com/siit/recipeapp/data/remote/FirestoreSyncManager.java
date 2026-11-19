@@ -13,7 +13,9 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.siit.recipeapp.data.local.EntityMapper;
 import com.siit.recipeapp.data.local.RecipeDatabase;
 import com.siit.recipeapp.data.local.SyncState;
+import com.siit.recipeapp.data.local.entity.IngredientEntity;
 import com.siit.recipeapp.data.local.entity.PantryEntity;
+import com.siit.recipeapp.data.local.entity.ProductEntity;
 import com.siit.recipeapp.data.local.entity.ShoppingListEntity;
 import com.siit.recipeapp.data.local.entity.ShoppingListItemEntity;
 import com.siit.recipeapp.data.local.entity.SyncTombstoneEntity;
@@ -238,7 +240,7 @@ public final class FirestoreSyncManager {
             PantryEntity remote = pantryEntity(document);
 
             remote.ownerId = userId;
-
+            restoreReferences(document, remote.ingredientId, remote.productId);
             database.pantryDao().upsert(remote);
         }
     }
@@ -322,7 +324,7 @@ public final class FirestoreSyncManager {
             if (parent == null) {
                 continue;
             }
-
+            restoreReferences(document, remote.ingredientId, null);
             database.shoppingDao().upsertItem(remote);
         }
     }
@@ -431,6 +433,8 @@ public final class FirestoreSyncManager {
         values.put("unitId", item.unitId);
         values.put("expirationDate", item.expirationDate == null ? null : item.expirationDate.toString());
         values.put("updatedAt", item.updatedAt);
+        values.put("ingredientSnapshot", ingredientSnapshot(item.ingredientId));
+        values.put("productSnapshot", productSnapshot(item.productId));
         return values;
     }
 
@@ -465,6 +469,7 @@ public final class FirestoreSyncManager {
         values.put("unitId", item.unitId);
         values.put("purchased", item.purchased);
         values.put("updatedAt", item.updatedAt);
+        values.put("ingredientSnapshot", ingredientSnapshot(item.ingredientId));
         return values;
     }
 
@@ -540,5 +545,97 @@ public final class FirestoreSyncManager {
         values.put("updatedAt", profile.updatedAt);
 
         return values;
+    }
+
+    private Map<String, Object> ingredientSnapshot(String ingredientId) {
+        IngredientEntity ingredient = database.catalogDao()
+                .findIngredient(ingredientId);
+
+        if (ingredient == null) {
+            throw new IllegalStateException(
+                    "Referenced ingredient is missing: " + ingredientId);
+        }
+
+        Map<String, Object> values = new HashMap<>();
+        values.put("id", ingredient.id);
+        values.put("name", ingredient.name);
+        values.put("categoryId", ingredient.categoryId);
+        values.put("defaultUnitId", ingredient.defaultUnitId);
+        values.put("kind", ingredient.kind);
+
+        return values;
+    }
+
+    private Map<String, Object> productSnapshot(String productId) {
+        if (productId == null) {
+            return null;
+        }
+
+        ProductEntity product = database.catalogDao().findProduct(productId);
+
+        if (product == null) {
+            throw new IllegalStateException(
+                    "Referenced product is missing: " + productId);
+        }
+
+        Map<String, Object> values = new HashMap<>();
+        values.put("id", product.id);
+        values.put("barcode", product.barcode);
+        values.put("brandName", product.brandName);
+        values.put("packageQuantity", product.packageQuantity);
+        values.put("unitId", product.unitId);
+        values.put("displayColor", product.displayColor);
+        values.put("ingredientId", product.ingredientId);
+
+        return values;
+    }
+
+    private void restoreReferences(
+            DocumentSnapshot document,
+            String ingredientId,
+            String productId) {
+
+        if (ingredientId == null || ingredientId.trim().isEmpty()) {
+            throw new IllegalStateException(
+                    "Remote item is missing its ingredient reference.");
+        }
+
+        if (database.catalogDao().findIngredient(ingredientId) == null) {
+            IngredientEntity ingredient = document.get(
+                    "ingredientSnapshot", IngredientEntity.class);
+
+            if (ingredient == null
+                    || !ingredientId.equals(ingredient.id)
+                    || ingredient.name == null
+                    || ingredient.name.trim().isEmpty()) {
+                throw new IllegalStateException(
+                        "Ingredient data must be resent from the source device.");
+            }
+
+            // Proverava da zapis moze da se pretvori u postojeci model.
+            EntityMapper.ingredient(ingredient);
+
+            database.catalogDao().upsertIngredient(ingredient);
+        }
+
+        if (productId == null) {
+            return;
+        }
+
+        if (database.catalogDao().findProduct(productId) == null) {
+            ProductEntity product = document.get(
+                    "productSnapshot", ProductEntity.class);
+
+            if (product == null
+                    || !productId.equals(product.id)
+                    || !ingredientId.equals(product.ingredientId)) {
+                throw new IllegalStateException(
+                        "Product data must be resent from the source device.");
+            }
+
+            EntityMapper.product(product);
+
+            database.catalogDao().upsertProduct(product);
+        }
     }
 }
