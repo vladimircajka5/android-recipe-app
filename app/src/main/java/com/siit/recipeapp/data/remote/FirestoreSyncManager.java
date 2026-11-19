@@ -17,6 +17,7 @@ import com.siit.recipeapp.data.local.entity.PantryEntity;
 import com.siit.recipeapp.data.local.entity.ShoppingListEntity;
 import com.siit.recipeapp.data.local.entity.ShoppingListItemEntity;
 import com.siit.recipeapp.data.local.entity.SyncTombstoneEntity;
+import com.siit.recipeapp.data.local.entity.UserProfileEntity;
 
 import java.util.HashMap;
 import java.util.List;
@@ -165,8 +166,11 @@ public final class FirestoreSyncManager {
         com.google.android.gms.tasks.Task<QuerySnapshot> itemsTask = firestore
                 .collection("users").document(userId).collection("shoppingItems").get();
 
+        com.google.android.gms.tasks.Task<DocumentSnapshot> profileTask = firestore
+                .collection("users").document(userId).get();
+
         com.google.android.gms.tasks.Tasks
-                .whenAllSuccess(pantryTask, listsTask, itemsTask)
+                .whenAllSuccess(pantryTask, listsTask, itemsTask, profileTask)
                 .addOnSuccessListener(executor, results -> {
                     try {
                         database.runInTransaction(() -> {
@@ -179,6 +183,7 @@ public final class FirestoreSyncManager {
                             mergePantry(userId, (QuerySnapshot) results.get(0));
                             mergeLists(userId, (QuerySnapshot) results.get(1));
                             mergeItems(userId, (QuerySnapshot) results.get(2));
+                            mergeProfile(userId, (DocumentSnapshot) results.get(3));
                         });
                     } catch (Exception error) {
                         callback.onError(error);
@@ -307,6 +312,53 @@ public final class FirestoreSyncManager {
         }
     }
 
+    private void mergeProfile(String userId, DocumentSnapshot document) {
+        if (!document.exists()) {
+            return;
+        }
+
+        UserProfileEntity local = database.userProfileDao()
+                .getProfile(userId);
+
+        if (local != null
+                && SyncState.PENDING.name().equals(local.syncState)) {
+            return;
+        }
+
+        long remoteUpdatedAt = longValue(document, "updatedAt");
+
+        if (local != null && remoteUpdatedAt < local.updatedAt) {
+            return;
+        }
+
+        String username = document.getString("username");
+
+        if (username == null || username.trim().isEmpty()) {
+            throw new IllegalStateException(
+                    "User profile is missing its username.");
+        }
+
+        UserProfileEntity profile = new UserProfileEntity();
+
+        profile.ownerId = userId;
+        profile.username = username;
+        profile.biography = document.getString("biography");
+        profile.country = document.getString("country");
+        profile.region = document.getString("region");
+        profile.city = document.getString("city");
+        profile.latitude = document.getDouble("latitude");
+        profile.longitude = document.getDouble("longitude");
+
+        // Preuzimanje ne menja sliku sacuvanu na ovom uredjaju
+        profile.localImageUri = local == null
+                ? null
+                : local.localImageUri;
+
+        profile.syncState = SyncState.SYNCED.name();
+        profile.updatedAt = remoteUpdatedAt;
+
+        database.userProfileDao().upsert(profile);
+    }
     private boolean canApplyRemote(
             String userId,
             String collection,
