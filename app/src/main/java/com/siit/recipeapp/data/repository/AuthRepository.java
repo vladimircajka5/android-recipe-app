@@ -1,5 +1,7 @@
 package com.siit.recipeapp.data.repository;
 
+import com.siit.recipeapp.data.model.account.UserRole;
+
 public interface AuthRepository {
 
     // ===== Registracija =====
@@ -52,4 +54,24 @@ public interface AuthRepository {
 
     // Provera da li postoji prijavljen i verifikovan korisnik
     boolean hasVerifiedSession();
+
+    // ===== Administratorske uloge =====
+
+    // Rezultat citanja uloge
+    interface RoleCallback {
+        void onSuccess(UserRole role);
+        void onError(String message);
+    }
+
+    // Rezultat dodele administratorske uloge
+    interface AdminCallback {
+        void onSuccess();
+        void onError(String message);
+    }
+
+    // Citanje uloge trenutno prijavljenog korisnika
+    void getCurrentRole(RoleCallback callback);
+
+    // Dodela ADMIN uloge korisniku na osnovu username-a
+    void grantAdmin(String username, AdminCallback callback);
 }

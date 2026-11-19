@@ -16,9 +16,11 @@ import android.widget.Button;
 
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.siit.recipeapp.R;
+import com.siit.recipeapp.data.model.account.UserRole;
 import com.siit.recipeapp.data.repository.AuthRepository;
 import com.siit.recipeapp.data.repository.firebase.FirebaseAuthRepository;
 import com.siit.recipeapp.RecipeApplication;
+import com.siit.recipeapp.ui.auth.AdminRoleFragment;
 import com.siit.recipeapp.ui.auth.ChangePasswordFragment;
 import com.siit.recipeapp.ui.auth.LoginFragment;
 import com.siit.recipeapp.ui.recipe.RecipeListFragment;
@@ -36,12 +38,15 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // ===== Povezivanje =====
+        Button btnGrantAdmin = view.findViewById(R.id.btn_profile_grant_admin);
         Button btnLogout = view.findViewById(R.id.btn_profile_logout);
         Button btnEdit = view.findViewById(R.id.btn_profile_edit);
         Button btnChangePassword = view.findViewById(R.id.btn_profile_change_password);
         Button btnRecipes = view.findViewById(R.id.btn_profile_recipes);
         Button btnFavorites = view.findViewById(R.id.btn_profile_favorites);
 
+        // ===== Navigacija =====
         // Logout
         btnLogout.setOnClickListener(v -> {
             authRepository.logout();
@@ -100,6 +105,39 @@ public class ProfileFragment extends Fragment {
                     .commit();
         });
 
+        // Administratorske funkcionalnosti
+        btnGrantAdmin.setOnClickListener(v -> {
+            getParentFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, new AdminRoleFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
+
+
+
+        // ===== Funkcionalnosti =====
+
+        // Provera administratorske uloge
+        authRepository.getCurrentRole(new AuthRepository.RoleCallback() {
+
+            @Override
+            public void onSuccess(UserRole role) {
+
+                if (!isAdded() || getView() != view) {
+                    return;
+                }
+
+                if (role == UserRole.ADMIN) {
+                    btnGrantAdmin.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onError(String message) {
+                // Dugme ostaje sakriveno ako provera ne uspe
+            }
+        });
 
 
         // Promena teme
