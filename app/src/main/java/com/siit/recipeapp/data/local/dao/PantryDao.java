@@ -34,4 +34,20 @@ public interface PantryDao {
 
     @Delete
     void delete(PantryEntity item);
+
+    @Query("SELECT * FROM pantry_items WHERE ownerId = :ownerId " +
+            "ORDER BY expirationDate IS NULL, expirationDate")
+    List<PantryEntity> getForOwner(String ownerId);
+
+    @Query("SELECT * FROM pantry_items WHERE ownerId = :ownerId " +
+            "ORDER BY expirationDate IS NULL, expirationDate")
+    LiveData<List<PantryEntity>> observeForOwner(String ownerId);
+
+    @Query("SELECT * FROM pantry_items " +
+            "WHERE id = :id AND ownerId = :ownerId LIMIT 1")
+    PantryEntity findByIdForOwner(String id, String ownerId);
+
+    @Query("SELECT * FROM pantry_items " +
+            "WHERE productId = :productId AND ownerId = :ownerId LIMIT 1")
+    PantryEntity findByProductIdForOwner(String productId, String ownerId);
 }

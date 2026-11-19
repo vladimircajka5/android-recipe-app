@@ -60,4 +60,27 @@ public interface ShoppingDao {
 
     @Query("DELETE FROM shopping_list_items WHERE id = :id")
     void deleteItemById(String id);
+
+    @Query("SELECT * FROM shopping_lists " +
+            "WHERE ownerId = :ownerId ORDER BY createdAt DESC")
+    List<ShoppingListEntity> getListsForOwner(String ownerId);
+
+    @Query("SELECT i.* FROM shopping_list_items AS i " +
+            "INNER JOIN shopping_lists AS l ON i.shoppingListId = l.id " +
+            "WHERE l.ownerId = :ownerId")
+    List<ShoppingListItemEntity> getItemsForOwner(String ownerId);
+
+    @Query("SELECT * FROM shopping_lists " +
+            "WHERE id = :id AND ownerId = :ownerId LIMIT 1")
+    ShoppingListEntity findListForOwner(String id, String ownerId);
+
+    @Query("SELECT i.* FROM shopping_list_items AS i " +
+            "INNER JOIN shopping_lists AS l ON i.shoppingListId = l.id " +
+            "WHERE i.id = :id AND l.ownerId = :ownerId LIMIT 1")
+    ShoppingListItemEntity findItemForOwner(String id, String ownerId);
+
+    @Query("SELECT i.* FROM shopping_list_items AS i " +
+            "INNER JOIN shopping_lists AS l ON i.shoppingListId = l.id " +
+            "WHERE i.shoppingListId = :listId AND l.ownerId = :ownerId")
+    List<ShoppingListItemEntity> itemsForOwner(String listId, String ownerId);
 }
