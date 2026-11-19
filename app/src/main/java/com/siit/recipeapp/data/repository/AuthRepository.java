@@ -1,5 +1,7 @@
 package com.siit.recipeapp.data.repository;
 
+import com.siit.recipeapp.data.model.account.UserRole;
+
 public interface AuthRepository {
 
     // ===== Registracija =====
@@ -23,8 +25,8 @@ public interface AuthRepository {
         void onError(String message);
     }
 
-    // Prijava korisnika
-    void login(String email, String password, LoginCallback callback);
+    // Prijava preko emaila ili korisnickog imena
+    void login(String identifier, String password, LoginCallback callback);
 
 
     // ===== Odjava =====
@@ -47,4 +49,29 @@ public interface AuthRepository {
     // Promena lozinke prijavljenog korisnika
     void changePassword(String currentPassword, String newPassword,
                         PasswordCallback callback);
+
+    // ===== Sesija =====
+
+    // Provera da li postoji prijavljen i verifikovan korisnik
+    boolean hasVerifiedSession();
+
+    // ===== Administratorske uloge =====
+
+    // Rezultat citanja uloge
+    interface RoleCallback {
+        void onSuccess(UserRole role);
+        void onError(String message);
+    }
+
+    // Rezultat dodele administratorske uloge
+    interface AdminCallback {
+        void onSuccess();
+        void onError(String message);
+    }
+
+    // Citanje uloge trenutno prijavljenog korisnika
+    void getCurrentRole(RoleCallback callback);
+
+    // Dodela ADMIN uloge korisniku na osnovu username-a
+    void grantAdmin(String username, AdminCallback callback);
 }

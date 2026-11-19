@@ -9,6 +9,31 @@ service cloud.firestore {
     function ownsUserData(userId) {
       return signedIn() && request.auth.uid == userId;
     }
+    
+    function isAdmin() {
+      return signedIn()
+        && request.auth.token.email_verified == true
+        && exists(/databases/$(database)/documents/roles/$(request.auth.uid))
+        && get(/databases/$(database)/documents/roles/$(request.auth.uid)).data.role == "ADMIN";
+    }
+
+    
+  match /roles/{userId} {
+
+  allow get: if signedIn() && (request.auth.uid == userId || isAdmin());
+
+  allow list: if false;
+
+  // Samo admin dodeljuje ADMIN ulogu drugom korisniku
+  allow create: if isAdmin()
+    && request.auth.uid != userId
+    && exists(/databases/$(database)/documents/users/$(userId))
+    && request.resource.data.keys().hasOnly(["role"])
+    && request.resource.data.role == "ADMIN";
+
+  // Nema proizvoljne promene i brisanja uloga
+  allow update, delete: if false;
+  }
 
     match /users/{userId}/pantry/{itemId} {
       allow read, write: if ownsUserData(userId);
@@ -26,12 +51,25 @@ service cloud.firestore {
       allow read, write: if ownsUserData(userId);
     }
 
+    
     match /usernames/{username} {
-          allow read: if signedIn();
-          allow create: if signedIn()
+
+        // Dozvoljeno citanje pojedinacnog korisnickog imena
+        allow get: if true;
+
+        // Zabranjen pregled cele kolekcije
+        allow list: if false;
+
+        // Kreiranje rezervacije za sopstveni nalog
+        allow create: if signedIn()
             && !exists(/databases/$(database)/documents/usernames/$(username))
-            && request.resource.data.uid == request.auth.uid;
-          allow update, delete: if false;
-        }
+            && request.resource.data.keys().hasOnly(['uid', 'email'])
+            && request.resource.data.uid == request.auth.uid
+            && request.resource.data.email == request.auth.token.email;
+
+        // Korisnicko ime se ne menja i ne brise
+        allow update, delete: if false;
+    }
+
   }
 }

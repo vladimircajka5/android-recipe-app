@@ -1,3 +1,4 @@
+
 package com.siit.recipeapp.ui.auth;
 
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.siit.recipeapp.R;
+import com.siit.recipeapp.data.model.account.UserRole;
 import com.siit.recipeapp.data.repository.AuthRepository;
 import com.siit.recipeapp.data.repository.firebase.FirebaseAuthRepository;
 import com.siit.recipeapp.ui.home.HomeFragment;
@@ -76,22 +78,32 @@ public class LoginFragment extends Fragment {
 
         // Ulazak kao Guest
         btnGuest.setOnClickListener(v -> {
-            navigateToHome();
+            FragmentManager manager = getParentFragmentManager();
+
+            // Brisanje prethodnih fragmenata iz Back Stack-a
+            manager.popBackStackImmediate(
+                    null,
+                    FragmentManager.POP_BACK_STACK_INCLUSIVE
+            );
+
+            manager.beginTransaction()
+                    .replace(R.id.fragment_container, new HomeFragment())
+                    .commit();
         });
 
         // ===== Funkcionalnosti =====
 
-        // Prijava korisnika
+        // Prijava preko emaila ili korisnickog imena
         btnLogin.setOnClickListener(v -> {
 
             // Sakrij prethodnu gresku
             tvError.setVisibility(View.GONE);
 
-            String email = etIdentifier.getText().toString().trim();
+            String identifier = etIdentifier.getText().toString().trim();
             String password = etPassword.getText().toString();
 
             // Provera unetih podataka
-            if (email.isEmpty() || password.isEmpty()) {
+            if (identifier.isEmpty() || password.isEmpty()) {
                 tvError.setText(R.string.login_invalid_data);
                 tvError.setVisibility(View.VISIBLE);
                 return;
@@ -100,7 +112,7 @@ public class LoginFragment extends Fragment {
             // Blokiraj dugme dok Firebase obradjuje zahtev
             btnLogin.setEnabled(false);
 
-            authRepository.login(email, password,
+            authRepository.login(identifier, password,
                     new AuthRepository.LoginCallback() {
 
                         @Override
@@ -118,31 +130,48 @@ public class LoginFragment extends Fragment {
 
     // ===== Privatne metode =====
 
-    // Otvaranje Home ekrana
-    private void navigateToHome() {
-
-        FragmentManager manager = getParentFragmentManager();
-
-        // Brisanje prethodnih fragmenata iz Back Stack-a
-        manager.popBackStackImmediate(
-                null,
-                FragmentManager.POP_BACK_STACK_INCLUSIVE
-        );
-
-        manager.beginTransaction()
-                .replace(R.id.fragment_container, new HomeFragment())
-                .commit();
-    }
-
-    // Uspesna prijava
+    // Uspesna Firebase prijava
     private void handleLoginSuccess(View view) {
 
         if (!isAdded() || getView() != view) {
             return;
         }
 
+        // Provera administratorske uloge
+        authRepository.getCurrentRole(new AuthRepository.RoleCallback() {
+
+            @Override
+            public void onSuccess(UserRole role) {
+                showLoginSuccess(view, role);
+            }
+
+            @Override
+            public void onError(String message) {
+
+                // Prijava je uspela, ali uloga nije procitana
+                // Ne dodeljujemo administratorska prava
+                showLoginSuccess(view, UserRole.USER);
+            }
+        });
+    }
+
+    // Prikaz poruke nakon uspesne prijave
+    private void showLoginSuccess(View view, UserRole role) {
+
+        if (!isAdded() || getView() != view) {
+            return;
+        }
+
+        int messageId;
+
+        if (role == UserRole.ADMIN) {
+            messageId = R.string.login_admin_success;
+        } else {
+            messageId = R.string.login_success;
+        }
+
         Toast.makeText(requireContext(),
-                R.string.login_success,
+                messageId,
                 Toast.LENGTH_SHORT).show();
 
         navigateToHome();
@@ -167,5 +196,21 @@ public class LoginFragment extends Fragment {
         }
 
         tvError.setVisibility(View.VISIBLE);
+    }
+
+    // Otvaranje Home ekrana
+    private void navigateToHome() {
+
+        FragmentManager manager = getParentFragmentManager();
+
+        // Brisanje prethodnih fragmenata iz Back Stack-a
+        manager.popBackStackImmediate(
+                null,
+                FragmentManager.POP_BACK_STACK_INCLUSIVE
+        );
+
+        manager.beginTransaction()
+                .replace(R.id.fragment_container, new HomeFragment())
+                .commit();
     }
 }
