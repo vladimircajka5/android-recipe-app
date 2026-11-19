@@ -61,7 +61,7 @@ public class ChangePasswordFragment extends Fragment {
             confirmLayout.setError(null);
             if (!AuthValidator.isValidPassword(oldSecret)
                     || !AuthValidator.isValidPassword(newSecret)) {
-                newLayout.setError("Passwords must contain at least 8 characters");
+                newLayout.setError("Passwords must contain at least 6 characters");
                 return;
             }
             if (!AuthValidator.passwordsMatch(newSecret, confirmation)) {

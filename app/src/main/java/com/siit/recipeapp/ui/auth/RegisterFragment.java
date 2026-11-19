@@ -52,7 +52,6 @@ public class RegisterFragment extends Fragment {
         });
 
 
-
         btnRegister.setOnClickListener(v -> {
 
             // Sakrij prethodnu gresku
@@ -102,7 +101,7 @@ public class RegisterFragment extends Fragment {
                         @Override
                         public void onError(String message) {
 
-                            if (!isAdded()|| getView() != view) {
+                            if (!isAdded() || getView() != view) {
                                 return;
                             }
 
