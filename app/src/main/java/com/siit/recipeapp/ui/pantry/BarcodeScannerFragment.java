@@ -65,7 +65,13 @@ public final class BarcodeScannerFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View root, @Nullable Bundle state) {
-        viewModel = new ViewModelProvider(requireActivity(), new PantryViewModelFactory(requireContext())).get(PantryViewModel.class);
+        viewModel = new ViewModelProvider(
+                requireActivity(),
+                new PantryViewModelFactory(requireContext())
+        ).get(
+                PantryViewModelFactory.key(requireContext()),
+                PantryViewModel.class
+        );
         previewView = root.findViewById(R.id.barcode_preview);
         status = root.findViewById(R.id.barcode_status);
         root.findViewById(R.id.barcode_cancel).setOnClickListener(v -> getParentFragmentManager().popBackStack());

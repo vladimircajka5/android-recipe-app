@@ -17,6 +17,9 @@ public interface PantryDao {
     @Query("SELECT * FROM pantry_items ORDER BY expirationDate IS NULL, expirationDate")
     LiveData<List<PantryEntity>> observeAll();
 
+    @Query("SELECT * FROM pantry_items WHERE id = :id LIMIT 1")
+    PantryEntity findById(String id);
+
     @Query("SELECT * FROM pantry_items WHERE productId = :productId LIMIT 1")
     PantryEntity findByProductId(String productId);
 

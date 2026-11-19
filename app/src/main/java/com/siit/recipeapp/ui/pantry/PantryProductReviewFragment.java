@@ -47,7 +47,13 @@ public final class PantryProductReviewFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View root, @Nullable Bundle state) {
-        viewModel = new ViewModelProvider(requireActivity(), new PantryViewModelFactory(requireContext())).get(PantryViewModel.class);
+        viewModel = new ViewModelProvider(
+                requireActivity(),
+                new PantryViewModelFactory(requireContext())
+        ).get(
+                PantryViewModelFactory.key(requireContext()),
+                PantryViewModel.class
+        );
         ingredients.addAll(viewModel.getIngredients());
         units.addAll(PantryPreviewData.UNITS);
         Bundle args = getArguments() == null ? Bundle.EMPTY : getArguments();
