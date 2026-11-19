@@ -1,22 +1,38 @@
 package com.siit.recipeapp.domain.validation;
 
+import android.util.Patterns;
+
 public final class AuthValidator {
 
-    private static final int MIN_PASSWORD_LENGTH = 8;
+    // Svojstva
+    private static final int MIN_PASSWORD_LENGTH = 6;
 
     private AuthValidator() {
     }
 
     public static boolean isValidUsername(String username) {
-        return username != null && username.matches("[A-Za-z0-9._-]{3,30}");
+
+        if (username == null) {
+            return false;
+        }
+
+        String value = username.trim();
+
+        return !value.isEmpty()
+                && !value.contains("/")
+                && !value.contains("@")
+                && !value.equals(".")
+                && !value.equals("..");
     }
 
     public static boolean isValidEmail(String email) {
-        return email != null && email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$");
+        return email != null
+                && Patterns.EMAIL_ADDRESS.matcher(email.trim()).matches();
     }
 
     public static boolean isValidPassword(String password) {
-        return password != null && password.length() >= MIN_PASSWORD_LENGTH;
+        return password != null
+                && password.length() >= MIN_PASSWORD_LENGTH;
     }
 
     public static boolean passwordsMatch(String password, String confirmPassword) {
