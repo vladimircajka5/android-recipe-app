@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.siit.recipeapp.MainActivity;
 import com.siit.recipeapp.R;
 import com.siit.recipeapp.ui.recipe.UserRecipesFragment;
 
@@ -32,12 +33,12 @@ public class HomeFragment extends Fragment {
 
         Button btnProfile = view.findViewById(R.id.btn_home_profile);
 
+        // Otvaranje korisnickih recepata
         btnProfile.setOnClickListener(v -> {
-            getParentFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, new UserRecipesFragment())
-                    .addToBackStack(null)
-                    .commit();
+
+            MainActivity activity = (MainActivity) requireActivity();
+
+            activity.openProtectedFragment(new UserRecipesFragment());
         });
     }
 }

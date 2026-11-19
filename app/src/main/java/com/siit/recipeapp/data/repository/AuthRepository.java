@@ -47,4 +47,9 @@ public interface AuthRepository {
     // Promena lozinke prijavljenog korisnika
     void changePassword(String currentPassword, String newPassword,
                         PasswordCallback callback);
+
+    // ===== Sesija =====
+
+    // Provera da li postoji prijavljen i verifikovan korisnik
+    boolean hasVerifiedSession();
 }

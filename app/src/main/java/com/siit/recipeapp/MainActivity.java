@@ -14,6 +14,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.siit.recipeapp.data.repository.AuthRepository;
+import com.siit.recipeapp.data.repository.firebase.FirebaseAuthRepository;
 import com.siit.recipeapp.ui.auth.LoginFragment;
 import com.siit.recipeapp.ui.auth.RegisterFragment;
 import com.siit.recipeapp.ui.auth.ForgotPasswordFragment;
@@ -34,6 +37,9 @@ import com.siit.recipeapp.data.remote.UserDataSession;
 public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigation;
+
+    // Veze
+    private final AuthRepository authRepository = new FirebaseAuthRepository();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,27 +78,16 @@ public class MainActivity extends AppCompatActivity {
                     item.getItemId() == R.id.nav_pantry
                             || item.getItemId() == R.id.nav_shopping;
 
-            if (requiresAccount
-                    && UserDataSession.currentOwnerId(this) == null) {
+            // ===== Provera pristupa =====
 
-                Toast.makeText(
-                        this,
-                        "Sign in to use pantry and shopping lists.",
-                        Toast.LENGTH_SHORT
-                ).show();
+            // Gost moze da pristupi samo Home kartici
+            if (item.getItemId() != R.id.nav_home
+                    && !authRepository.hasVerifiedSession()) {
 
-                getSupportFragmentManager().popBackStackImmediate(
-                        null,
-                        FragmentManager.POP_BACK_STACK_INCLUSIVE
-                );
-
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.fragment_container, new LoginFragment())
-                        .commit();
-
+                showLoginRequiredDialog();
                 return false;
             }
+
             Fragment fragment;
 
             if (item.getItemId() == R.id.nav_home) {
@@ -167,11 +162,71 @@ public class MainActivity extends AppCompatActivity {
         );
 
         // Pocetni ekran
-        if (savedInstanceState == null) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, new LoginFragment())
-                    .commit();
+        showInitialScreen(savedInstanceState);
+    }
+
+
+    // ===== Privatne metode =====
+
+    // Odredjivanje pocetnog ekrana
+    private void showInitialScreen(Bundle savedInstanceState) {
+
+        // Android je vec obnovio postojeci fragment
+        if (savedInstanceState != null) {
+            return;
         }
+
+        Fragment initialFragment;
+
+        // Provera sacuvane Firebase sesije
+        if (authRepository.hasVerifiedSession()) {
+            initialFragment = new HomeFragment();
+        } else {
+            initialFragment = new LoginFragment();
+        }
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, initialFragment)
+                .commit();
+    }
+
+    // ===== Privatne metode =====
+
+    // Dijalog za funkcionalnosti koje zahtevaju prijavu
+    private void showLoginRequiredDialog() {
+
+        new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.guest_access_title)
+                .setMessage(R.string.guest_access_message)
+                .setNegativeButton(R.string.guest_access_back, null)
+                .setPositiveButton(R.string.guest_access_login,
+                        (dialog, which) -> navigateToLogin())
+                .show();
+    }
+
+    // Otvaranje Login ekrana
+    private void navigateToLogin() {
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, new LoginFragment())
+                .addToBackStack(null)
+                .commit();
+    }
+
+    // Otvaranje ekrana koji zahteva prijavu
+    public void openProtectedFragment(Fragment fragment) {
+
+        if (!authRepository.hasVerifiedSession()) {
+            showLoginRequiredDialog();
+            return;
+        }
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 }

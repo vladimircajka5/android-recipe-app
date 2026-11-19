@@ -172,6 +172,11 @@
     <string name="home_subtitle">This is subtitle</string>
     <string name="home_other_user_profile">Other User Profile</string>
 
+    <string name="guest_access_title">Login required</string>
+    <string name="guest_access_message">Please log in to use this feature.</string>
+    <string name="guest_access_back">Back</string>
+    <string name="guest_access_login">Log in</string>
+
 
     <!-- Cajkini Stringovi -->
 

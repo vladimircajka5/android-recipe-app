@@ -235,5 +235,20 @@ public class FirebaseAuthRepository implements AuthRepository {
                 });
     }
 
+    // ===== Sesija =====
+
+    // Provera postojece prijave
+    @Override
+    public boolean hasVerifiedSession() {
+
+        FirebaseUser user = auth.getCurrentUser();
+
+        if (user == null) {
+            return false;
+        }
+
+        return user.isEmailVerified();
+    }
+
 
 }
