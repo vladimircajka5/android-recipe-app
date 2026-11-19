@@ -1,43 +1,36 @@
 package com.siit.recipeapp.ui.auth;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 import com.siit.recipeapp.R;
-import android.widget.Toast;
-
 import com.siit.recipeapp.data.repository.AuthRepository;
 import com.siit.recipeapp.data.repository.firebase.FirebaseAuthRepository;
 import com.siit.recipeapp.domain.validation.AuthValidator;
 
 public class ForgotPasswordFragment extends Fragment {
 
+    // Veze
     private final AuthRepository authRepository = new FirebaseAuthRepository();
 
+    // Constructor
     public ForgotPasswordFragment() {
         // Required empty public constructor
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_forgot_password, container, false);
     }
 
@@ -45,56 +38,90 @@ public class ForgotPasswordFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        Button btnCancel = view.findViewById(R.id.btn_forgot_password_cancel);
-        Button btnSubmit = view.findViewById(R.id.btn_forgot_password_submit);
-        TextInputLayout emailLayout = view.findViewById(R.id.til_forgot_password_email);
-        TextInputEditText email = view.findViewById(R.id.et_forgot_password_email);
+        // ===== Povezivanje =====
 
+        TextInputEditText etEmail = view.findViewById(R.id.et_forgot_password_email);
+        TextView tvError = view.findViewById(R.id.tv_forgot_password_error);
+
+        Button btnSubmit = view.findViewById(R.id.btn_forgot_password_submit);
+        Button btnCancel = view.findViewById(R.id.btn_forgot_password_cancel);
+
+        // ===== Navigacija =====
+
+        // Povratak na Login
         btnCancel.setOnClickListener(v -> {
             getParentFragmentManager().popBackStack();
         });
+
+        // ===== Funkcionalnosti =====
+
+        // Slanje emaila za resetovanje lozinke
         btnSubmit.setOnClickListener(v -> {
-            String address = email.getText() == null
-                    ? ""
-                    : email.getText().toString().trim();
 
-            emailLayout.setError(null);
+            // Sakrij prethodnu gresku
+            tvError.setVisibility(View.GONE);
 
-            if (!AuthValidator.isValidEmail(address)) {
-                emailLayout.setError("Enter a valid email address.");
+            String email = etEmail.getText().toString().trim();
+
+            // Provera email adrese
+            if (!AuthValidator.isValidEmail(email)) {
+                tvError.setText(R.string.forgot_password_invalid_email);
+                tvError.setVisibility(View.VISIBLE);
                 return;
             }
 
+            // Blokiraj dugmad dok Firebase obradjuje zahtev
             btnSubmit.setEnabled(false);
+            btnCancel.setEnabled(false);
 
-            authRepository.sendPasswordReset(
-                    address,
-                    new AuthRepository.OperationCallback() {
+            authRepository.sendPasswordResetEmail(email,
+                    new AuthRepository.PasswordCallback() {
+
                         @Override
                         public void onSuccess() {
-                            if (!isAdded() || getView() != view) {
-                                return;
-                            }
-
-                            btnSubmit.setEnabled(true);
-
-                            Toast.makeText(
-                                    requireContext(),
-                                    R.string.forgot_password_reset_requested,
-                                    Toast.LENGTH_LONG
-                            ).show();
+                            handleResetPasswordSuccess(view);
                         }
 
                         @Override
                         public void onError(String message) {
-                            if (!isAdded() || getView() != view) {
-                                return;
-                            }
-
-                            btnSubmit.setEnabled(true);
-                            emailLayout.setError(message);
+                            handleResetPasswordError(
+                                    view, btnSubmit, btnCancel, tvError
+                            );
                         }
                     });
         });
+    }
+
+    // ===== Privatne metode =====
+
+    // Uspesno slanje emaila
+    private void handleResetPasswordSuccess(View view) {
+
+        if (!isAdded() || getView() != view) {
+            return;
+        }
+
+        Toast.makeText(requireContext(),
+                R.string.forgot_password_sent,
+                Toast.LENGTH_LONG).show();
+
+        getParentFragmentManager().popBackStack();
+    }
+
+    // Neuspesno slanje emaila
+    private void handleResetPasswordError(View view,
+                                          Button btnSubmit,
+                                          Button btnCancel,
+                                          TextView tvError) {
+
+        if (!isAdded() || getView() != view) {
+            return;
+        }
+
+        btnSubmit.setEnabled(true);
+        btnCancel.setEnabled(true);
+
+        tvError.setText(R.string.forgot_password_failed);
+        tvError.setVisibility(View.VISIBLE);
     }
 }
