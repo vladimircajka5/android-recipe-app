@@ -25,11 +25,14 @@ public interface ShoppingDao {
     @Query("SELECT * FROM shopping_list_items WHERE shoppingListId = :listId")
     List<ShoppingListItemEntity> itemsFor(String listId);
 
-    @Query("SELECT * FROM shopping_lists WHERE syncState = 'PENDING'")
-    List<ShoppingListEntity> getPendingLists();
+    @Query("SELECT * FROM shopping_lists WHERE ownerId = :ownerId AND syncState = 'PENDING'")
+    List<ShoppingListEntity> getPendingLists(String ownerId);
 
-    @Query("SELECT * FROM shopping_list_items WHERE syncState = 'PENDING'")
-    List<ShoppingListItemEntity> getPendingItems();
+    @Query("SELECT item.* FROM shopping_list_items AS item " +
+            "INNER JOIN shopping_lists AS list " +
+            "ON item.shoppingListId = list.id " +
+            "WHERE list.ownerId = :ownerId AND item.syncState = 'PENDING'")
+    List<ShoppingListItemEntity> getPendingItems(String ownerId);
 
     @Query("UPDATE shopping_lists SET syncState = 'SYNCED' WHERE id = :id")
     void markListSynced(String id);

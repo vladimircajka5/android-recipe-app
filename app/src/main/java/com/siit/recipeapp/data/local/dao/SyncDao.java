@@ -11,8 +11,8 @@ import java.util.List;
 
 @Dao
 public interface SyncDao {
-    @Query("SELECT * FROM sync_tombstones ORDER BY updatedAt")
-    List<SyncTombstoneEntity> getTombstones();
+    @Query("SELECT * FROM sync_tombstones WHERE ownerId = :ownerId ORDER BY updatedAt")
+    List<SyncTombstoneEntity> getTombstones(String ownerId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void upsertTombstone(SyncTombstoneEntity tombstone);

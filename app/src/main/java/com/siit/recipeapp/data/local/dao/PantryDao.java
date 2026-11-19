@@ -20,8 +20,8 @@ public interface PantryDao {
     @Query("SELECT * FROM pantry_items WHERE productId = :productId LIMIT 1")
     PantryEntity findByProductId(String productId);
 
-    @Query("SELECT * FROM pantry_items WHERE syncState = 'PENDING'")
-    List<PantryEntity> getPending();
+    @Query("SELECT * FROM pantry_items WHERE ownerId = :ownerId AND syncState = 'PENDING'")
+    List<PantryEntity> getPending(String ownerId);
 
     @Query("UPDATE pantry_items SET syncState = 'SYNCED' WHERE id = :id")
     void markSynced(String id);

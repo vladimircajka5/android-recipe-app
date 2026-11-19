@@ -55,10 +55,10 @@ public final class FirestoreSyncManager {
     }
 
     private void pushPending(String userId, Callback callback) {
-        List<PantryEntity> pantry = database.pantryDao().getPending();
-        List<ShoppingListEntity> lists = database.shoppingDao().getPendingLists();
-        List<ShoppingListItemEntity> items = database.shoppingDao().getPendingItems();
-        List<SyncTombstoneEntity> tombstones = database.syncDao().getTombstones();
+        List<PantryEntity> pantry = database.pantryDao().getPending(userId);
+        List<ShoppingListEntity> lists = database.shoppingDao().getPendingLists(userId);
+        List<ShoppingListItemEntity> items = database.shoppingDao().getPendingItems(userId);
+        List<SyncTombstoneEntity> tombstones = database.syncDao().getTombstones(userId);
 
 
         com.google.android.gms.tasks.Task<Void> task = com.google.android.gms.tasks.Tasks.forResult(null);
