@@ -34,11 +34,17 @@ public interface ShoppingDao {
             "WHERE list.ownerId = :ownerId AND item.syncState = 'PENDING'")
     List<ShoppingListItemEntity> getPendingItems(String ownerId);
 
-    @Query("UPDATE shopping_lists SET syncState = 'SYNCED' WHERE id = :id")
-    void markListSynced(String id);
+    @Query("UPDATE shopping_lists SET syncState = 'SYNCED' " +
+            "WHERE id = :id AND ownerId = :ownerId " +
+            "AND localRevision = :revision AND syncState = 'PENDING'")
+    int markListSynced(String id, String ownerId, String revision);
 
-    @Query("UPDATE shopping_list_items SET syncState = 'SYNCED' WHERE id = :id")
-    void markItemSynced(String id);
+    @Query("UPDATE shopping_list_items SET syncState = 'SYNCED' " +
+            "WHERE id = :id AND localRevision = :revision " +
+            "AND syncState = 'PENDING' " +
+            "AND shoppingListId IN (" +
+            "SELECT id FROM shopping_lists WHERE ownerId = :ownerId)")
+    int markItemSynced(String id, String ownerId, String revision);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void upsertList(ShoppingListEntity list);

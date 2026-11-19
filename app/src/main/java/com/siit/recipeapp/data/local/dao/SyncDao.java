@@ -19,4 +19,9 @@ public interface SyncDao {
 
     @Query("DELETE FROM sync_tombstones WHERE `key` = :key")
     void deleteTombstone(String key);
+
+    @Query("DELETE FROM sync_tombstones " +
+            "WHERE `key` = :key AND ownerId = :ownerId " +
+            "AND localRevision = :revision")
+    int deleteSyncedTombstone(String key, String ownerId, String revision);
 }

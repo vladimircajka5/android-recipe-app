@@ -26,8 +26,10 @@ public interface PantryDao {
     @Query("SELECT * FROM pantry_items WHERE ownerId = :ownerId AND syncState = 'PENDING'")
     List<PantryEntity> getPending(String ownerId);
 
-    @Query("UPDATE pantry_items SET syncState = 'SYNCED' WHERE id = :id")
-    void markSynced(String id);
+    @Query("UPDATE pantry_items SET syncState = 'SYNCED' " +
+            "WHERE id = :id AND ownerId = :ownerId " +
+            "AND localRevision = :revision AND syncState = 'PENDING'")
+    int markSynced(String id, String ownerId, String revision);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void upsert(PantryEntity item);

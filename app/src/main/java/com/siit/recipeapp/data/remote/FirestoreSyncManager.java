@@ -69,25 +69,43 @@ public final class FirestoreSyncManager {
                     .document(tombstone.documentId)
                     .set(tombstoneMap(tombstone)));
             task = markAfter(task, () ->
-                    database.syncDao().deleteTombstone(tombstone.key));
+                    database.syncDao().deleteSyncedTombstone(
+                            tombstone.key,
+                            userId,
+                            tombstone.localRevision));
         }
         for (PantryEntity item : pantry) {
             task = next(task, () -> firestore
                     .collection("users").document(userId).collection("pantry")
                     .document(item.id).set(pantryMap(item)));
-            task = markAfter(task, () -> database.pantryDao().markSynced(item.id));
+            task = markAfter(task, () ->
+                    database.pantryDao().markSynced(
+                            item.id,
+                            userId,
+                            item.localRevision
+                    ));
         }
         for (ShoppingListEntity list : lists) {
             task = next(task, () -> firestore
                     .collection("users").document(userId).collection("shoppingLists")
                     .document(list.id).set(listMap(list)));
-            task = markAfter(task, () -> database.shoppingDao().markListSynced(list.id));
+            task = markAfter(task, () ->
+                    database.shoppingDao().markListSynced(
+                            list.id,
+                            userId,
+                            list.localRevision
+                    ));
         }
         for (ShoppingListItemEntity item : items) {
             task = next(task, () -> firestore
                     .collection("users").document(userId).collection("shoppingItems")
                     .document(item.id).set(itemMap(item)));
-            task = markAfter(task, () -> database.shoppingDao().markItemSynced(item.id));
+            task = markAfter(task, () ->
+                    database.shoppingDao().markItemSynced(
+                            item.id,
+                            userId,
+                            item.localRevision
+                    ));
         }
 
         task.addOnSuccessListener(ignored -> pullRemote(userId, callback))
