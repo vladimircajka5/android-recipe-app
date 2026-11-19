@@ -33,7 +33,13 @@ public final class ShoppingDetailFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View root, @Nullable Bundle state) {
         listId = requireArguments().getString(ShoppingScreenHelper.LIST_ID);
-        viewModel = new ViewModelProvider(requireActivity(), new ShoppingViewModelFactory(requireContext())).get(ShoppingViewModel.class);
+        viewModel = new ViewModelProvider(
+                requireActivity(),
+                new ShoppingViewModelFactory(requireContext())
+        ).get(
+                ShoppingViewModelFactory.key(requireContext()),
+                ShoppingViewModel.class
+        );
         ListView list = root.findViewById(R.id.shopping_items);
         list.setAdapter(adapter);
         list.setOnItemClickListener((parent, row, position, id) -> {

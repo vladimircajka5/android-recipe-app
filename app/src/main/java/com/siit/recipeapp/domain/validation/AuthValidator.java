@@ -7,7 +7,6 @@ public final class AuthValidator {
     // Svojstva
     private static final int MIN_PASSWORD_LENGTH = 6;
 
-    // Constructor
     private AuthValidator() {
     }
 

@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.siit.recipeapp.RecipeApplication;
 import com.siit.recipeapp.data.local.LocalDataSeeder;
 import com.siit.recipeapp.data.local.RecipeDatabase;
+import com.siit.recipeapp.data.remote.UserDataSession;
 import com.siit.recipeapp.data.repository.room.RoomIngredientRepository;
 import com.siit.recipeapp.data.repository.room.RoomPantryRepository;
 import com.siit.recipeapp.data.repository.room.RoomProductRepository;
@@ -35,13 +36,18 @@ public final class PantryViewModelFactory implements ViewModelProvider.Factory {
     }
 
     @NonNull
-    private static PantryViewModel getViewModel(RecipeDatabase database) {
-        RoomPantryRepository pantryRepository = new RoomPantryRepository(database);
+    private PantryViewModel getViewModel(RecipeDatabase database) {
+        RoomPantryRepository pantryRepository = new RoomPantryRepository(database, context);
         RoomIngredientRepository ingredientRepository = new RoomIngredientRepository(database);
         RoomProductRepository productRepository = new RoomProductRepository(database);
         return new PantryViewModel(
                 new PantryService(pantryRepository),
                 new IngredientService(ingredientRepository),
                 new ProductService(productRepository));
+    }
+
+    public static String key(Context context) {
+        String ownerId = UserDataSession.currentOwnerId(context);
+        return "pantry:" + (ownerId == null ? "guest" : ownerId);
     }
 }

@@ -24,6 +24,16 @@ public interface AuthRepository {
     // Prijava korisnika
     void login(String email, String password, LoginCallback callback);
 
+    // rezultat operacije koja ne vraca podatke
+    // za reset i promenu lozinke
+    interface OperationCallback {
+        void onSuccess();
+        void onError(String message);
+    }
+
+    // Slanje emaila za reset lozinke
+    void sendPasswordReset(String email, OperationCallback callback);
+
     // Odjava korisnika
     void logout();
 }

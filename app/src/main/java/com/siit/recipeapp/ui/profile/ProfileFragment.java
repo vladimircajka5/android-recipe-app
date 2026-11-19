@@ -18,6 +18,7 @@ import com.google.android.material.materialswitch.MaterialSwitch;
 import com.siit.recipeapp.R;
 import com.siit.recipeapp.data.repository.AuthRepository;
 import com.siit.recipeapp.data.repository.firebase.FirebaseAuthRepository;
+import com.siit.recipeapp.RecipeApplication;
 import com.siit.recipeapp.ui.auth.ChangePasswordFragment;
 import com.siit.recipeapp.ui.auth.LoginFragment;
 import com.siit.recipeapp.ui.recipe.RecipeListFragment;

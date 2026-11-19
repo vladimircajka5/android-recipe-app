@@ -16,6 +16,9 @@ public interface CatalogDao {
     @Query("SELECT * FROM ingredients WHERE id = :id LIMIT 1")
     IngredientEntity findIngredient(String id);
 
+    @Query("SELECT * FROM products WHERE id = :id LIMIT 1")
+    ProductEntity findProduct(String id);
+
     @Query("SELECT * FROM products")
     List<ProductEntity> getProducts();
 

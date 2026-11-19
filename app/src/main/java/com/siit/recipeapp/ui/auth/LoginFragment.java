@@ -42,9 +42,6 @@ public class LoginFragment extends Fragment {
         TextInputEditText etPassword = view.findViewById(R.id.et_login_password);
         TextView tvError = view.findViewById(R.id.tv_login_error);
 
-        etIdentifier.setText("petarkukic12321@gmail.com");
-        etPassword.setText("123456");
-
         Button btnRegister = view.findViewById(R.id.btn_login_register);
         Button btnLogin = view.findViewById(R.id.btn_login_lsumbit);
         Button btnGuest = view.findViewById(R.id.btn_login_guest);
@@ -73,8 +70,7 @@ public class LoginFragment extends Fragment {
                     .commit();
         };
 
-        btnLogin.setOnClickListener(openHome);
-        btnGuest.setOnClickListener(openHome);
+
 
         // Guest
         btnGuest.setOnClickListener(openHome);
@@ -155,6 +151,4 @@ public class LoginFragment extends Fragment {
 
         tvError.setVisibility(View.VISIBLE);
     }
-
-
 }

@@ -11,6 +11,7 @@ import com.siit.recipeapp.data.local.LocalDataSeeder;
 import com.siit.recipeapp.data.local.RecipeDatabase;
 import com.siit.recipeapp.data.repository.room.RoomShoppingRepository;
 import com.siit.recipeapp.domain.service.ShoppingService;
+import com.siit.recipeapp.data.remote.UserDataSession;
 
 public final class ShoppingViewModelFactory implements ViewModelProvider.Factory {
     private final Context context;
@@ -24,9 +25,14 @@ public final class ShoppingViewModelFactory implements ViewModelProvider.Factory
             LocalDataSeeder.seed(database);
             ((RecipeApplication) context.getApplicationContext()).syncSignedInUser();
 
-            ShoppingService service = new ShoppingService(new RoomShoppingRepository(database));
+            ShoppingService service = new ShoppingService(new RoomShoppingRepository(database, context));
             return modelClass.cast(new ShoppingViewModel(service));
         }
         throw new IllegalArgumentException("Unsupported ViewModel: " + modelClass.getName());
+    }
+
+    public static String key(Context context) {
+        String ownerId = UserDataSession.currentOwnerId(context);
+        return "shopping:" + (ownerId == null ? "guest" : ownerId);
     }
 }

@@ -13,15 +13,24 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.siit.recipeapp.data.local.EntityMapper;
 import com.siit.recipeapp.data.local.RecipeDatabase;
 import com.siit.recipeapp.data.local.SyncState;
+import com.siit.recipeapp.data.local.entity.IngredientEntity;
 import com.siit.recipeapp.data.local.entity.PantryEntity;
+import com.siit.recipeapp.data.local.entity.ProductEntity;
 import com.siit.recipeapp.data.local.entity.ShoppingListEntity;
 import com.siit.recipeapp.data.local.entity.ShoppingListItemEntity;
+import com.siit.recipeapp.data.local.entity.SyncTombstoneEntity;
+import com.siit.recipeapp.data.local.entity.UserProfileEntity;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public final class FirestoreSyncManager {
+    private interface TaskOperation {
+        com.google.android.gms.tasks.Task<Void> run();
+    }
     public interface Callback {
         void onComplete();
         void onError(@NonNull Exception exception);
@@ -30,6 +39,7 @@ public final class FirestoreSyncManager {
     private final Context context;
     private final RecipeDatabase database;
     private final FirebaseFirestore firestore;
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public FirestoreSyncManager(Context context, RecipeDatabase database) {
         this.context = context.getApplicationContext();
@@ -38,104 +48,377 @@ public final class FirestoreSyncManager {
     }
 
     public void sync(String userId, Callback callback) {
-        if (userId == null || userId.trim().isEmpty()) {
-            callback.onError(new IllegalArgumentException("A signed-in user is required"));
-            return;
-        }
-        if (!isOnline()) {
-            callback.onComplete();
-            return;
-        }
+        executor.execute(() -> {
+            try {
+                if (userId == null || userId.trim().isEmpty()) {
+                    callback.onError(new IllegalArgumentException(
+                            "A signed-in user is required."));
+                    return;
+                }
 
-        pushPending(userId, callback);
+                if (!userId.equals(UserDataSession.currentOwnerId(context))) {
+                    callback.onError(new IllegalStateException(
+                            "Account changed before synchronization."));
+                    return;
+                }
+
+                if (!isOnline()) {
+                    callback.onComplete();
+                    return;
+                }
+
+                pushPending(userId, callback);
+            } catch (Exception error) {
+                callback.onError(error);
+            }
+        });
     }
 
     private void pushPending(String userId, Callback callback) {
-        List<PantryEntity> pantry = database.pantryDao().getPending();
-        List<ShoppingListEntity> lists = database.shoppingDao().getPendingLists();
-        List<ShoppingListItemEntity> items = database.shoppingDao().getPendingItems();
+        List<PantryEntity> pantry = database.pantryDao().getPending(userId);
+        List<ShoppingListEntity> lists = database.shoppingDao().getPendingLists(userId);
+        List<ShoppingListItemEntity> items = database.shoppingDao().getPendingItems(userId);
+        List<SyncTombstoneEntity> tombstones = database.syncDao().getTombstones(userId);
+        UserProfileEntity profile = database.userProfileDao().getPending(userId);
+
 
         com.google.android.gms.tasks.Task<Void> task = com.google.android.gms.tasks.Tasks.forResult(null);
+
+        if (profile != null) {
+            task = next(task, () -> firestore
+                    .collection("users")
+                    .document(userId)
+                    .update(profileMap(profile)));
+
+            task = markAfter(task, () ->
+                    database.userProfileDao().markSynced(
+                            userId,
+                            profile.localRevision
+                    ));
+        }
+
+        for (SyncTombstoneEntity tombstone : tombstones) {
+            task = next(task, () -> firestore
+                    .collection("users").document(userId)
+                    .collection(tombstone.collection)
+                    .document(tombstone.documentId)
+                    .set(tombstoneMap(tombstone)));
+            task = markAfter(task, () ->
+                    database.syncDao().deleteSyncedTombstone(
+                            tombstone.key,
+                            userId,
+                            tombstone.localRevision));
+        }
         for (PantryEntity item : pantry) {
-            task = task.continueWithTask(ignored -> firestore
+            task = next(task, () -> firestore
                     .collection("users").document(userId).collection("pantry")
                     .document(item.id).set(pantryMap(item)));
-            task = markAfter(task, () -> database.pantryDao().markSynced(item.id));
+            task = markAfter(task, () ->
+                    database.pantryDao().markSynced(
+                            item.id,
+                            userId,
+                            item.localRevision
+                    ));
         }
         for (ShoppingListEntity list : lists) {
-            task = task.continueWithTask(ignored -> firestore
+            task = next(task, () -> firestore
                     .collection("users").document(userId).collection("shoppingLists")
                     .document(list.id).set(listMap(list)));
-            task = markAfter(task, () -> database.shoppingDao().markListSynced(list.id));
+            task = markAfter(task, () ->
+                    database.shoppingDao().markListSynced(
+                            list.id,
+                            userId,
+                            list.localRevision
+                    ));
         }
         for (ShoppingListItemEntity item : items) {
-            task = task.continueWithTask(ignored -> firestore
+            task = next(task, () -> firestore
                     .collection("users").document(userId).collection("shoppingItems")
                     .document(item.id).set(itemMap(item)));
-            task = markAfter(task, () -> database.shoppingDao().markItemSynced(item.id));
+            task = markAfter(task, () ->
+                    database.shoppingDao().markItemSynced(
+                            item.id,
+                            userId,
+                            item.localRevision
+                    ));
         }
 
-        task.addOnSuccessListener(ignored -> pullRemote(userId, callback))
-                .addOnFailureListener(callback::onError);
+        task.addOnSuccessListener(executor, ignored -> pullRemote(userId, callback))
+                .addOnFailureListener(executor, callback::onError);
     }
 
+    private com.google.android.gms.tasks.Task<Void> next(
+            com.google.android.gms.tasks.Task<Void> previous, TaskOperation operation) {
+        return previous.continueWithTask(executor, result -> {
+            if (!result.isSuccessful()) {
+                return com.google.android.gms.tasks.Tasks.forException(
+                        result.getException() == null
+                                ? new IllegalStateException("Synchronization failed")
+                                : result.getException());
+            }
+            return operation.run();
+        });
+    }
     private com.google.android.gms.tasks.Task<Void> markAfter(
             com.google.android.gms.tasks.Task<Void> task, Runnable action) {
-        return task.continueWith(previous -> {
+        return task.continueWithTask(executor, previous -> {
+            if (!previous.isSuccessful()) {
+                return com.google.android.gms.tasks.Tasks.forException(
+                        previous.getException() == null
+                                ? new IllegalStateException("Synchronization failed")
+                                : previous.getException());
+            }
             action.run();
-            return null;
+            return com.google.android.gms.tasks.Tasks.forResult(null);
         });
     }
 
     private void pullRemote(String userId, Callback callback) {
         com.google.android.gms.tasks.Task<QuerySnapshot> pantryTask = firestore
                 .collection("users").document(userId).collection("pantry").get();
+
         com.google.android.gms.tasks.Task<QuerySnapshot> listsTask = firestore
                 .collection("users").document(userId).collection("shoppingLists").get();
+
         com.google.android.gms.tasks.Task<QuerySnapshot> itemsTask = firestore
                 .collection("users").document(userId).collection("shoppingItems").get();
 
-        com.google.android.gms.tasks.Tasks.whenAllSuccess(pantryTask, listsTask, itemsTask)
-                .addOnSuccessListener(results -> {
-                    mergePantry((QuerySnapshot) results.get(0));
-                    mergeLists((QuerySnapshot) results.get(1));
-                    mergeItems((QuerySnapshot) results.get(2));
+        com.google.android.gms.tasks.Task<DocumentSnapshot> profileTask = firestore
+                .collection("users").document(userId).get();
+
+        com.google.android.gms.tasks.Tasks
+                .whenAllSuccess(pantryTask, listsTask, itemsTask, profileTask)
+                .addOnSuccessListener(executor, results -> {
+                    try {
+                        database.runInTransaction(() -> {
+                            if (!userId.equals(
+                                    UserDataSession.currentOwnerId(context))) {
+                                throw new IllegalStateException(
+                                        "Account changed during synchronization.");
+                            }
+
+                            mergePantry(userId, (QuerySnapshot) results.get(0));
+                            mergeLists(userId, (QuerySnapshot) results.get(1));
+                            mergeItems(userId, (QuerySnapshot) results.get(2));
+                            mergeProfile(userId, (DocumentSnapshot) results.get(3));
+                        });
+                    } catch (Exception error) {
+                        callback.onError(error);
+                        return;
+                    }
+
                     callback.onComplete();
                 })
-                .addOnFailureListener(callback::onError);
+                .addOnFailureListener(executor, callback::onError);
     }
 
-    private void mergePantry(QuerySnapshot snapshot) {
+    private void mergePantry(String userId, QuerySnapshot snapshot) {
         for (DocumentSnapshot document : snapshot.getDocuments()) {
+            PantryEntity local = database.pantryDao()
+                    .findById(document.getId());
+
+            if (local != null) {
+                requireSameOwner(userId, local.ownerId);
+            }
+
+            if (!canApplyRemote(
+                    userId,
+                    "pantry",
+                    document,
+                    local == null ? null : local.syncState,
+                    local == null ? 0 : local.updatedAt)) {
+                continue;
+            }
+
+            if (Boolean.TRUE.equals(document.getBoolean("deleted"))) {
+                if (local != null) {
+                    database.pantryDao().deleteById(local.id);
+                }
+                continue;
+            }
+
             PantryEntity remote = pantryEntity(document);
-            PantryEntity local = database.pantryDao().getAll().stream()
-                    .filter(item -> item.id.equals(remote.id)).findFirst().orElse(null);
-            if (local == null || remote.updatedAt > local.updatedAt
-                    || "SYNCED".equals(local.syncState)) {
-                database.pantryDao().upsert(remote);
-            }
+
+            remote.ownerId = userId;
+            restoreReferences(document, remote.ingredientId, remote.productId);
+            database.pantryDao().upsert(remote);
         }
     }
 
-    private void mergeLists(QuerySnapshot snapshot) {
+    private void mergeLists(String userId, QuerySnapshot snapshot) {
         for (DocumentSnapshot document : snapshot.getDocuments()) {
+            ShoppingListEntity local = database.shoppingDao()
+                    .findList(document.getId());
+
+            if (local != null) {
+                requireSameOwner(userId, local.ownerId);
+            }
+
+            if (!canApplyRemote(
+                    userId,
+                    "shoppingLists",
+                    document,
+                    local == null ? null : local.syncState,
+                    local == null ? 0 : local.updatedAt)) {
+                continue;
+            }
+
+            if (Boolean.TRUE.equals(document.getBoolean("deleted"))) {
+                if (local != null) {
+                    if (hasPendingItems(userId, local.id)) {
+                        continue;
+                    }
+
+                    database.shoppingDao().deleteItemsForList(local.id);
+                    database.shoppingDao().deleteList(local.id);
+                }
+                continue;
+            }
+
             ShoppingListEntity remote = listEntity(document);
-            ShoppingListEntity local = database.shoppingDao().findList(remote.id);
-            if (local == null || remote.updatedAt > local.updatedAt
-                    || "SYNCED".equals(local.syncState)) {
-                database.shoppingDao().upsertList(remote);
-            }
+            remote.ownerId = userId;
+
+            database.shoppingDao().upsertList(remote);
         }
     }
 
-    private void mergeItems(QuerySnapshot snapshot) {
+    private void mergeItems(String userId, QuerySnapshot snapshot) {
         for (DocumentSnapshot document : snapshot.getDocuments()) {
-            ShoppingListItemEntity remote = itemEntity(document);
-            ShoppingListItemEntity local = database.shoppingDao().findItem(remote.id);
-            if (local == null || remote.updatedAt > local.updatedAt
-                    || "SYNCED".equals(local.syncState)) {
-                database.shoppingDao().upsertItem(remote);
+            ShoppingListItemEntity local = database.shoppingDao()
+                    .findItem(document.getId());
+
+            if (local != null
+                    && database.shoppingDao()
+                    .findItemForOwner(local.id, userId) == null) {
+                throw new IllegalStateException(
+                        "Shopping item ID is not owned by this account.");
             }
+
+            if (!canApplyRemote(
+                    userId,
+                    "shoppingItems",
+                    document,
+                    local == null ? null : local.syncState,
+                    local == null ? 0 : local.updatedAt)) {
+                continue;
+            }
+
+            if (Boolean.TRUE.equals(document.getBoolean("deleted"))) {
+                if (local != null) {
+                    database.shoppingDao().deleteItem(local.id);
+                }
+                continue;
+            }
+
+            ShoppingListItemEntity remote = itemEntity(document);
+
+            if (remote.shoppingListId == null
+                    || hasPendingDeletion(
+                    userId, "shoppingLists", remote.shoppingListId)) {
+                continue;
+            }
+
+            ShoppingListEntity parent = database.shoppingDao()
+                    .findListForOwner(remote.shoppingListId, userId);
+
+            if (parent == null) {
+                continue;
+            }
+            restoreReferences(document, remote.ingredientId, null);
+            database.shoppingDao().upsertItem(remote);
+        }
+    }
+
+    private void mergeProfile(String userId, DocumentSnapshot document) {
+        if (!document.exists()) {
+            return;
+        }
+
+        UserProfileEntity local = database.userProfileDao()
+                .getProfile(userId);
+
+        if (local != null
+                && SyncState.PENDING.name().equals(local.syncState)) {
+            return;
+        }
+
+        long remoteUpdatedAt = longValue(document, "updatedAt");
+
+        if (local != null && remoteUpdatedAt < local.updatedAt) {
+            return;
+        }
+
+        String username = document.getString("username");
+
+        if (username == null || username.trim().isEmpty()) {
+            throw new IllegalStateException(
+                    "User profile is missing its username.");
+        }
+
+        UserProfileEntity profile = new UserProfileEntity();
+
+        profile.ownerId = userId;
+        profile.username = username;
+        profile.biography = document.getString("biography");
+        profile.country = document.getString("country");
+        profile.region = document.getString("region");
+        profile.city = document.getString("city");
+        profile.latitude = document.getDouble("latitude");
+        profile.longitude = document.getDouble("longitude");
+
+        // Preuzimanje ne menja sliku sacuvanu na ovom uredjaju
+        profile.localImageUri = local == null
+                ? null
+                : local.localImageUri;
+
+        profile.syncState = SyncState.SYNCED.name();
+        profile.updatedAt = remoteUpdatedAt;
+
+        database.userProfileDao().upsert(profile);
+    }
+    private boolean canApplyRemote(
+            String userId,
+            String collection,
+            DocumentSnapshot document,
+            String localState,
+            long localUpdatedAt) {
+
+        if (SyncState.PENDING.name().equals(localState)) {
+            return false;
+        }
+
+        if (hasPendingDeletion(userId, collection, document.getId())) {
+            return false;
+        }
+
+        return longValue(document, "updatedAt") >= localUpdatedAt;
+    }
+
+    private boolean hasPendingDeletion(
+            String userId, String collection, String documentId) {
+
+        return database.syncDao().findTombstone(
+                collection + "/" + documentId,
+                userId
+        ) != null;
+    }
+
+    private boolean hasPendingItems(String userId, String listId) {
+        for (ShoppingListItemEntity item :
+                database.shoppingDao().itemsForOwner(listId, userId)) {
+
+            if (SyncState.PENDING.name().equals(item.syncState)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void requireSameOwner(String userId, String localOwnerId) {
+        if (!userId.equals(localOwnerId)) {
+            throw new IllegalStateException(
+                    "Local record ID belongs to another owner.");
         }
     }
 
@@ -150,6 +433,17 @@ public final class FirestoreSyncManager {
         values.put("unitId", item.unitId);
         values.put("expirationDate", item.expirationDate == null ? null : item.expirationDate.toString());
         values.put("updatedAt", item.updatedAt);
+        values.put("ingredientSnapshot", ingredientSnapshot(item.ingredientId));
+        values.put("productSnapshot", productSnapshot(item.productId));
+        return values;
+    }
+
+    private Map<String, Object> tombstoneMap(SyncTombstoneEntity tombstone) {
+        Map<String, Object> values = new HashMap<>();
+        values.put("id", tombstone.documentId);
+        values.put("ownerId", tombstone.ownerId);
+        values.put("deleted", true);
+        values.put("updatedAt", tombstone.updatedAt);
         return values;
     }
 
@@ -175,6 +469,7 @@ public final class FirestoreSyncManager {
         values.put("unitId", item.unitId);
         values.put("purchased", item.purchased);
         values.put("updatedAt", item.updatedAt);
+        values.put("ingredientSnapshot", ingredientSnapshot(item.ingredientId));
         return values;
     }
 
@@ -236,5 +531,111 @@ public final class FirestoreSyncManager {
         NetworkCapabilities capabilities = network == null ? null : manager.getNetworkCapabilities(network);
         return capabilities != null && capabilities.hasCapability(
                 NetworkCapabilities.NET_CAPABILITY_INTERNET);
+    }
+
+    private Map<String, Object> profileMap(UserProfileEntity profile) {
+        Map<String, Object> values = new HashMap<>();
+
+        values.put("biography", profile.biography);
+        values.put("country", profile.country);
+        values.put("region", profile.region);
+        values.put("city", profile.city);
+        values.put("latitude", profile.latitude);
+        values.put("longitude", profile.longitude);
+        values.put("updatedAt", profile.updatedAt);
+
+        return values;
+    }
+
+    private Map<String, Object> ingredientSnapshot(String ingredientId) {
+        IngredientEntity ingredient = database.catalogDao()
+                .findIngredient(ingredientId);
+
+        if (ingredient == null) {
+            throw new IllegalStateException(
+                    "Referenced ingredient is missing: " + ingredientId);
+        }
+
+        Map<String, Object> values = new HashMap<>();
+        values.put("id", ingredient.id);
+        values.put("name", ingredient.name);
+        values.put("categoryId", ingredient.categoryId);
+        values.put("defaultUnitId", ingredient.defaultUnitId);
+        values.put("kind", ingredient.kind);
+
+        return values;
+    }
+
+    private Map<String, Object> productSnapshot(String productId) {
+        if (productId == null) {
+            return null;
+        }
+
+        ProductEntity product = database.catalogDao().findProduct(productId);
+
+        if (product == null) {
+            throw new IllegalStateException(
+                    "Referenced product is missing: " + productId);
+        }
+
+        Map<String, Object> values = new HashMap<>();
+        values.put("id", product.id);
+        values.put("barcode", product.barcode);
+        values.put("brandName", product.brandName);
+        values.put("packageQuantity", product.packageQuantity);
+        values.put("unitId", product.unitId);
+        values.put("displayColor", product.displayColor);
+        values.put("ingredientId", product.ingredientId);
+
+        return values;
+    }
+
+    private void restoreReferences(
+            DocumentSnapshot document,
+            String ingredientId,
+            String productId) {
+
+        if (ingredientId == null || ingredientId.trim().isEmpty()) {
+            throw new IllegalStateException(
+                    "Remote item is missing its ingredient reference.");
+        }
+
+        if (database.catalogDao().findIngredient(ingredientId) == null) {
+            IngredientEntity ingredient = document.get(
+                    "ingredientSnapshot", IngredientEntity.class);
+
+            if (ingredient == null
+                    || !ingredientId.equals(ingredient.id)
+                    || ingredient.name == null
+                    || ingredient.name.trim().isEmpty()) {
+                throw new IllegalStateException(
+                        "Ingredient data must be resent from the source device.");
+            }
+
+            // Proverava da zapis moze da se pretvori u postojeci model.
+            EntityMapper.ingredient(ingredient);
+
+            database.catalogDao().upsertIngredient(ingredient);
+        }
+
+        if (productId == null) {
+            return;
+        }
+
+        if (database.catalogDao().findProduct(productId) == null) {
+            ProductEntity product = document.get(
+                    "productSnapshot", ProductEntity.class);
+
+            if (product == null
+                    || !productId.equals(product.id)
+                    || !ingredientId.equals(product.ingredientId)) {
+                throw new IllegalStateException(
+                        "Product data must be resent from the source device.");
+            }
+
+            EntityMapper.product(product);
+
+            database.catalogDao().upsertProduct(product);
+        }
     }
 }

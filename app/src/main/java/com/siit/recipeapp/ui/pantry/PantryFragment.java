@@ -43,7 +43,13 @@ public final class PantryFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle state) {
         setupListControls(view);
         ((TextView) view.findViewById(R.id.pantry_notice)).setText(R.string.pantry_development_notice);
-        viewModel = new ViewModelProvider(requireActivity(), new PantryViewModelFactory(requireContext())).get(PantryViewModel.class);
+        viewModel =new ViewModelProvider(
+                requireActivity(),
+                new PantryViewModelFactory(requireContext())
+        ).get(
+                PantryViewModelFactory.key(requireContext()),
+                PantryViewModel.class
+        );
         ingredients.clear();
         for (Ingredient ingredient : viewModel.getIngredients()) ingredients.put(ingredient.getId(), ingredient);
         units.clear();

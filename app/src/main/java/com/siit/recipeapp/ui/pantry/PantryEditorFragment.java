@@ -53,8 +53,13 @@ public final class PantryEditorFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View root, @Nullable Bundle state) {
-        viewModel = new ViewModelProvider(requireActivity(), new PantryViewModelFactory(requireContext())).get(PantryViewModel.class);
-
+        viewModel = new ViewModelProvider(
+                requireActivity(),
+                new PantryViewModelFactory(requireContext())
+        ).get(
+                PantryViewModelFactory.key(requireContext()),
+                PantryViewModel.class
+        );
         String existingId = getArguments() == null ? null : getArguments().getString(ARG_ITEM_ID);
 
         editing = existingId != null;

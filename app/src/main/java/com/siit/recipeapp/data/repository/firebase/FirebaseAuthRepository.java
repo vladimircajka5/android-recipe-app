@@ -8,16 +8,20 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.siit.recipeapp.data.repository.AuthRepository;
+import com.siit.recipeapp.domain.validation.AuthValidator;
 
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-// Firebase Authentication - Cuva naloge, imejl, info da li je imejl potvrdjen...
-// Cloud Firestorage - Cuva stvari vezane za nalog: ime, region, bio, recepte, favorite...
-// Firebase auth ce da napravi nalog i dodeli mu UID, a store ce da cuva njegove podatke
 
-// auth - koristim za registraciju, prijavu, odjavu i upravljanje lozinke.
-// firestoe - za citanje i pisanje dokumenata o korisniku
+// Firebase Authentication upravlja nalozima, lozinkama i potvrdom emaila.
+// Svaki nalog dobija jedinstveni UID.
+// Cloud Firestore čuva podatke aplikacije u dokumentima.
+// Dokument korisnika povezujemo sa nalogom preko UID-a.
+
+// auth - registracija, prijava, odjava i upravljanje lozinkom.
+// firestore - citanje i upis dokumenata u Cloud Firestore.
+
 public class FirebaseAuthRepository implements AuthRepository {
 
     // Veze
@@ -161,6 +165,19 @@ public class FirebaseAuthRepository implements AuthRepository {
                 .addOnFailureListener(error -> {
                     callback.onError("LOGIN_FAILED");
                 });
+    }
+
+    @Override
+    public void sendPasswordReset(String email, OperationCallback callback) {
+        if (!AuthValidator.isValidEmail(email)) {
+            callback.onError("Enter a valid email address.");
+            return;
+        }
+
+        auth.sendPasswordResetEmail(email.trim())
+                .addOnSuccessListener(unused -> callback.onSuccess())
+                .addOnFailureListener(error ->
+                        callback.onError("Unable to send password reset email."));
     }
 
     // Odjava korisnika

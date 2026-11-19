@@ -31,6 +31,7 @@ public class RegisterFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_register, container, false);
     }
 
@@ -46,12 +47,11 @@ public class RegisterFragment extends Fragment {
         Button btnBack = view.findViewById(R.id.btn_register_back);
         Button btnRegister = view.findViewById(R.id.btn_register_sumbit);
 
-        // Povratak na Login
         btnBack.setOnClickListener(v -> {
             getParentFragmentManager().popBackStack();
         });
 
-        // Registracija
+
         btnRegister.setOnClickListener(v -> {
 
             // Sakrij prethodnu gresku
@@ -81,7 +81,7 @@ public class RegisterFragment extends Fragment {
                         @Override
                         public void onSuccess(boolean verificationEmailSent) {
 
-                            if (!isAdded()) {
+                            if (!isAdded() || getView() != view) {
                                 return;
                             }
 
@@ -101,7 +101,7 @@ public class RegisterFragment extends Fragment {
                         @Override
                         public void onError(String message) {
 
-                            if (!isAdded()) {
+                            if (!isAdded() || getView() != view) {
                                 return;
                             }
 
@@ -119,5 +119,6 @@ public class RegisterFragment extends Fragment {
                         }
                     });
         });
+
     }
 }
