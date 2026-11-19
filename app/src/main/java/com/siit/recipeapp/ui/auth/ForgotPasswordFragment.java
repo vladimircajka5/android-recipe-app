@@ -14,10 +14,15 @@ import android.widget.Button;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.siit.recipeapp.R;
-import com.siit.recipeapp.RecipeApplication;
+import android.widget.Toast;
+
+import com.siit.recipeapp.data.repository.AuthRepository;
+import com.siit.recipeapp.data.repository.firebase.FirebaseAuthRepository;
 import com.siit.recipeapp.domain.validation.AuthValidator;
 
 public class ForgotPasswordFragment extends Fragment {
+
+    private final AuthRepository authRepository = new FirebaseAuthRepository();
 
     public ForgotPasswordFragment() {
         // Required empty public constructor
@@ -49,26 +54,45 @@ public class ForgotPasswordFragment extends Fragment {
             getParentFragmentManager().popBackStack();
         });
         btnSubmit.setOnClickListener(v -> {
-            String address = email.getText() == null ? "" : email.getText().toString().trim();
+            String address = email.getText() == null
+                    ? ""
+                    : email.getText().toString().trim();
+
             emailLayout.setError(null);
+
             if (!AuthValidator.isValidEmail(address)) {
-                emailLayout.setError("Enter a valid email address");
+                emailLayout.setError("Enter a valid email address.");
                 return;
             }
+
             btnSubmit.setEnabled(false);
-            ((RecipeApplication) requireContext().getApplicationContext()).auth()
-                    .sendPasswordReset(address, new com.siit.recipeapp.data.remote.AuthManager.Callback<>() {
-                        @Override public void onSuccess(Void value) {
-                            if (isAdded()) {
-                                btnSubmit.setEnabled(true);
-                                emailLayout.setError("Password reset email sent");
+
+            authRepository.sendPasswordReset(
+                    address,
+                    new AuthRepository.OperationCallback() {
+                        @Override
+                        public void onSuccess() {
+                            if (!isAdded() || getView() != view) {
+                                return;
                             }
+
+                            btnSubmit.setEnabled(true);
+
+                            Toast.makeText(
+                                    requireContext(),
+                                    R.string.forgot_password_reset_requested,
+                                    Toast.LENGTH_LONG
+                            ).show();
                         }
-                        @Override public void onError(@NonNull Exception error) {
-                            if (isAdded()) {
-                                btnSubmit.setEnabled(true);
-                                emailLayout.setError(error.getMessage());
+
+                        @Override
+                        public void onError(String message) {
+                            if (!isAdded() || getView() != view) {
+                                return;
                             }
+
+                            btnSubmit.setEnabled(true);
+                            emailLayout.setError(message);
                         }
                     });
         });
