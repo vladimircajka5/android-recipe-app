@@ -31,7 +31,6 @@ public class RegisterFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_register, container, false);
     }
 
@@ -39,19 +38,27 @@ public class RegisterFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // ===== Povezivanje =====
+
         TextInputEditText etUsername = view.findViewById(R.id.et_register_username);
         TextInputEditText etEmail = view.findViewById(R.id.et_register_email);
         TextInputEditText etPassword = view.findViewById(R.id.et_register_password);
+
         TextView tvError = view.findViewById(R.id.tv_register_error);
 
         Button btnBack = view.findViewById(R.id.btn_register_back);
         Button btnRegister = view.findViewById(R.id.btn_register_sumbit);
 
+        // ===== Navigacija =====
+
+        // Povratak na Login
         btnBack.setOnClickListener(v -> {
             getParentFragmentManager().popBackStack();
         });
 
+        // ===== Funkcionalnosti =====
 
+        // Registracija korisnika
         btnRegister.setOnClickListener(v -> {
 
             // Sakrij prethodnu gresku
@@ -71,7 +78,7 @@ public class RegisterFragment extends Fragment {
                 return;
             }
 
-            // Onemoguci dugmad tokom registracije
+            // Blokiraj dugmad dok Firebase obradjuje zahtev
             btnRegister.setEnabled(false);
             btnBack.setEnabled(false);
 
@@ -80,45 +87,62 @@ public class RegisterFragment extends Fragment {
 
                         @Override
                         public void onSuccess(boolean verificationEmailSent) {
-
-                            if (!isAdded() || getView() != view) {
-                                return;
-                            }
-
-                            if (verificationEmailSent) {
-                                Toast.makeText(requireContext(),
-                                        R.string.register_verification_sent,
-                                        Toast.LENGTH_LONG).show();
-                            } else {
-                                Toast.makeText(requireContext(),
-                                        R.string.register_verification_failed,
-                                        Toast.LENGTH_LONG).show();
-                            }
-
-                            getParentFragmentManager().popBackStack();
+                            handleRegisterSuccess(view, verificationEmailSent);
                         }
 
                         @Override
                         public void onError(String message) {
-
-                            if (!isAdded() || getView() != view) {
-                                return;
-                            }
-
-                            btnRegister.setEnabled(true);
-                            btnBack.setEnabled(true);
-
-                            if (message != null
-                                    && message.contains("Username is already taken")) {
-                                tvError.setText(R.string.register_username_taken);
-                            } else {
-                                tvError.setText(R.string.register_failed_generic);
-                            }
-
-                            tvError.setVisibility(View.VISIBLE);
+                            handleRegisterError(
+                                    view, btnRegister, btnBack, tvError, message
+                            );
                         }
                     });
         });
+    }
 
+    // ===== Privatne metode =====
+
+    // Uspesna registracija
+    private void handleRegisterSuccess(View view, boolean verificationEmailSent) {
+
+        if (!isAdded() || getView() != view) {
+            return;
+        }
+
+        if (verificationEmailSent) {
+            Toast.makeText(requireContext(),
+                    R.string.register_verification_sent,
+                    Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(requireContext(),
+                    R.string.register_verification_failed,
+                    Toast.LENGTH_LONG).show();
+        }
+
+        getParentFragmentManager().popBackStack();
+    }
+
+    // Neuspesna registracija
+    private void handleRegisterError(View view,
+                                     Button btnRegister,
+                                     Button btnBack,
+                                     TextView tvError,
+                                     String message) {
+
+        if (!isAdded() || getView() != view) {
+            return;
+        }
+
+        btnRegister.setEnabled(true);
+        btnBack.setEnabled(true);
+
+        if (message != null
+                && message.contains("Username is already taken")) {
+            tvError.setText(R.string.register_username_taken);
+        } else {
+            tvError.setText(R.string.register_failed_generic);
+        }
+
+        tvError.setVisibility(View.VISIBLE);
     }
 }

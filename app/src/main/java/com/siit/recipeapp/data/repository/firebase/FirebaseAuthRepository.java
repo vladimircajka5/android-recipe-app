@@ -1,6 +1,9 @@
 package com.siit.recipeapp.data.repository.firebase;
 
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -167,8 +170,9 @@ public class FirebaseAuthRepository implements AuthRepository {
                 });
     }
 
+    // Slanje emaila za resetovanje lozinke
     @Override
-    public void sendPasswordReset(String email, OperationCallback callback) {
+    public void sendPasswordResetEmail(String email, PasswordCallback callback) {
         if (!AuthValidator.isValidEmail(email)) {
             callback.onError("Enter a valid email address.");
             return;
@@ -185,5 +189,51 @@ public class FirebaseAuthRepository implements AuthRepository {
     public void logout() {
         auth.signOut();
     }
+
+
+
+// ===== Promena lozinke =====
+
+    @Override
+    public void changePassword(String currentPassword, String newPassword,
+                               PasswordCallback callback) {
+
+        FirebaseUser user = auth.getCurrentUser();
+
+        // Provera da li je korisnik prijavljen
+        if (user == null || user.getEmail() == null) {
+            callback.onError("NO_USER");
+            return;
+        }
+
+        // Priprema podataka za ponovnu autentifikaciju
+        AuthCredential credential = EmailAuthProvider.getCredential(
+                user.getEmail(), currentPassword
+        );
+
+        // Provera trenutne lozinke
+        user.reauthenticate(credential)
+                .addOnSuccessListener(unused -> {
+
+                    // Postavljanje nove lozinke
+                    user.updatePassword(newPassword)
+                            .addOnSuccessListener(result -> {
+                                callback.onSuccess();
+                            })
+                            .addOnFailureListener(error -> {
+                                callback.onError("CHANGE_FAILED");
+                            });
+                })
+                .addOnFailureListener(error -> {
+
+                    // Neuspesna provera trenutne lozinke
+                    if (error instanceof FirebaseAuthInvalidCredentialsException) {
+                        callback.onError("WRONG_PASSWORD");
+                    } else {
+                        callback.onError("CHANGE_FAILED");
+                    }
+                });
+    }
+
 
 }
