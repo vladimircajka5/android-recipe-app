@@ -42,7 +42,13 @@ public final class ShoppingItemEditorFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View root, @Nullable Bundle state) {
-        viewModel = new ViewModelProvider(requireActivity(), new ShoppingViewModelFactory(requireContext())).get(ShoppingViewModel.class);
+        viewModel = new ViewModelProvider(
+                requireActivity(),
+                new ShoppingViewModelFactory(requireContext())
+        ).get(
+                ShoppingViewModelFactory.key(requireContext()),
+                ShoppingViewModel.class
+        );
         listId = requireArguments().getString(ShoppingScreenHelper.LIST_ID);
         String existingId = requireArguments().getString(ShoppingScreenHelper.ITEM_ID);
         editing = existingId != null;
