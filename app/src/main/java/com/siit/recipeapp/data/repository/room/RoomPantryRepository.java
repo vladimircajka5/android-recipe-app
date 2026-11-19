@@ -47,7 +47,7 @@ public final class RoomPantryRepository implements PantryRepository {
         if (!isActiveOwner()) {
             return Collections.emptyList();
         }
-        return mapItems(database.pantryDao().getAll());
+        return mapItems(database.pantryDao().getForOwner(ownerId));
     }
 
     @Override
