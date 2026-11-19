@@ -14,4 +14,13 @@ public interface AuthRepository {
     // Registracija korisnika
     void register(String username, String email, String password,
                   RegisterCallback callback);
+
+    // Rezultat prijave
+    interface LoginCallback {
+        void onSuccess();
+        void onError(String message);
+    }
+
+    // Prijava korisnika
+    void login(String email, String password, LoginCallback callback);
 }

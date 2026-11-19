@@ -127,4 +127,40 @@ public class FirebaseAuthRepository implements AuthRepository {
                 })
                 .addOnFailureListener(error -> callback.onError(error.getMessage()));
     }
+
+
+    @Override
+    public void login(String email, String password,
+                      AuthRepository.LoginCallback callback) {
+
+        auth.signInWithEmailAndPassword(email, password)
+                .addOnSuccessListener(result -> {
+
+                    FirebaseUser user = result.getUser();
+
+                    if (user == null) {
+                        auth.signOut();
+                        callback.onError("LOGIN_FAILED");
+                        return;
+                    }
+
+                    // Osvezi podatak o potvrdi email adrese
+                    user.reload().addOnCompleteListener(task -> {
+
+                        if (!task.isSuccessful()) {
+                            auth.signOut();
+                            callback.onError("LOGIN_FAILED");
+                        } else if (!user.isEmailVerified()) {
+                            auth.signOut();
+                            callback.onError("EMAIL_NOT_VERIFIED");
+                        } else {
+                            callback.onSuccess();
+                        }
+                    });
+                })
+                .addOnFailureListener(error -> {
+                    callback.onError("LOGIN_FAILED");
+                });
+    }
+
 }
