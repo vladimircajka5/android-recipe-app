@@ -36,3 +36,13 @@ Packages are created as features are implemented.
 - Shared data will be accessed through repositories.
 - Features should reuse shared models instead of defining duplicate entities.
 - Cross-feature dependencies should be kept minimal.
+
+## 4. Persistence and media
+- Room/SQLite is the relational offline store for personal pantry and shopping data.
+- Firestore is reserved for shared online data and synchronization.
+- Local changes are marked with SyncState.PENDING; remote synchronization can process those records when connectivity is available.
+- User-selected images are copied into app-internal storage and referenced by local URI. They are intentionally device-local because Firebase Storage is not available.
+- Recipe videos are represented by validated YouTube links rather than uploaded files.
+- Firestore synchronization writes pending pantry and shopping changes under the signed-in user's document and merges remote records using updatedAt.
+- Firebase Storage is not used. The Google Services Gradle plugin is applied only when a local google-services.json file is present.
+- Deletes use Firestore tombstone documents so another device can receive the deletion during a later synchronization.

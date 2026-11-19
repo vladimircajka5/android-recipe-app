@@ -2,6 +2,10 @@ plugins {
     alias(libs.plugins.android.application)
 }
 
+if (file("google-services.json").exists()) {
+    apply(plugin = "com.google.gms.google-services")
+}
+
 android {
     namespace = "com.siit.recipeapp"
     compileSdk {
@@ -45,4 +49,16 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.ext.junit)
+
+    // Firebase BoM
+    implementation(platform(libs.firebase.bom))
+
+    // Firebase services
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
+    //implementation(libs.firebase.storage)
+
+    // Room (for local data and offline mode)
+    implementation(libs.room.runtime)
+    annotationProcessor(libs.room.compiler)
 }

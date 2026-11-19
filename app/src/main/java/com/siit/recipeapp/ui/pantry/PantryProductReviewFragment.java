@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.checkbox.MaterialCheckBox;
@@ -40,40 +41,67 @@ public final class PantryProductReviewFragment extends Fragment {
     private String selectedIngredientId;
     private LocalDate expiry;
 
-    public PantryProductReviewFragment() { super(R.layout.fragment_pantry_product_review); }
+    public PantryProductReviewFragment() {
+        super(R.layout.fragment_pantry_product_review);
+    }
 
-    @Override public void onViewCreated(@NonNull View root, @Nullable Bundle state) {
-        viewModel = new ViewModelProvider(requireActivity(), new PantryViewModelFactory()).get(PantryViewModel.class);
+    @Override
+    public void onViewCreated(@NonNull View root, @Nullable Bundle state) {
+        viewModel = new ViewModelProvider(
+                requireActivity(),
+                new PantryViewModelFactory(requireContext())
+        ).get(
+                PantryViewModelFactory.key(requireContext()),
+                PantryViewModel.class
+        );
         ingredients.addAll(viewModel.getIngredients());
         units.addAll(PantryPreviewData.UNITS);
         Bundle args = getArguments() == null ? Bundle.EMPTY : getArguments();
-        EditText barcode = root.findViewById(R.id.product_barcode); barcode.setText(args.getString(ARG_BARCODE, ""));
-        ((EditText) root.findViewById(R.id.product_name)).setText(args.getString(ARG_NAME, ""));
-        ((EditText) root.findViewById(R.id.product_brand)).setText(args.getString(ARG_BRAND, ""));
-        if (args.containsKey(ARG_QUANTITY)) ((EditText) root.findViewById(R.id.product_quantity)).setText(Double.toString(args.getDouble(ARG_QUANTITY)));
+        showLookupFields(root, args);
         setupUnits(root, args.getString(ARG_UNIT));
         setupIngredients(root, args.getString(ARG_NAME));
         setupCategories(root);
-        root.findViewById(R.id.product_create_ingredient).setOnClickListener(v -> updateIngredientMode(root));
-        root.findViewById(R.id.product_date).setOnClickListener(v -> chooseDate(root));
-        root.findViewById(R.id.product_clear_date).setOnClickListener(v -> { expiry = null; updateDate(root); });
-        root.findViewById(R.id.product_cancel).setOnClickListener(v -> getParentFragmentManager().popBackStack("pantry-scanner", androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE));
-        root.findViewById(R.id.product_save).setOnClickListener(v -> save(root));
+        setupReviewActions(root);
         ((TextView) root.findViewById(R.id.product_review_result)).setText(args.containsKey(ARG_NAME)
                 ? R.string.product_review_found : R.string.product_review_not_found);
         updateIngredientMode(root);
     }
 
+    private void showLookupFields(View root, Bundle args) {
+        EditText barcode = root.findViewById(R.id.product_barcode);
+        barcode.setText(args.getString(ARG_BARCODE, ""));
+        ((EditText) root.findViewById(R.id.product_name)).setText(args.getString(ARG_NAME, ""));
+        ((EditText) root.findViewById(R.id.product_brand)).setText(args.getString(ARG_BRAND, ""));
+        if (args.containsKey(ARG_QUANTITY)) {
+            EditText quantity = root.findViewById(R.id.product_quantity);
+            quantity.setText(Double.toString(args.getDouble(ARG_QUANTITY)));
+        }
+    }
+
+    private void setupReviewActions(View root) {
+        root.findViewById(R.id.product_create_ingredient).setOnClickListener(v -> updateIngredientMode(root));
+        root.findViewById(R.id.product_date).setOnClickListener(v -> chooseDate(root));
+        root.findViewById(R.id.product_clear_date).setOnClickListener(v -> { expiry = null; updateDate(root); });
+        root.findViewById(R.id.product_cancel).setOnClickListener(v -> getParentFragmentManager().popBackStack("pantry-scanner", FragmentManager.POP_BACK_STACK_INCLUSIVE));
+        root.findViewById(R.id.product_save).setOnClickListener(v -> save(root));
+    }
+
     private void setupUnits(View root, String selectedUnit) {
-        List<String> labels = new ArrayList<>(); labels.add(getString(R.string.pantry_no_unit));
+        List<String> labels = new ArrayList<>();
+        labels.add(getString(R.string.pantry_no_unit));
         int selected = 0;
         for (int i = 0; i < units.size(); i++) {
-            MeasurementUnit unit = units.get(i); labels.add(unit.toString());
-            if (unit.getId().equals(selectedUnit)) selected = i + 1;
+            MeasurementUnit unit = units.get(i);
+            labels.add(unit.toString());
+            if (unit.getId().equals(selectedUnit)) {
+                selected = i + 1;
+            }
         }
         Spinner spinner = root.findViewById(R.id.product_unit);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, labels);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); spinner.setAdapter(adapter); spinner.setSelection(selected);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setSelection(selected);
     }
 
     private void setupIngredients(View root, String productName) {
@@ -85,12 +113,18 @@ public final class PantryProductReviewFragment extends Fragment {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override public void onItemSelected(AdapterView<?> parent, View row, int position, long id) {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View row, int position, long id) {
                 selectedIngredientId = position == 0 ? null : ingredients.get(position - 1).getId();
             }
-            @Override public void onNothingSelected(AdapterView<?> parent) { selectedIngredientId = null; }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                selectedIngredientId = null;
+            }
         });
-        if (productName == null) return;
+        if (productName == null) {
+            return;
+        }
         String normalized = productName.toLowerCase(Locale.ROOT);
         for (int i = 0; i < ingredients.size(); i++) {
             Ingredient candidate = ingredients.get(i);
@@ -110,7 +144,8 @@ public final class PantryProductReviewFragment extends Fragment {
         Spinner spinner = root.findViewById(R.id.product_category);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(requireContext(), R.array.ingredient_categories,
                 android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item); spinner.setAdapter(adapter);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
     }
 
     private void updateIngredientMode(View root) {
@@ -138,55 +173,72 @@ public final class PantryProductReviewFragment extends Fragment {
     private void save(View root) {
         EditText codeField = root.findViewById(R.id.product_barcode);
         EditText nameField = root.findViewById(R.id.product_name);
+        EditText quantityField = root.findViewById(R.id.product_quantity);
         EditText brandField = root.findViewById(R.id.product_brand);
         String code = codeField.getText().toString().trim();
-        if (code.isEmpty()) { codeField.setError(getString(R.string.barcode_required)); return; }
-        if (!code.matches("[0-9]{8,14}")) { codeField.setError(getString(R.string.barcode_invalid)); return; }
+        if (code.isEmpty()) {
+            codeField.setError(getString(R.string.barcode_required));
+            return;
+        }
+        if (!code.matches("[0-9]{8,14}")) {
+            codeField.setError(getString(R.string.barcode_invalid));
+            return;
+        }
         if (viewModel.findProductByBarcode(code) != null) {
-            codeField.setError(getString(R.string.product_barcode_duplicate)); return;
+            codeField.setError(getString(R.string.product_barcode_duplicate));
+            return;
         }
 
         Double packageQuantity = null;
-        String raw = ((EditText) root.findViewById(R.id.product_quantity)).getText().toString().trim();
+        String raw = quantityField.getText().toString().trim();
         if (!raw.isEmpty()) {
             try { packageQuantity = Double.parseDouble(raw.replace(',', '.')); }
             catch (NumberFormatException invalid) {
-                ((EditText) root.findViewById(R.id.product_quantity)).setError(getString(R.string.pantry_quantity_invalid)); return;
+                quantityField.setError(getString(R.string.pantry_quantity_invalid));
+                return;
             }
             if (!Double.isFinite(packageQuantity) || packageQuantity <= 0) {
-                ((EditText) root.findViewById(R.id.product_quantity)).setError(getString(R.string.pantry_quantity_invalid)); return;
+                quantityField.setError(getString(R.string.pantry_quantity_invalid));
+                return;
             }
         }
         String unitId = selectedUnit(root);
         if (packageQuantity != null && unitId == null) {
-            ((EditText) root.findViewById(R.id.product_quantity)).setError(getString(R.string.pantry_quantity_needs_unit)); return;
+            quantityField.setError(getString(R.string.pantry_quantity_needs_unit));
+            return;
         }
 
         boolean create = ((MaterialCheckBox) root.findViewById(R.id.product_create_ingredient)).isChecked();
         String ingredientId;
         if (create) {
             String name = nameField.getText().toString().trim();
-            if (name.isEmpty()) { nameField.setError(getString(R.string.product_name_required)); return; }
+            if (name.isEmpty()) {
+                nameField.setError(getString(R.string.product_name_required));
+                return;
+            }
             String[] categoryIds = getResources().getStringArray(R.array.ingredient_category_ids);
             int categoryIndex = ((Spinner) root.findViewById(R.id.product_category)).getSelectedItemPosition();
             ingredientId = UUID.randomUUID().toString();
             viewModel.saveIngredient(new Ingredient(ingredientId, name, categoryIds[categoryIndex], unitId, IngredientKind.BRANDED));
         } else {
             if (selectedIngredientId == null) {
-                ((TextView) root.findViewById(R.id.product_suggestion)).setText(R.string.product_choose_ingredient_error); return;
+                ((TextView) root.findViewById(R.id.product_suggestion)).setText(R.string.product_choose_ingredient_error);
+                return;
             }
             ingredientId = selectedIngredientId;
         }
 
         String brand = brandField.getText().toString().trim();
-        if (brand.isEmpty()) brand = null;
+        if (brand.isEmpty()) {
+            brand = null;
+        }
         String productId = UUID.randomUUID().toString();
         Product product = new Product(productId, code, brand, packageQuantity, unitId, null, ingredientId);
         PantryItem item = new PantryItem(UUID.randomUUID().toString(), PantryPreviewData.OWNER_ID,
                 ingredientId, productId, brand, 1.0, "piece", expiry);
         viewModel.saveProduct(product);
         viewModel.saveItem(item);
-        getParentFragmentManager().popBackStack("pantry-scanner", androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        getParentFragmentManager().popBackStack("pantry-scanner", FragmentManager.POP_BACK_STACK_INCLUSIVE);
     }
 
     private String selectedUnit(View root) {

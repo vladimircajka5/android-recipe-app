@@ -12,7 +12,9 @@ import android.widget.Toast;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
 import androidx.camera.core.CameraSelector;
+import androidx.camera.core.ExperimentalGetImage;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageProxy;
 import androidx.camera.core.Preview;
@@ -51,31 +53,58 @@ public final class BarcodeScannerFragment extends Fragment {
 
     private final androidx.activity.result.ActivityResultLauncher<String> permissionRequest =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), granted -> {
-                if (granted) startCamera(); else showManualOnly();
+                if (granted) {
+                    startCamera();
+                }
+                else showManualOnly();
             });
 
-    public BarcodeScannerFragment() { super(R.layout.fragment_barcode_scanner); }
+    public BarcodeScannerFragment() {
+        super(R.layout.fragment_barcode_scanner);
+    }
 
-    @Override public void onViewCreated(@NonNull View root, @Nullable Bundle state) {
-        viewModel = new ViewModelProvider(requireActivity(), new PantryViewModelFactory()).get(PantryViewModel.class);
+    @Override
+    public void onViewCreated(@NonNull View root, @Nullable Bundle state) {
+        viewModel = new ViewModelProvider(
+                requireActivity(),
+                new PantryViewModelFactory(requireContext())
+        ).get(
+                PantryViewModelFactory.key(requireContext()),
+                PantryViewModel.class
+        );
         previewView = root.findViewById(R.id.barcode_preview);
         status = root.findViewById(R.id.barcode_status);
         root.findViewById(R.id.barcode_cancel).setOnClickListener(v -> getParentFragmentManager().popBackStack());
         root.findViewById(R.id.barcode_manual_continue).setOnClickListener(v -> {
-            String code = ((EditText) root.findViewById(R.id.barcode_manual_input)).getText().toString().trim();
-            if (code.isEmpty()) { ((EditText) root.findViewById(R.id.barcode_manual_input)).setError(getString(R.string.barcode_required)); return; }
-            handleBarcode(code);
+            submitManualBarcode(root);
         });
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) startCamera();
-        else permissionRequest.launch(Manifest.permission.CAMERA);
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            startCamera();
+        } else {
+            permissionRequest.launch(Manifest.permission.CAMERA);
+        }
+    }
+
+    private void submitManualBarcode(View root) {
+        EditText input = root.findViewById(R.id.barcode_manual_input);
+        String barcode = input.getText().toString().trim();
+        if (barcode.isEmpty()) {
+            input.setError(getString(R.string.barcode_required));
+            return;
+        }
+        handleBarcode(barcode);
     }
 
     private void startCamera() {
-        if (!isAdded() || previewView == null) return;
+        if (!isAdded() || previewView == null) {
+            return;
+        }
         status.setText(R.string.barcode_camera_starting);
         ListenableFuture<ProcessCameraProvider> future = ProcessCameraProvider.getInstance(requireContext());
         future.addListener(() -> {
-            if (!isAdded() || previewView == null) return;
+            if (!isAdded() || previewView == null) {
+                return;
+            }
             try {
                 cameraProvider = future.get();
                 Preview preview = new Preview.Builder().build();
@@ -85,67 +114,113 @@ public final class BarcodeScannerFragment extends Fragment {
                 cameraProvider.unbindAll();
                 cameraProvider.bindToLifecycle(getViewLifecycleOwner(), CameraSelector.DEFAULT_BACK_CAMERA, preview, analysis);
                 status.setText(R.string.barcode_camera_ready);
-            } catch (Exception error) { showManualOnly(); }
+            } catch (Exception error) {
+                showManualOnly();
+            }
         }, ContextCompat.getMainExecutor(requireContext()));
     }
 
+    @OptIn(markerClass = ExperimentalGetImage.class)
     private void analyze(@NonNull ImageProxy proxy) {
         android.media.Image media = proxy.getImage();
-        if (media == null || handled.get()) { proxy.close(); return; }
+        if (media == null || handled.get()) {
+            proxy.close();
+            return;
+        }
         scanner.process(InputImage.fromMediaImage(media, proxy.getImageInfo().getRotationDegrees()))
                 .addOnSuccessListener(codes -> {
                     if (!codes.isEmpty() && handled.compareAndSet(false, true)) {
                         String code = codes.get(0).getRawValue();
-                        if (code != null) requireActivity().runOnUiThread(() -> handleBarcode(code)); else handled.set(false);
+                        if (code != null) {
+                            requireActivity().runOnUiThread(() -> handleBarcode(code));
+                        } else {
+                            handled.set(false);
+                        }
                     }
                 }).addOnCompleteListener(task -> proxy.close());
     }
 
     private void handleBarcode(String barcode) {
-        if (cameraProvider != null) cameraProvider.unbindAll();
+        if (cameraProvider != null) {
+            cameraProvider.unbindAll();
+        }
         handled.set(true);
-        if (status != null) status.setText(R.string.barcode_lookup_loading);
+        if (status != null) {
+            status.setText(R.string.barcode_lookup_loading);
+        }
         Product existing = viewModel.findProductByBarcode(barcode);
         if (existing != null) {
-            PantryItem item = viewModel.findItemByProductId(existing.getId());
-            if (item != null) {
-                new MaterialAlertDialogBuilder(requireContext()).setTitle(R.string.barcode_duplicate_title)
-                        .setMessage(R.string.barcode_duplicate_message)
-                        .setNegativeButton(R.string.pantry_cancel, (dialog, which) -> { handled.set(false); startCamera(); })
-                        .setPositiveButton(R.string.barcode_add_package, (dialog, which) -> {
-                            double count = item.getQuantity() == null ? 1.0 : item.getQuantity() + 1.0;
-                            viewModel.saveItem(new PantryItem(item.getId(), item.getOwnerId(), item.getIngredientId(), item.getProductId(), item.getBrand(), count, "piece", item.getExpirationDate()));
-                            Toast.makeText(requireContext(), R.string.barcode_package_added, Toast.LENGTH_SHORT).show();
-                            getParentFragmentManager().popBackStack();
-                        }).show();
-            } else {
-                viewModel.saveItem(new PantryItem(UUID.randomUUID().toString(), "pantry-preview", existing.getIngredientId(), existing.getId(), existing.getBrandName(), 1.0, "piece", null));
-                Toast.makeText(requireContext(), R.string.barcode_product_added, Toast.LENGTH_SHORT).show();
-                getParentFragmentManager().popBackStack();
-            }
+            addKnownProduct(existing);
             return;
         }
+        lookUpProduct(barcode);
+    }
+
+    private void addKnownProduct(Product existing) {
+        PantryItem item = viewModel.findItemByProductId(existing.getId());
+        if (item != null) {
+            new MaterialAlertDialogBuilder(requireContext()).setTitle(R.string.barcode_duplicate_title)
+                    .setMessage(R.string.barcode_duplicate_message)
+                    .setNegativeButton(R.string.pantry_cancel, (dialog, which) -> { handled.set(false); startCamera(); })
+                    .setPositiveButton(R.string.barcode_add_package, (dialog, which) -> {
+                        double count = item.getQuantity() == null ? 1.0 : item.getQuantity() + 1.0;
+                        viewModel.saveItem(new PantryItem(item.getId(), item.getOwnerId(), item.getIngredientId(), item.getProductId(), item.getBrand(), count, "piece", item.getExpirationDate()));
+                        Toast.makeText(requireContext(), R.string.barcode_package_added, Toast.LENGTH_SHORT).show();
+                        getParentFragmentManager().popBackStack();
+                    }).show();
+        } else {
+            viewModel.saveItem(new PantryItem(UUID.randomUUID().toString(), "pantry-preview", existing.getIngredientId(), existing.getId(), existing.getBrandName(), 1.0, "piece", null));
+            Toast.makeText(requireContext(), R.string.barcode_product_added, Toast.LENGTH_SHORT).show();
+            getParentFragmentManager().popBackStack();
+        }
+    }
+
+    private void lookUpProduct(String barcode) {
         lookupExecutor.execute(() -> {
             OpenFoodFactsLookupService.Result result = new OpenFoodFactsLookupService().lookup(barcode);
-            mainHandler.post(() -> {
-                if (!isAdded()) return;
-                Bundle args = new Bundle();
-                args.putString(PantryProductReviewFragment.ARG_BARCODE, barcode);
-                if (result != null) {
-                    args.putString(PantryProductReviewFragment.ARG_NAME, result.name);
-                    args.putString(PantryProductReviewFragment.ARG_BRAND, result.brand);
-                    if (result.packageQuantity != null) args.putDouble(PantryProductReviewFragment.ARG_QUANTITY, result.packageQuantity);
-                    args.putString(PantryProductReviewFragment.ARG_UNIT, result.unitId);
-                }
-                PantryProductReviewFragment review = new PantryProductReviewFragment();
-                review.setArguments(args);
-                getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, review)
-                        .addToBackStack("pantry-product-review").commit();
-            });
+            mainHandler.post(() -> openProductReview(barcode, result));
         });
     }
 
-    private void showManualOnly() { if (status != null) status.setText(R.string.barcode_camera_unavailable); }
-    @Override public void onDestroyView() { if (cameraProvider != null) cameraProvider.unbindAll(); previewView = null; status = null; super.onDestroyView(); }
-    @Override public void onDestroy() { scanner.close(); cameraExecutor.shutdown(); lookupExecutor.shutdown(); super.onDestroy(); }
+    private void openProductReview(String barcode, OpenFoodFactsLookupService.Result result) {
+        if (!isAdded()) {
+            return;
+        }
+        Bundle args = new Bundle();
+        args.putString(PantryProductReviewFragment.ARG_BARCODE, barcode);
+        if (result != null) {
+            args.putString(PantryProductReviewFragment.ARG_NAME, result.name);
+            args.putString(PantryProductReviewFragment.ARG_BRAND, result.brand);
+            if (result.packageQuantity != null) {
+                args.putDouble(PantryProductReviewFragment.ARG_QUANTITY, result.packageQuantity);
+            }
+            args.putString(PantryProductReviewFragment.ARG_UNIT, result.unitId);
+        }
+        PantryProductReviewFragment review = new PantryProductReviewFragment();
+        review.setArguments(args);
+        getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, review)
+                .addToBackStack("pantry-product-review").commit();
+    }
+
+    private void showManualOnly() {
+        if (status != null) {
+            status.setText(R.string.barcode_camera_unavailable);
+        }
+    }
+    @Override
+    public void onDestroyView() {
+        if (cameraProvider != null) {
+            cameraProvider.unbindAll();
+        }
+        previewView = null;
+        status = null;
+        super.onDestroyView();
+    }
+    @Override
+    public void onDestroy() {
+        scanner.close();
+        cameraExecutor.shutdown();
+        lookupExecutor.shutdown();
+        super.onDestroy();
+    }
 }

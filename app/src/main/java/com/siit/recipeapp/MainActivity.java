@@ -28,6 +28,8 @@ import com.siit.recipeapp.ui.pantry.PantryFragment;
 import com.siit.recipeapp.ui.pantry.PantryEditorFragment;
 import com.siit.recipeapp.ui.pantry.BarcodeScannerFragment;
 import com.siit.recipeapp.ui.pantry.PantryProductReviewFragment;
+import android.widget.Toast;
+import com.siit.recipeapp.data.remote.UserDataSession;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -66,7 +68,31 @@ public class MainActivity extends AppCompatActivity {
 
         // Promena tabova
         bottomNavigation.setOnItemSelectedListener(item -> {
+            boolean requiresAccount =
+                    item.getItemId() == R.id.nav_pantry
+                            || item.getItemId() == R.id.nav_shopping;
 
+            if (requiresAccount
+                    && UserDataSession.currentOwnerId(this) == null) {
+
+                Toast.makeText(
+                        this,
+                        "Sign in to use pantry and shopping lists.",
+                        Toast.LENGTH_SHORT
+                ).show();
+
+                getSupportFragmentManager().popBackStackImmediate(
+                        null,
+                        FragmentManager.POP_BACK_STACK_INCLUSIVE
+                );
+
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, new LoginFragment())
+                        .commit();
+
+                return false;
+            }
             Fragment fragment;
 
             if (item.getItemId() == R.id.nav_home) {

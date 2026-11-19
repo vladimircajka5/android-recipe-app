@@ -13,6 +13,11 @@
     <string name="login_forgot_password">Forgot Password?</string>
     <string name="login_guest">Continue as Guest</string>
 
+    <string name="login_invalid_data">Enter your email and password.</string>
+    <string name="login_failed">Invalid email or password, or login failed.</string>
+    <string name="login_email_not_verified">Please verify your email before logging in.</string>
+    <string name="login_success">Successfully logged in!</string>
+
     <!-- Register Fragment -->
     <string name="register_title">You will need account</string>
     <string name="register_subtitle">Register to continue</string>
@@ -21,6 +26,14 @@
     <string name="register_username_hint">Enter your new username</string>
     <string name="register_email_hint">Enter your email</string>
     <string name="register_password_hint">Enter password</string>
+
+    <string name="register_verification_sent">Account created! Check your email to verify your account.</string>
+    <string name="register_verification_failed">Account created, but verification email could not be sent.</string>
+    <string name="register_failed">Registration failed: %1$s</string>
+
+    <string name="register_invalid_data">Please enter a valid username, email and password (at least 6 characters).</string>
+    <string name="register_username_taken">This username is already taken.</string>
+    <string name="register_failed_generic">Registration failed. Check your details and try again.</string>
 
     <!-- Profile Fragment -->
     <string name="profile_title">My Profile</string>
@@ -65,6 +78,7 @@
     <string name="forgot_password_email">Email Address</string>
     <string name="forgot_password_submit">Send Reset Email</string>
     <string name="forgot_password_cancel">Cancel</string>
+    <string name="forgot_password_reset_requested">If an account exists for this email, you will receive password reset instructions.</string>
 
     <!-- Recipe List -->
     <string name="recipe_list_title">My Recipes</string>
@@ -180,6 +194,7 @@
     <string name="pantry_select_ingredient">Choose an ingredient from the catalog suggestions.</string>
     <string name="pantry_quantity_invalid">Enter a number greater than zero, or leave quantity empty.</string>
     <string name="pantry_quantity_needs_unit">Choose a measurement unit for this quantity.</string>
+    <string name="pantry_save_failed">Could not save this item. Please try again.</string>
 
 
     <!-- Shopping lists -->
