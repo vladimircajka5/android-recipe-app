@@ -163,4 +163,10 @@ public class FirebaseAuthRepository implements AuthRepository {
                 });
     }
 
+    // Odjava korisnika
+    @Override
+    public void logout() {
+        auth.signOut();
+    }
+
 }

@@ -23,4 +23,7 @@ public interface AuthRepository {
 
     // Prijava korisnika
     void login(String email, String password, LoginCallback callback);
+
+    // Odjava korisnika
+    void logout();
 }
