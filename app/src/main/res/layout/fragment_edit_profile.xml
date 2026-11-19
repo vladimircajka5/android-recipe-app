@@ -47,28 +47,41 @@
                 android:layout_gravity="center_horizontal"
                 android:contentDescription="@string/edit_profile_avatar_description"
                 android:scaleType="centerCrop"
-                tools:src="@tools:sample/avatars" />
+                android:src="@drawable/ic_avatar_placeholder" />
 
-            <Button
-                style="@style/SecondaryButton"
-                android:id="@+id/btn_edit_profile_photo"
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/AppInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/edit_profile_photo" />
+                android:layout_marginTop="16dp"
+                android:hint="@string/edit_profile_image_url">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et_edit_profile_image_url"
+                    style="@style/AppEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textUri"
+                    android:singleLine="true" />
+
+            </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_edit_profile_country"
+                style="@style/AppInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/AppInput"
-                android:hint="@string/edit_profile_country" >
+                android:hint="@string/edit_profile_country"
+                app:endIconMode="dropdown_menu">
 
-                <com.google.android.material.textfield.TextInputEditText
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
                     android:id="@+id/et_edit_profile_country"
                     style="@style/AppEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    />
+                    android:inputType="text"
+                    android:singleLine="true" />
+
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -115,6 +128,14 @@
                     android:inputType="textMultiLine"
                     android:minLines="3" />
             </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/tv_edit_profile_error"
+                style="@style/AppErrorText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:visibility="gone" />
 
             <Button
                 android:id="@+id/btn_edit_profile_cancel"
