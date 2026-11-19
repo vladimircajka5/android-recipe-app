@@ -141,64 +141,198 @@ public final class FirestoreSyncManager {
     private void pullRemote(String userId, Callback callback) {
         com.google.android.gms.tasks.Task<QuerySnapshot> pantryTask = firestore
                 .collection("users").document(userId).collection("pantry").get();
+
         com.google.android.gms.tasks.Task<QuerySnapshot> listsTask = firestore
                 .collection("users").document(userId).collection("shoppingLists").get();
+
         com.google.android.gms.tasks.Task<QuerySnapshot> itemsTask = firestore
                 .collection("users").document(userId).collection("shoppingItems").get();
 
-        com.google.android.gms.tasks.Tasks.whenAllSuccess(pantryTask, listsTask, itemsTask)
+        com.google.android.gms.tasks.Tasks
+                .whenAllSuccess(pantryTask, listsTask, itemsTask)
                 .addOnSuccessListener(results -> {
-                    mergePantry((QuerySnapshot) results.get(0));
-                    mergeLists((QuerySnapshot) results.get(1));
-                    mergeItems((QuerySnapshot) results.get(2));
+                    try {
+                        database.runInTransaction(() -> {
+                            if (!userId.equals(
+                                    UserDataSession.currentOwnerId(context))) {
+                                throw new IllegalStateException(
+                                        "Account changed during synchronization.");
+                            }
+
+                            mergePantry(userId, (QuerySnapshot) results.get(0));
+                            mergeLists(userId, (QuerySnapshot) results.get(1));
+                            mergeItems(userId, (QuerySnapshot) results.get(2));
+                        });
+                    } catch (Exception error) {
+                        callback.onError(error);
+                        return;
+                    }
+
                     callback.onComplete();
                 })
                 .addOnFailureListener(callback::onError);
     }
 
-    private void mergePantry(QuerySnapshot snapshot) {
+    private void mergePantry(String userId, QuerySnapshot snapshot) {
         for (DocumentSnapshot document : snapshot.getDocuments()) {
-            if (Boolean.TRUE.equals(document.getBoolean("deleted"))) {
-                deleteLocalPantryIfOlder(document);
+            PantryEntity local = database.pantryDao()
+                    .findById(document.getId());
+
+            if (local != null) {
+                requireSameOwner(userId, local.ownerId);
+            }
+
+            if (!canApplyRemote(
+                    userId,
+                    "pantry",
+                    document,
+                    local == null ? null : local.syncState,
+                    local == null ? 0 : local.updatedAt)) {
                 continue;
             }
+
+            if (Boolean.TRUE.equals(document.getBoolean("deleted"))) {
+                if (local != null) {
+                    database.pantryDao().deleteById(local.id);
+                }
+                continue;
+            }
+
             PantryEntity remote = pantryEntity(document);
-            PantryEntity local = database.pantryDao().getAll().stream()
-                    .filter(item -> item.id.equals(remote.id)).findFirst().orElse(null);
-            if (local == null || remote.updatedAt > local.updatedAt
-                    || "SYNCED".equals(local.syncState)) {
-                database.pantryDao().upsert(remote);
-            }
+
+            remote.ownerId = userId;
+
+            database.pantryDao().upsert(remote);
         }
     }
 
-    private void mergeLists(QuerySnapshot snapshot) {
+    private void mergeLists(String userId, QuerySnapshot snapshot) {
         for (DocumentSnapshot document : snapshot.getDocuments()) {
-            if (Boolean.TRUE.equals(document.getBoolean("deleted"))) {
-                deleteLocalListIfOlder(document);
+            ShoppingListEntity local = database.shoppingDao()
+                    .findList(document.getId());
+
+            if (local != null) {
+                requireSameOwner(userId, local.ownerId);
+            }
+
+            if (!canApplyRemote(
+                    userId,
+                    "shoppingLists",
+                    document,
+                    local == null ? null : local.syncState,
+                    local == null ? 0 : local.updatedAt)) {
                 continue;
             }
+
+            if (Boolean.TRUE.equals(document.getBoolean("deleted"))) {
+                if (local != null) {
+                    if (hasPendingItems(userId, local.id)) {
+                        continue;
+                    }
+
+                    database.shoppingDao().deleteItemsForList(local.id);
+                    database.shoppingDao().deleteList(local.id);
+                }
+                continue;
+            }
+
             ShoppingListEntity remote = listEntity(document);
-            ShoppingListEntity local = database.shoppingDao().findList(remote.id);
-            if (local == null || remote.updatedAt > local.updatedAt
-                    || "SYNCED".equals(local.syncState)) {
-                database.shoppingDao().upsertList(remote);
-            }
+            remote.ownerId = userId;
+
+            database.shoppingDao().upsertList(remote);
         }
     }
 
-    private void mergeItems(QuerySnapshot snapshot) {
+    private void mergeItems(String userId, QuerySnapshot snapshot) {
         for (DocumentSnapshot document : snapshot.getDocuments()) {
-            if (Boolean.TRUE.equals(document.getBoolean("deleted"))) {
-                deleteLocalItemIfOlder(document);
+            ShoppingListItemEntity local = database.shoppingDao()
+                    .findItem(document.getId());
+
+            if (local != null
+                    && database.shoppingDao()
+                    .findItemForOwner(local.id, userId) == null) {
+                throw new IllegalStateException(
+                        "Shopping item ID is not owned by this account.");
+            }
+
+            if (!canApplyRemote(
+                    userId,
+                    "shoppingItems",
+                    document,
+                    local == null ? null : local.syncState,
+                    local == null ? 0 : local.updatedAt)) {
                 continue;
             }
-            ShoppingListItemEntity remote = itemEntity(document);
-            ShoppingListItemEntity local = database.shoppingDao().findItem(remote.id);
-            if (local == null || remote.updatedAt > local.updatedAt
-                    || "SYNCED".equals(local.syncState)) {
-                database.shoppingDao().upsertItem(remote);
+
+            if (Boolean.TRUE.equals(document.getBoolean("deleted"))) {
+                if (local != null) {
+                    database.shoppingDao().deleteItem(local.id);
+                }
+                continue;
             }
+
+            ShoppingListItemEntity remote = itemEntity(document);
+
+            if (remote.shoppingListId == null
+                    || hasPendingDeletion(
+                    userId, "shoppingLists", remote.shoppingListId)) {
+                continue;
+            }
+
+            ShoppingListEntity parent = database.shoppingDao()
+                    .findListForOwner(remote.shoppingListId, userId);
+
+            if (parent == null) {
+                continue;
+            }
+
+            database.shoppingDao().upsertItem(remote);
+        }
+    }
+
+    private boolean canApplyRemote(
+            String userId,
+            String collection,
+            DocumentSnapshot document,
+            String localState,
+            long localUpdatedAt) {
+
+        if (SyncState.PENDING.name().equals(localState)) {
+            return false;
+        }
+
+        if (hasPendingDeletion(userId, collection, document.getId())) {
+            return false;
+        }
+
+        return longValue(document, "updatedAt") >= localUpdatedAt;
+    }
+
+    private boolean hasPendingDeletion(
+            String userId, String collection, String documentId) {
+
+        return database.syncDao().findTombstone(
+                collection + "/" + documentId,
+                userId
+        ) != null;
+    }
+
+    private boolean hasPendingItems(String userId, String listId) {
+        for (ShoppingListItemEntity item :
+                database.shoppingDao().itemsForOwner(listId, userId)) {
+
+            if (SyncState.PENDING.name().equals(item.syncState)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void requireSameOwner(String userId, String localOwnerId) {
+        if (!userId.equals(localOwnerId)) {
+            throw new IllegalStateException(
+                    "Local record ID belongs to another owner.");
         }
     }
 
@@ -223,28 +357,6 @@ public final class FirestoreSyncManager {
         values.put("deleted", true);
         values.put("updatedAt", tombstone.updatedAt);
         return values;
-    }
-
-    private void deleteLocalPantryIfOlder(DocumentSnapshot document) {
-        PantryEntity local = database.pantryDao().getAll().stream()
-                .filter(item -> item.id.equals(document.getId())).findFirst().orElse(null);
-        if (local == null || local.updatedAt < longValue(document, "updatedAt")) {
-            database.pantryDao().deleteById(document.getId());
-        }
-    }
-
-    private void deleteLocalListIfOlder(DocumentSnapshot document) {
-        ShoppingListEntity local = database.shoppingDao().findList(document.getId());
-        if (local == null || local.updatedAt < longValue(document, "updatedAt")) {
-            database.shoppingDao().deleteListById(document.getId());
-        }
-    }
-
-    private void deleteLocalItemIfOlder(DocumentSnapshot document) {
-        ShoppingListItemEntity local = database.shoppingDao().findItem(document.getId());
-        if (local == null || local.updatedAt < longValue(document, "updatedAt")) {
-            database.shoppingDao().deleteItemById(document.getId());
-        }
     }
 
     private Map<String, Object> listMap(ShoppingListEntity list) {
