@@ -77,9 +77,24 @@ public final class FirestoreSyncManager {
         List<ShoppingListEntity> lists = database.shoppingDao().getPendingLists(userId);
         List<ShoppingListItemEntity> items = database.shoppingDao().getPendingItems(userId);
         List<SyncTombstoneEntity> tombstones = database.syncDao().getTombstones(userId);
+        UserProfileEntity profile = database.userProfileDao().getPending(userId);
 
 
         com.google.android.gms.tasks.Task<Void> task = com.google.android.gms.tasks.Tasks.forResult(null);
+
+        if (profile != null) {
+            task = next(task, () -> firestore
+                    .collection("users")
+                    .document(userId)
+                    .update(profileMap(profile)));
+
+            task = markAfter(task, () ->
+                    database.userProfileDao().markSynced(
+                            userId,
+                            profile.localRevision
+                    ));
+        }
+
         for (SyncTombstoneEntity tombstone : tombstones) {
             task = next(task, () -> firestore
                     .collection("users").document(userId)
@@ -511,5 +526,19 @@ public final class FirestoreSyncManager {
         NetworkCapabilities capabilities = network == null ? null : manager.getNetworkCapabilities(network);
         return capabilities != null && capabilities.hasCapability(
                 NetworkCapabilities.NET_CAPABILITY_INTERNET);
+    }
+
+    private Map<String, Object> profileMap(UserProfileEntity profile) {
+        Map<String, Object> values = new HashMap<>();
+
+        values.put("biography", profile.biography);
+        values.put("country", profile.country);
+        values.put("region", profile.region);
+        values.put("city", profile.city);
+        values.put("latitude", profile.latitude);
+        values.put("longitude", profile.longitude);
+        values.put("updatedAt", profile.updatedAt);
+
+        return values;
     }
 }

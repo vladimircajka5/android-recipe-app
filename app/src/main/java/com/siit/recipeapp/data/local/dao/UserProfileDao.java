@@ -19,4 +19,13 @@ public interface UserProfileDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void upsert(UserProfileEntity profile);
+
+    @Query("SELECT * FROM user_profiles " +
+            "WHERE ownerId = :ownerId AND syncState = 'PENDING' LIMIT 1")
+    UserProfileEntity getPending(String ownerId);
+
+    @Query("UPDATE user_profiles SET syncState = 'SYNCED' " +
+            "WHERE ownerId = :ownerId AND localRevision = :revision " +
+            "AND syncState = 'PENDING'")
+    int markSynced(String ownerId, String revision);
 }
