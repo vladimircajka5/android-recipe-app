@@ -172,7 +172,7 @@ public final class FirestoreSyncManager {
     private void mergeItems(QuerySnapshot snapshot) {
         for (DocumentSnapshot document : snapshot.getDocuments()) {
             if (Boolean.TRUE.equals(document.getBoolean("deleted"))) {
-                deleteLocalListIfOlder(document);
+                deleteLocalItemIfOlder(document);
                 continue;
             }
             ShoppingListItemEntity remote = itemEntity(document);

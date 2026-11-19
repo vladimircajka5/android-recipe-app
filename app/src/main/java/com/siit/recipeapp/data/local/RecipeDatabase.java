@@ -37,7 +37,7 @@ public abstract class RecipeDatabase extends RoomDatabase {
                                     context.getApplicationContext(),
                                     RecipeDatabase.class,
                                     "recipeapp.db")
-                            .fallbackToDestructiveMigration()
+                            .addMigrations(MIGRATION_1_2)
                             .allowMainThreadQueries()
                             .build();
                 }
@@ -49,12 +49,19 @@ public abstract class RecipeDatabase extends RoomDatabase {
     private static final androidx.room.migration.Migration MIGRATION_1_2 =
             new androidx.room.migration.Migration(1, 2) {
                 @Override
-                public void migrate(@androidx.annotation.NonNull
-                                    androidx.sqlite.db.SupportSQLiteDatabase database) {
-                    database.execSQL("CREATE TABLE IF NOT EXISTS sync_tombstones (" +
-                            "`key` TEXT NOT NULL, ownerId TEXT, collection TEXT NOT NULL, " +
-                            "documentId TEXT NOT NULL, updatedAt INTEGER NOT NULL, " +
-                            "PRIMARY KEY(`key`))");
+                public void migrate(
+                        @androidx.annotation.NonNull
+                        androidx.sqlite.db.SupportSQLiteDatabase database) {
+
+                    database.execSQL(
+                            "CREATE TABLE IF NOT EXISTS sync_tombstones (" +
+                            "`key` TEXT NOT NULL, " +
+                            "ownerId TEXT, " +
+                            "collection TEXT, " +
+                            "documentId TEXT, " +
+                            "updatedAt INTEGER NOT NULL, " +
+                            "PRIMARY KEY(`key`))"
+                    );
                 }
             };
 }
