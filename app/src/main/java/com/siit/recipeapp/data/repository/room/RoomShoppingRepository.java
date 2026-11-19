@@ -2,6 +2,7 @@ package com.siit.recipeapp.data.repository.room;
 
 import android.content.Context;
 
+import com.siit.recipeapp.RecipeApplication;
 import com.siit.recipeapp.data.local.EntityMapper;
 import com.siit.recipeapp.data.local.RecipeDatabase;
 import com.siit.recipeapp.data.local.SyncState;
@@ -136,6 +137,7 @@ public final class RoomShoppingRepository implements ShoppingRepository {
 
             database.shoppingDao().upsertList(entity);
         });
+        requestSync();
     }
 
     @Override
@@ -172,6 +174,7 @@ public final class RoomShoppingRepository implements ShoppingRepository {
             database.shoppingDao().deleteItemsForList(id);
             database.shoppingDao().deleteList(id);
         });
+        requestSync();
     }
 
     @Override
@@ -204,6 +207,7 @@ public final class RoomShoppingRepository implements ShoppingRepository {
             database.shoppingDao().upsertItem(
                     EntityMapper.item(item, SyncState.PENDING));
         });
+        requestSync();
     }
 
     @Override
@@ -229,5 +233,11 @@ public final class RoomShoppingRepository implements ShoppingRepository {
 
             database.shoppingDao().deleteItem(id);
         });
+        requestSync();
+    }
+
+    private void requestSync() {
+        ((RecipeApplication) context.getApplicationContext())
+                .syncSignedInUser();
     }
 }

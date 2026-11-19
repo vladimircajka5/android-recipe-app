@@ -21,6 +21,8 @@ import com.siit.recipeapp.data.local.entity.SyncTombstoneEntity;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public final class FirestoreSyncManager {
     private interface TaskOperation {
@@ -34,6 +36,7 @@ public final class FirestoreSyncManager {
     private final Context context;
     private final RecipeDatabase database;
     private final FirebaseFirestore firestore;
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     public FirestoreSyncManager(Context context, RecipeDatabase database) {
         this.context = context.getApplicationContext();
@@ -42,16 +45,30 @@ public final class FirestoreSyncManager {
     }
 
     public void sync(String userId, Callback callback) {
-        if (userId == null || userId.trim().isEmpty()) {
-            callback.onError(new IllegalArgumentException("A signed-in user is required"));
-            return;
-        }
-        if (!isOnline()) {
-            callback.onComplete();
-            return;
-        }
+        executor.execute(() -> {
+            try {
+                if (userId == null || userId.trim().isEmpty()) {
+                    callback.onError(new IllegalArgumentException(
+                            "A signed-in user is required."));
+                    return;
+                }
 
-        pushPending(userId, callback);
+                if (!userId.equals(UserDataSession.currentOwnerId(context))) {
+                    callback.onError(new IllegalStateException(
+                            "Account changed before synchronization."));
+                    return;
+                }
+
+                if (!isOnline()) {
+                    callback.onComplete();
+                    return;
+                }
+
+                pushPending(userId, callback);
+            } catch (Exception error) {
+                callback.onError(error);
+            }
+        });
     }
 
     private void pushPending(String userId, Callback callback) {
@@ -108,13 +125,13 @@ public final class FirestoreSyncManager {
                     ));
         }
 
-        task.addOnSuccessListener(ignored -> pullRemote(userId, callback))
-                .addOnFailureListener(callback::onError);
+        task.addOnSuccessListener(executor, ignored -> pullRemote(userId, callback))
+                .addOnFailureListener(executor, callback::onError);
     }
 
     private com.google.android.gms.tasks.Task<Void> next(
             com.google.android.gms.tasks.Task<Void> previous, TaskOperation operation) {
-        return previous.continueWithTask(result -> {
+        return previous.continueWithTask(executor, result -> {
             if (!result.isSuccessful()) {
                 return com.google.android.gms.tasks.Tasks.forException(
                         result.getException() == null
@@ -126,7 +143,7 @@ public final class FirestoreSyncManager {
     }
     private com.google.android.gms.tasks.Task<Void> markAfter(
             com.google.android.gms.tasks.Task<Void> task, Runnable action) {
-        return task.continueWithTask(previous -> {
+        return task.continueWithTask(executor, previous -> {
             if (!previous.isSuccessful()) {
                 return com.google.android.gms.tasks.Tasks.forException(
                         previous.getException() == null
@@ -150,7 +167,7 @@ public final class FirestoreSyncManager {
 
         com.google.android.gms.tasks.Tasks
                 .whenAllSuccess(pantryTask, listsTask, itemsTask)
-                .addOnSuccessListener(results -> {
+                .addOnSuccessListener(executor, results -> {
                     try {
                         database.runInTransaction(() -> {
                             if (!userId.equals(
@@ -170,7 +187,7 @@ public final class FirestoreSyncManager {
 
                     callback.onComplete();
                 })
-                .addOnFailureListener(callback::onError);
+                .addOnFailureListener(executor, callback::onError);
     }
 
     private void mergePantry(String userId, QuerySnapshot snapshot) {

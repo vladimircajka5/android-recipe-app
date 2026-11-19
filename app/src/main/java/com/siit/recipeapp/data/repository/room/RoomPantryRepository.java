@@ -2,6 +2,7 @@ package com.siit.recipeapp.data.repository.room;
 
 import android.content.Context;
 
+import com.siit.recipeapp.RecipeApplication;
 import com.siit.recipeapp.data.local.EntityMapper;
 import com.siit.recipeapp.data.local.RecipeDatabase;
 import com.siit.recipeapp.data.local.SyncState;
@@ -106,6 +107,7 @@ public final class RoomPantryRepository implements PantryRepository {
 
             database.pantryDao().upsert(entity);
         });
+        requestSync();
     }
 
     @Override
@@ -131,5 +133,11 @@ public final class RoomPantryRepository implements PantryRepository {
 
             database.pantryDao().delete(entity);
         });
+        requestSync();
+    }
+
+    private void requestSync() {
+        ((RecipeApplication) context.getApplicationContext())
+                .syncSignedInUser();
     }
 }
