@@ -1,7 +1,11 @@
+
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // ===== Pomocne funkcije =====
+
     function signedIn() {
       return request.auth != null;
     }
@@ -9,7 +13,7 @@ service cloud.firestore {
     function ownsUserData(userId) {
       return signedIn() && request.auth.uid == userId;
     }
-    
+
     function isAdmin() {
       return signedIn()
         && request.auth.token.email_verified == true
@@ -17,23 +21,30 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/roles/$(request.auth.uid)).data.role == "ADMIN";
     }
 
-    
-  match /roles/{userId} {
 
-  allow get: if signedIn() && (request.auth.uid == userId || isAdmin());
+    // ===== Administratorske uloge =====
 
-  allow list: if false;
+    match /roles/{userId} {
 
-  // Samo admin dodeljuje ADMIN ulogu drugom korisniku
-  allow create: if isAdmin()
-    && request.auth.uid != userId
-    && exists(/databases/$(database)/documents/users/$(userId))
-    && request.resource.data.keys().hasOnly(["role"])
-    && request.resource.data.role == "ADMIN";
+      // Korisnik cita svoju ulogu, admin moze i tudju
+      allow get: if signedIn()
+        && (request.auth.uid == userId || isAdmin());
 
-  // Nema proizvoljne promene i brisanja uloga
-  allow update, delete: if false;
-  }
+      allow list: if false;
+
+      // Samo admin dodeljuje ulogu drugom korisniku
+      allow create: if isAdmin()
+        && request.auth.uid != userId
+        && exists(/databases/$(database)/documents/users/$(userId))
+        && request.resource.data.keys().hasOnly(["role"])
+        && request.resource.data.role == "ADMIN";
+
+      // Uloge se ne menjaju i ne brisu iz aplikacije
+      allow update, delete: if false;
+    }
+
+
+    // ===== Ostali korisnicki podaci =====
 
     match /users/{userId}/pantry/{itemId} {
       allow read, write: if ownsUserData(userId);
@@ -47,28 +58,59 @@ service cloud.firestore {
       allow read, write: if ownsUserData(userId);
     }
 
+
+    // ===== Korisnicki profili =====
+
     match /users/{userId} {
-      allow read, write: if ownsUserData(userId);
+
+      // Prijavljeni korisnici mogu da vide tudje profile
+      allow get: if signedIn();
+
+      // Zabranjeno listanje svih korisnika
+      allow list: if false;
+
+      // Kreiranje sopstvenog profila pri registraciji
+      allow create: if ownsUserData(userId)
+        && request.resource.data.uid == userId;
+
+      // Vlasnik menja samo dozvoljena polja profila
+      allow update: if ownsUserData(userId)
+        && request.resource.data.diff(resource.data)
+          .affectedKeys().hasOnly([
+            'biography',
+            'country',
+            'region',
+            'city',
+            'latitude',
+            'longitude',
+            'profileImageUrl',
+            'updatedAt'
+          ]);
+
+      // Brisanje profila nije dozvoljeno iz aplikacije
+      allow delete: if false;
     }
 
-    
+
+    // ===== Korisnicka imena =====
+
     match /usernames/{username} {
 
-        // Dozvoljeno citanje pojedinacnog korisnickog imena
-        allow get: if true;
+      // Citanje pojedinacnog username dokumenta
+      allow get: if true;
 
-        // Zabranjen pregled cele kolekcije
-        allow list: if false;
+      // Zabranjen pregled cele kolekcije
+      allow list: if false;
 
-        // Kreiranje rezervacije za sopstveni nalog
-        allow create: if signedIn()
-            && !exists(/databases/$(database)/documents/usernames/$(username))
-            && request.resource.data.keys().hasOnly(['uid', 'email'])
-            && request.resource.data.uid == request.auth.uid
-            && request.resource.data.email == request.auth.token.email;
+      // Rezervacija korisnickog imena pri registraciji
+      allow create: if signedIn()
+        && !exists(/databases/$(database)/documents/usernames/$(username))
+        && request.resource.data.keys().hasOnly(['uid', 'email'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.email == request.auth.token.email;
 
-        // Korisnicko ime se ne menja i ne brise
-        allow update, delete: if false;
+      // Korisnicko ime se ne menja i ne brise
+      allow update, delete: if false;
     }
 
   }

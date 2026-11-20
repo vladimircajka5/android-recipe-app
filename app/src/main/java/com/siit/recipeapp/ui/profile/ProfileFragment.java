@@ -272,7 +272,7 @@ public class ProfileFragment extends Fragment {
                     List<String> locationParts = new ArrayList<>();
 
                     if (profile.country != null && !profile.country.trim().isEmpty()) {
-                        locationParts.add(profile.country.trim());
+                        locationParts.add(CountryFlag.format(profile.country));
                     }
 
                     if (profile.region != null && !profile.region.trim().isEmpty()) {

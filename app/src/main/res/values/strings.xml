@@ -184,6 +184,12 @@
     <string name="user_recipes_count">%1$d recipes</string>
     <string name="user_recipes_empty">This user has no recipes yet.</string>
 
+    <string name="other_profile_unavailable">User profile is not available.</string>
+    <string name="user_recipes_not_ready">User recipes will appear here when available.</string>
+    <string name="other_profile_open_title">Open User Profile</string>
+    <string name="other_profile_username_hint">Enter username</string>
+    <string name="other_profile_open">Open</string>
+
     <!-- Bottom Navigation -->
     <string name="nav_home">Home</string>
     <string name="nav_my_recipes">My Recipes</string>
