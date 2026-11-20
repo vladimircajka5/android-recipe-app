@@ -41,7 +41,7 @@
                 android:layout_marginTop="24dp"
                 android:contentDescription="@string/profile_avatar_description"
                 android:scaleType="centerCrop"
-                tools:src="@tools:sample/avatars" />
+                android:src="@drawable/ic_avatar_placeholder" />
 
             <TextView
                 android:id="@+id/tv_profile_username"

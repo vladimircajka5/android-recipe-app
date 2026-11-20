@@ -51,10 +51,13 @@
     <string name="profile_settings_section">Account Settings</string>
     <string name="profile_light_theme">Light theme</string>
 
+    <string name="profile_region_empty">Region not set</string>
+    <string name="profile_bio_empty">No biography yet</string>
+
     <!-- EditProfile Fragment -->
     <string name="edit_profile_title">Edit Profile</string>
-    <string name="edit_profile_photo">Change Photo</string>
-    <string name="edit_profile_country">Country</string>
+    <string name="edit_profile_photo">Preview Image</string>
+    <string name="edit_profile_country">"  Country"</string>
     <string name="edit_profile_region">Region</string>
     <string name="edit_profile_city">City (optional)</string>
     <string name="edit_profile_bio">Biography (optional)</string>
@@ -62,6 +65,15 @@
     <string name="edit_profile_cancel">Cancel</string>
     <string name="edit_profile_username_label">Username (cannot be changed)</string>
     <string name="edit_profile_avatar_description">User profile picture</string>
+
+    <string name="edit_profile_image_url">Profile image URL (optional)</string>
+    <string name="edit_profile_username_value">Username: %1$s (cannot be changed)</string>
+    <string name="edit_profile_invalid_country">Select a country from the list.</string>
+    <string name="edit_profile_invalid_data">Invalid profile data.</string>
+    <string name="edit_profile_not_ready">Profile data is not ready yet.</string>
+    <string name="edit_profile_save_failed">Unable to save profile changes.</string>
+    <string name="edit_profile_image_failed">Unable to save image URL. Check the link and connection.</string>
+    <string name="edit_profile_success">Profile updated successfully!</string>
 
     <!-- Change password -->
     <string name="change_password_title">Change Password</string>
@@ -171,6 +183,12 @@
     <string name="user_recipes_region_placeholder">Region</string>
     <string name="user_recipes_count">%1$d recipes</string>
     <string name="user_recipes_empty">This user has no recipes yet.</string>
+
+    <string name="other_profile_unavailable">User profile is not available.</string>
+    <string name="user_recipes_not_ready">User recipes will appear here when available.</string>
+    <string name="other_profile_open_title">Open User Profile</string>
+    <string name="other_profile_username_hint">Enter username</string>
+    <string name="other_profile_open">Open</string>
 
     <!-- Bottom Navigation -->
     <string name="nav_home">Home</string>

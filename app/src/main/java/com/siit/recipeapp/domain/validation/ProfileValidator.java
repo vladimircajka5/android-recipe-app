@@ -1,3 +1,4 @@
+
 package com.siit.recipeapp.domain.validation;
 
 import com.siit.recipeapp.data.model.account.Profile;
@@ -9,12 +10,18 @@ public final class ProfileValidator {
     }
 
     public static boolean isValid(Profile profile) {
-        if (profile == null) {
+
+        if (profile == null || profile.getLocation() == null) {
             return false;
         }
 
         Location location = profile.getLocation();
 
-        return LocationValidator.isValid(location) && location.hasValidRegion();
+        // Sva tekstualna polja lokacije su opciona
+        // Koordinate, ako postoje, moraju biti ispravne
+        return LocationValidator.areCoordinatesValid(
+                location.getLatitude(),
+                location.getLongitude()
+        );
     }
 }
