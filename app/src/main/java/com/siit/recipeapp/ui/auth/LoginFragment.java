@@ -53,7 +53,7 @@ public class LoginFragment extends Fragment {
         Button btnLogin = view.findViewById(R.id.btn_login_lsumbit);
         Button btnGuest = view.findViewById(R.id.btn_login_guest);
 
-        etIdentifier.setText("petarkukic12321@gmail.com");
+        etIdentifier.setText("Hollow Knight");
         etPassword.setText("123456");
 
         // ===== Navigacija =====
