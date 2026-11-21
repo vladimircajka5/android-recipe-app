@@ -21,6 +21,41 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/roles/$(request.auth.uid)).data.role == "ADMIN";
     }
 
+    // ===== Zajednicki katalozi =====
+
+    function isCatalog(collectionName) {
+      return collectionName in [
+        'ingredientCategories',
+        'allergens',
+        'mealTypes',
+        'dishTypes',
+        'dietTypes'
+      ];
+    }
+
+    function validCatalogEntry(entryId) {
+      return request.resource.data.keys().hasAll([
+          'id', 'name', 'description'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'id', 'name', 'description'
+        ])
+        && request.resource.data.id == entryId
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.description is string;
+    }
+
+    match /{collectionName}/{entryId} {
+      allow read: if isCatalog(collectionName);
+
+      allow create, update: if isCatalog(collectionName)
+        && isAdmin()
+        && validCatalogEntry(entryId);
+
+      // Ukljucujemo uz proveru da zapis nije u upotrebi.
+      allow delete: if false;
+    }
 
     // ===== Administratorske uloge =====
 
