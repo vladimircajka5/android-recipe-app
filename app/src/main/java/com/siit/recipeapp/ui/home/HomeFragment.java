@@ -23,6 +23,7 @@ import com.siit.recipeapp.data.repository.firebase.FirebaseAuthRepository;
 import com.siit.recipeapp.ui.admin.AdminCatalogFragment;
 import com.siit.recipeapp.ui.recipe.UserRecipesFragment;
 import com.siit.recipeapp.ui.proposals.CategoryProposalsFragment;
+import com.siit.recipeapp.ui.search.RecipeSearchFragment;
 
 
 public class HomeFragment extends Fragment {
@@ -40,6 +41,13 @@ public class HomeFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        view.findViewById(R.id.btn_home_search_recipes).setOnClickListener(v ->
+                getParentFragmentManager().beginTransaction()
+                        .setReorderingAllowed(true)
+                        .replace(R.id.fragment_container, new RecipeSearchFragment())
+                        .addToBackStack(null)
+                        .commit());
 
         Button catalogButton = view.findViewById(R.id.btn_home_catalog);
         AuthRepository catalogAuth = new FirebaseAuthRepository();
