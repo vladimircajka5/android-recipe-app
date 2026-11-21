@@ -61,4 +61,7 @@ dependencies {
     // Room (for local data and offline mode)
     implementation(libs.room.runtime)
     annotationProcessor(libs.room.compiler)
+
+    // Ucitavanje slika sa URL-a
+    implementation(libs.glide)
 }

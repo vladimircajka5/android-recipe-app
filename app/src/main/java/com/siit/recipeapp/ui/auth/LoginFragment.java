@@ -1,3 +1,4 @@
+
 package com.siit.recipeapp.ui.auth;
 
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.textfield.TextInputEditText;
 import com.siit.recipeapp.R;
+import com.siit.recipeapp.data.model.account.UserRole;
 import com.siit.recipeapp.data.repository.AuthRepository;
 import com.siit.recipeapp.data.repository.firebase.FirebaseAuthRepository;
 import com.siit.recipeapp.ui.home.HomeFragment;
@@ -24,6 +26,7 @@ public class LoginFragment extends Fragment {
     // Veze
     private final AuthRepository authRepository = new FirebaseAuthRepository();
 
+    // Constructor
     public LoginFragment() {
         // Required empty public constructor
     }
@@ -38,16 +41,24 @@ public class LoginFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // ===== Povezivanje =====
+
         TextInputEditText etIdentifier = view.findViewById(R.id.et_login_identifier);
         TextInputEditText etPassword = view.findViewById(R.id.et_login_password);
+
         TextView tvError = view.findViewById(R.id.tv_login_error);
+        TextView tvForgotPassword = view.findViewById(R.id.tv_login_forgot_password);
 
         Button btnRegister = view.findViewById(R.id.btn_login_register);
         Button btnLogin = view.findViewById(R.id.btn_login_lsumbit);
         Button btnGuest = view.findViewById(R.id.btn_login_guest);
-        TextView tvForgotPassword = view.findViewById(R.id.tv_login_forgot_password);
 
-        // Register
+        etIdentifier.setText("Hollow Knight");
+        etPassword.setText("123456");
+
+        // ===== Navigacija =====
+
+        // Otvaranje Register ekrana
         btnRegister.setOnClickListener(v -> {
             getParentFragmentManager()
                     .beginTransaction()
@@ -56,10 +67,20 @@ public class LoginFragment extends Fragment {
                     .commit();
         });
 
-        // Otvaranje Home ekrana
-        View.OnClickListener openHome = v -> {
+        // Otvaranje Forgot Password ekrana
+        tvForgotPassword.setOnClickListener(v -> {
+            getParentFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, new ForgotPasswordFragment())
+                    .addToBackStack(null)
+                    .commit();
+        });
+
+        // Ulazak kao Guest
+        btnGuest.setOnClickListener(v -> {
             FragmentManager manager = getParentFragmentManager();
 
+            // Brisanje prethodnih fragmenata iz Back Stack-a
             manager.popBackStackImmediate(
                     null,
                     FragmentManager.POP_BACK_STACK_INCLUSIVE
@@ -68,35 +89,35 @@ public class LoginFragment extends Fragment {
             manager.beginTransaction()
                     .replace(R.id.fragment_container, new HomeFragment())
                     .commit();
-        };
+        });
 
+        // ===== Funkcionalnosti =====
 
-
-        // Guest
-        btnGuest.setOnClickListener(openHome);
-
-        // Login
+        // Prijava preko emaila ili korisnickog imena
         btnLogin.setOnClickListener(v -> {
 
+            // Sakrij prethodnu gresku
             tvError.setVisibility(View.GONE);
 
-            String email = etIdentifier.getText().toString().trim();
+            String identifier = etIdentifier.getText().toString().trim();
             String password = etPassword.getText().toString();
 
-            if (email.isEmpty() || password.isEmpty()) {
+            // Provera unetih podataka
+            if (identifier.isEmpty() || password.isEmpty()) {
                 tvError.setText(R.string.login_invalid_data);
                 tvError.setVisibility(View.VISIBLE);
                 return;
             }
 
+            // Blokiraj dugme dok Firebase obradjuje zahtev
             btnLogin.setEnabled(false);
 
-            authRepository.login(email, password,
+            authRepository.login(identifier, password,
                     new AuthRepository.LoginCallback() {
 
                         @Override
                         public void onSuccess() {
-                            handleLoginSuccess(view, openHome, v);
+                            handleLoginSuccess(view);
                         }
 
                         @Override
@@ -105,37 +126,62 @@ public class LoginFragment extends Fragment {
                         }
                     });
         });
-
-        // Forgot Password
-        tvForgotPassword.setOnClickListener(v -> {
-            getParentFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, new ForgotPasswordFragment())
-                    .addToBackStack(null)
-                    .commit();
-        });
     }
 
-    // Uspesna prijava
-    private void handleLoginSuccess(View view,
-                                    View.OnClickListener openHome,
-                                    View clickedView) {
+    // ===== Privatne metode =====
+
+    // Uspesna Firebase prijava
+    private void handleLoginSuccess(View view) {
 
         if (!isAdded() || getView() != view) {
             return;
         }
 
-        Toast.makeText(requireContext(),
-                R.string.login_success,
-                Toast.LENGTH_SHORT).show();
+        // Provera administratorske uloge
+        authRepository.getCurrentRole(new AuthRepository.RoleCallback() {
 
-        openHome.onClick(clickedView);
+            @Override
+            public void onSuccess(UserRole role) {
+                showLoginSuccess(view, role);
+            }
+
+            @Override
+            public void onError(String message) {
+
+                // Prijava je uspela, ali uloga nije procitana
+                // Ne dodeljujemo administratorska prava
+                showLoginSuccess(view, UserRole.USER);
+            }
+        });
     }
 
+    // Prikaz poruke nakon uspesne prijave
+    private void showLoginSuccess(View view, UserRole role) {
+
+        if (!isAdded() || getView() != view) {
+            return;
+        }
+
+        int messageId;
+
+        if (role == UserRole.ADMIN) {
+            messageId = R.string.login_admin_success;
+        } else {
+            messageId = R.string.login_success;
+        }
+
+        Toast.makeText(requireContext(),
+                messageId,
+                Toast.LENGTH_SHORT).show();
+
+        navigateToHome();
+    }
 
     // Neuspesna prijava
-    private void handleLoginError(View view, Button btnLogin,
-                                  TextView tvError, String message) {
+    private void handleLoginError(View view,
+                                  Button btnLogin,
+                                  TextView tvError,
+                                  String message) {
 
         if (!isAdded() || getView() != view) {
             return;
@@ -150,5 +196,21 @@ public class LoginFragment extends Fragment {
         }
 
         tvError.setVisibility(View.VISIBLE);
+    }
+
+    // Otvaranje Home ekrana
+    private void navigateToHome() {
+
+        FragmentManager manager = getParentFragmentManager();
+
+        // Brisanje prethodnih fragmenata iz Back Stack-a
+        manager.popBackStackImmediate(
+                null,
+                FragmentManager.POP_BACK_STACK_INCLUSIVE
+        );
+
+        manager.beginTransaction()
+                .replace(R.id.fragment_container, new HomeFragment())
+                .commit();
     }
 }

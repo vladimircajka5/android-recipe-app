@@ -13,7 +13,6 @@ import androidx.annotation.NonNull;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.siit.recipeapp.data.local.RecipeDatabase;
-import com.siit.recipeapp.data.remote.AuthManager;
 import com.siit.recipeapp.data.remote.FirestoreSyncManager;
 import com.siit.recipeapp.data.remote.UserDataSession;
 
@@ -23,7 +22,6 @@ public final class RecipeApplication extends Application {
             new Handler(Looper.getMainLooper());
 
     private FirestoreSyncManager syncManager;
-    private AuthManager authManager;
 
     // Ova polja koristi samo glavna nit
     private boolean syncRunning;
@@ -109,13 +107,5 @@ public final class RecipeApplication extends Application {
                 startSyncIfNeeded();
             }
         });
-    }
-
-    public AuthManager auth() {
-        if (authManager == null) {
-            authManager = new AuthManager();
-        }
-
-        return authManager;
     }
 }

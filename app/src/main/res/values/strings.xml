@@ -13,7 +13,7 @@
     <string name="login_forgot_password">Forgot Password?</string>
     <string name="login_guest">Continue as Guest</string>
 
-    <string name="login_invalid_data">Enter your email and password.</string>
+    <string name="login_invalid_data">Enter your email or username and password.</string>
     <string name="login_failed">Invalid email or password, or login failed.</string>
     <string name="login_email_not_verified">Please verify your email before logging in.</string>
     <string name="login_success">Successfully logged in!</string>
@@ -51,10 +51,13 @@
     <string name="profile_settings_section">Account Settings</string>
     <string name="profile_light_theme">Light theme</string>
 
+    <string name="profile_region_empty">Region not set</string>
+    <string name="profile_bio_empty">No biography yet</string>
+
     <!-- EditProfile Fragment -->
     <string name="edit_profile_title">Edit Profile</string>
-    <string name="edit_profile_photo">Change Photo</string>
-    <string name="edit_profile_country">Country</string>
+    <string name="edit_profile_photo">Preview Image</string>
+    <string name="edit_profile_country">"  Country"</string>
     <string name="edit_profile_region">Region</string>
     <string name="edit_profile_city">City (optional)</string>
     <string name="edit_profile_bio">Biography (optional)</string>
@@ -62,6 +65,15 @@
     <string name="edit_profile_cancel">Cancel</string>
     <string name="edit_profile_username_label">Username (cannot be changed)</string>
     <string name="edit_profile_avatar_description">User profile picture</string>
+
+    <string name="edit_profile_image_url">Profile image URL (optional)</string>
+    <string name="edit_profile_username_value">Username: %1$s (cannot be changed)</string>
+    <string name="edit_profile_invalid_country">Select a country from the list.</string>
+    <string name="edit_profile_invalid_data">Invalid profile data.</string>
+    <string name="edit_profile_not_ready">Profile data is not ready yet.</string>
+    <string name="edit_profile_save_failed">Unable to save profile changes.</string>
+    <string name="edit_profile_image_failed">Unable to save image URL. Check the link and connection.</string>
+    <string name="edit_profile_success">Profile updated successfully!</string>
 
     <!-- Change password -->
     <string name="change_password_title">Change Password</string>
@@ -72,6 +84,14 @@
     <string name="change_password_cancel">Cancel</string>
     <string name="change_password_submit">Change Password</string>
 
+    <string name="change_password_current_required">Please enter your current password.</string>
+    <string name="change_password_invalid">New password must contain at least 6 characters.</string>
+    <string name="change_password_mismatch">New passwords do not match.</string>
+    <string name="change_password_wrong_current">Incorrect current password.</string>
+    <string name="change_password_no_user">Please log in to change your password.</string>
+    <string name="change_password_failed">Unable to change password. Please try again.</string>
+    <string name="change_password_success">Password changed successfully!</string>
+
     <!-- Forgot Password -->
     <string name="forgot_password_title">Forgot Password</string>
     <string name="forgot_password_subtitle">Enter your email address to receive instructions for resetting your password.</string>
@@ -79,6 +99,10 @@
     <string name="forgot_password_submit">Send Reset Email</string>
     <string name="forgot_password_cancel">Cancel</string>
     <string name="forgot_password_reset_requested">If an account exists for this email, you will receive password reset instructions.</string>
+
+    <string name="forgot_password_invalid_email">Please enter a valid email address.</string>
+    <string name="forgot_password_failed">Unable to send the reset email. Please try again.</string>
+    <string name="forgot_password_sent">If an account exists, check your email for a reset link.</string>
 
     <!-- Recipe List -->
     <string name="recipe_list_title">My Recipes</string>
@@ -136,6 +160,19 @@
     <string name="cooking_next">Next</string>
     <string name="cooking_finish">Finish Cooking</string>
 
+    <!-- Administrators -->
+    <string name="login_admin_success">Successfully logged in as administrator!</string>
+    <string name="admin_grant_title">Grant Administrator Role</string>
+    <string name="admin_grant_username">Username</string>
+    <string name="admin_grant_submit">Grant Admin</string>
+    <string name="admin_grant_success">Administrator role assigned successfully!</string>
+    <string name="admin_grant_not_found">User not found.</string>
+    <string name="admin_grant_already_admin">This user is already an administrator.</string>
+    <string name="admin_grant_self">You cannot assign the role to yourself.</string>
+    <string name="admin_grant_failed">Unable to assign the administrator role.</string>
+    <string name="admin_grant_invalid">Enter a valid username.</string>
+    <string name="admin_grant_back">Back</string>
+
     <!-- Recipe Card -->
     <string name="recipe_card_add_favorite">Add to favorites</string>
     <string name="recipe_card_remove_favorite">Remove from favorites</string>
@@ -146,6 +183,12 @@
     <string name="user_recipes_region_placeholder">Region</string>
     <string name="user_recipes_count">%1$d recipes</string>
     <string name="user_recipes_empty">This user has no recipes yet.</string>
+
+    <string name="other_profile_unavailable">User profile is not available.</string>
+    <string name="user_recipes_not_ready">User recipes will appear here when available.</string>
+    <string name="other_profile_open_title">Open User Profile</string>
+    <string name="other_profile_username_hint">Enter username</string>
+    <string name="other_profile_open">Open</string>
 
     <!-- Bottom Navigation -->
     <string name="nav_home">Home</string>
@@ -159,6 +202,11 @@
     <string name="home_title">This is HOME my Nigga</string>
     <string name="home_subtitle">This is subtitle</string>
     <string name="home_other_user_profile">Other User Profile</string>
+
+    <string name="guest_access_title">Login required</string>
+    <string name="guest_access_message">Please log in to use this feature.</string>
+    <string name="guest_access_back">Back</string>
+    <string name="guest_access_login">Log in</string>
 
 
     <!-- Cajkini Stringovi -->
@@ -250,12 +298,53 @@
     <string name="shopping_item_delete">Remove item</string>
     <string name="shopping_item_ingredient_hint">Ingredient (required)</string>
 
-    <string name="pantry_scan_barcode">Scan barcode</string><string name="barcode_manual_hint">Barcode number</string><string name="barcode_manual_continue">Continue with barcode</string><string name="barcode_required">Enter a barcode number.</string><string name="barcode_invalid">Enter a barcode with 8 to 14 digits.</string>
-    <string name="barcode_camera_starting">Starting camera…</string><string name="barcode_camera_ready">Point the camera at a product barcode.</string><string name="barcode_camera_unavailable">Camera is unavailable. Enter the barcode below.</string><string name="barcode_lookup_loading">Looking up product…</string>
-    <string name="barcode_duplicate_title">Product already in pantry</string><string name="barcode_duplicate_message">Add one more package of this product? The current expiry date will be kept.</string><string name="barcode_add_package">Add package</string><string name="barcode_package_added">One package added.</string><string name="barcode_product_added">Product added to pantry.</string>
-    <string name="product_review_title">Review scanned product</string><string name="product_review_found">We found product details. Review them and choose an ingredient.</string><string name="product_review_not_found">No product details found. Enter the details manually.</string><string name="product_barcode_hint">Barcode</string><string name="product_name_hint">Product or ingredient name</string><string name="product_brand_hint">Brand (optional)</string><string name="product_quantity_hint">Package size (optional)</string>
-    <string name="product_select_ingredient_hint">Match to catalog ingredient</string><string name="product_suggested_match">Suggested match: %1$s. Choose an ingredient from the dropdown or create a branded ingredient.</string><string name="product_choose_ingredient_error">Choose a catalog ingredient from the suggestions.</string><string name="product_create_ingredient">Create a local branded ingredient</string><string name="product_category_hint">Choose ingredient category</string><string name="product_name_required">Enter a product or ingredient name.</string><string name="product_barcode_duplicate">This barcode is already in the product catalog.</string><string name="product_save">Add to pantry</string>
-    <string name="pantry_package_amount">%1$s package(s) × %2$s %3$s</string><string name="pantry_package_count">%1$s package(s)</string>
-    <string-array name="ingredient_categories"><item>Fruit</item><item>Dairy</item><item>Protein</item><item>Grains</item><item>Vegetables</item><item>Spices</item></string-array>
-    <string-array name="ingredient_category_ids"><item>fruit</item><item>dairy</item><item>protein</item><item>grains</item><item>vegetables</item><item>spices</item></string-array>
+    <string name="pantry_scan_barcode">Scan barcode</string>
+    <string name="barcode_manual_hint">Barcode number</string>
+    <string name="barcode_manual_continue">Continue with barcode</string>
+    <string name="barcode_required">Enter a barcode number.</string>
+    <string name="barcode_invalid">Enter a barcode with 8 to 14 digits.</string>
+    <string name="barcode_camera_starting">Starting camera…</string>
+    <string name="barcode_camera_ready">Point the camera at a product barcode.</string>
+    <string name="barcode_camera_unavailable">Camera is unavailable. Enter the barcode below.</string>
+    <string name="barcode_lookup_loading">Looking up product…</string>
+    <string name="barcode_duplicate_title">Product already in pantry</string>
+    <string name="barcode_duplicate_message">Add one more package of this product? The current expiry date will be kept.</string>
+    <string name="barcode_add_package">Add package</string>
+    <string name="barcode_package_added">One package added.</string>
+    <string name="barcode_product_added">Product added to pantry.</string>
+    <string name="product_review_title">Review scanned product</string>
+    <string name="product_review_found">We found product details. Review them and choose an ingredient.</string>
+    <string name="product_review_not_found">No product details found. Enter the details manually.</string>
+    <string name="product_barcode_hint">Barcode</string>
+    <string name="product_name_hint">Product or ingredient name</string>
+    <string name="product_brand_hint">Brand (optional)</string>
+    <string name="product_quantity_hint">Package size (optional)</string>
+    <string name="product_select_ingredient_hint">Match to catalog ingredient</string>
+    <string name="product_suggested_match">Suggested match: %1$s. Choose an ingredient from the dropdown or create a branded ingredient.</string>
+    <string name="product_choose_ingredient_error">Choose a catalog ingredient from the suggestions.</string>
+    <string name="product_create_ingredient">Create a local branded ingredient</string>
+    <string name="product_category_hint">Choose ingredient category</string>
+    <string name="product_name_required">Enter a product or ingredient name.</string>
+    <string name="product_barcode_duplicate">This barcode is already in the product catalog.</string>
+    <string name="product_save">Add to pantry</string>
+    <string name="pantry_package_amount">%1$s package(s) × %2$s %3$s</string>
+    <string name="pantry_package_count">%1$s package(s)</string>
+    <string-array name="ingredient_categories">
+        <item>Fruit</item>
+        <item>Dairy</item>
+        <item>Protein</item>
+        <item>Grains</item>
+        <item>Vegetables</item>
+        <item>Spices</item>
+    </string-array>
+    <string-array name="ingredient_category_ids">
+        <item>fruit</item>
+        <item>dairy</item>
+        <item>protein</item>
+        <item>grains</item>
+        <item>vegetables</item>
+        <item>spices</item>
+    </string-array>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

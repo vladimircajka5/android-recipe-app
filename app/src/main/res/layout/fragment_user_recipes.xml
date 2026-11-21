@@ -33,7 +33,7 @@
                 style="@style/UserRecipesAvatar"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:src="@drawable/ic_nav_profile"
+                android:src="@drawable/ic_avatar_placeholder"
                 android:contentDescription="@string/user_recipes_avatar"
                 tools:src="@tools:sample/avatars" />
 
