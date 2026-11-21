@@ -600,4 +600,18 @@
     <string name="recipe_comment_reply">Reply</string>
     <string name="recipe_comment_edit">Edit</string>
     <string name="recipe_comment_delete">Delete</string>
+
+    <!-- Recipe ingredients to shopping list UI -->
+    <string name="recipe_shopping_title">Add to shopping list</string>
+    <string name="recipe_shopping_ingredients">Ingredients to add</string>
+    <string name="recipe_shopping_selected">Select ingredients</string>
+    <string name="recipe_shopping_missing">Missing ingredients</string>
+    <string name="recipe_shopping_all">All ingredients</string>
+    <string name="recipe_shopping_missing_unavailable">Missing ingredients are unavailable in this view.</string>
+    <string name="recipe_shopping_list_heading">Shopping list</string>
+    <string name="recipe_shopping_no_list">No list selected</string>
+    <string name="recipe_shopping_choose_list">Choose shopping list</string>
+    <string name="recipe_shopping_change_list">Change shopping list</string>
+    <string name="recipe_shopping_no_active_lists">No active shopping lists. Create a list to get started.</string>
+    <string name="recipe_shopping_add">Add ingredients</string>
 </resources>

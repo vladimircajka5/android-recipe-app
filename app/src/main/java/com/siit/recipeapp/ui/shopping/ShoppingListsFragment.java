@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.siit.recipeapp.R;
 import com.siit.recipeapp.data.model.shopping.ShoppingList;
@@ -20,6 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class ShoppingListsFragment extends Fragment {
+    static final String PICK_RESULT = "recipe_shopping_list_picked";
+    static final String PICKED_NAME = "list_name";
+    private static final String ARG_PICK_LIST = "pick_list";
+
     private final List<ShoppingList> lists = new ArrayList<>();
     private final ShoppingAdapter adapter = new ShoppingAdapter();
     private ShoppingViewModel viewModel;
@@ -27,6 +32,14 @@ public final class ShoppingListsFragment extends Fragment {
 
     public ShoppingListsFragment() {
         super(R.layout.fragment_shopping_lists);
+    }
+
+    static ShoppingListsFragment newPicker() {
+        ShoppingListsFragment fragment = new ShoppingListsFragment();
+        Bundle arguments = new Bundle();
+        arguments.putBoolean(ARG_PICK_LIST, true);
+        fragment.setArguments(arguments);
+        return fragment;
     }
 
     @Override
@@ -40,14 +53,42 @@ public final class ShoppingListsFragment extends Fragment {
         );
         ListView list = root.findViewById(R.id.shopping_lists);
         list.setAdapter(adapter);
-        list.setOnItemClickListener((parent, row, position, id) ->
-                ShoppingScreenHelper.open(this, new ShoppingDetailFragment(), lists.get(position).getId(), null));
+        list.setOnItemClickListener((parent, row, position, id) -> onListSelected(lists.get(position)));
         root.findViewById(R.id.shopping_new_list).setOnClickListener(v ->
                 ShoppingScreenHelper.open(this, new ShoppingListEditorFragment(), null, null));
-        root.findViewById(R.id.shopping_toggle_archived).setOnClickListener(v -> {
-            showingArchived = !showingArchived;
-            refresh();
-        });
+        if (isPicker()) {
+            setupPickerControls(root);
+        } else {
+            root.findViewById(R.id.shopping_toggle_archived).setOnClickListener(v -> {
+                showingArchived = !showingArchived;
+                refresh();
+            });
+        }
+    }
+
+    private boolean isPicker() {
+        Bundle arguments = getArguments();
+        return arguments != null && arguments.getBoolean(ARG_PICK_LIST);
+    }
+
+    private void setupPickerControls(View root) {
+        root.findViewById(R.id.shopping_lists_title).setVisibility(View.GONE);
+        root.findViewById(R.id.shopping_lists_notice).setVisibility(View.GONE);
+        root.findViewById(R.id.shopping_toggle_archived).setVisibility(View.GONE);
+        MaterialToolbar toolbar = root.findViewById(R.id.shopping_list_picker_toolbar);
+        toolbar.setVisibility(View.VISIBLE);
+        toolbar.setNavigationOnClickListener(view -> getParentFragmentManager().popBackStack());
+    }
+
+    private void onListSelected(ShoppingList list) {
+        if (!isPicker()) {
+            ShoppingScreenHelper.open(this, new ShoppingDetailFragment(), list.getId(), null);
+            return;
+        }
+        Bundle result = new Bundle();
+        result.putString(PICKED_NAME, list.getName());
+        getParentFragmentManager().setFragmentResult(PICK_RESULT, result);
+        getParentFragmentManager().popBackStack();
     }
 
     @Override
@@ -68,8 +109,12 @@ public final class ShoppingListsFragment extends Fragment {
         reloadVisibleLists();
         adapter.notifyDataSetChanged();
 
-        ((TextView) root.findViewById(R.id.shopping_empty)).setText(
-                showingArchived ? R.string.shopping_archive_empty : R.string.shopping_empty);
+        TextView empty = root.findViewById(R.id.shopping_empty);
+        if (isPicker()) {
+            empty.setText(R.string.recipe_shopping_no_active_lists);
+        } else {
+            empty.setText(showingArchived ? R.string.shopping_archive_empty : R.string.shopping_empty);
+        }
         MaterialButton toggle = root.findViewById(R.id.shopping_toggle_archived);
         toggle.setText(showingArchived ? R.string.shopping_show_active : R.string.shopping_show_archived);
         root.findViewById(R.id.shopping_empty).setVisibility(lists.isEmpty() ? View.VISIBLE : View.GONE);
