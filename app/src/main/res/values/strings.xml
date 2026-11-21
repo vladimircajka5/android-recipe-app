@@ -442,7 +442,7 @@
     <string-array name="report_admin_filters">
         <item>Active reports</item>
         <item>Processed reports</item>
-
+    </string-array>
 
     <string name="proposal_title">Category proposals</string>
     <string name="proposal_preview_notice">UI preview: sample data only. Changes are not saved online and reset when the application process restarts.</string>

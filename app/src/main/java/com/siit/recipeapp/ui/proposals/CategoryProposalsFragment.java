@@ -268,7 +268,7 @@ public class CategoryProposalsFragment extends Fragment {
         }
 
         View content = getLayoutInflater().inflate(
-                R.layout.dialog_category_proposal_details, null);
+                R.layout.fragment_category_proposal_details, null);
 
         String date = DateFormat.getDateTimeInstance(
                         DateFormat.SHORT, DateFormat.SHORT)
