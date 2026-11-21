@@ -70,6 +70,8 @@
                 android:layout_marginTop="8dp"
                 tools:text="By username" />
 
+            <include layout="@layout/recipe_rating_section" />
+
             <TextView
                 android:id="@+id/tv_recipe_detail_region"
                 style="@style/AppText"
@@ -200,6 +202,8 @@
                     tools:text="1. Prepare the ingredients&#10;&#10;2. Cook the pasta&#10;&#10;3. Add the sauce and serve" />
 
             </LinearLayout>
+
+            <include layout="@layout/recipe_discussion_section" />
 
             <LinearLayout
                 android:id="@+id/recipe_detail_actions"
