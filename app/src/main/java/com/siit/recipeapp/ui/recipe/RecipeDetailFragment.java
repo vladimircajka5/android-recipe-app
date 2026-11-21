@@ -35,6 +35,11 @@ public class RecipeDetailFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View root, @Nullable Bundle state) {
+        root.findViewById(R.id.recipe_rate).setOnClickListener(view ->
+                RecipeFeedbackDialogFragment.showRating(getChildFragmentManager()));
+        root.findViewById(R.id.recipe_add_comment).setOnClickListener(view ->
+                RecipeFeedbackDialogFragment.showComment(getChildFragmentManager()));
+
         Bundle arguments = getArguments();
         if (arguments == null) return;
         Recipe recipe = RecipeSearchPreviewData.findRecipe(arguments.getString(ARG_PREVIEW_ID));
