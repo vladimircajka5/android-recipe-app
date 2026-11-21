@@ -573,4 +573,28 @@
         <item quantity="one">%d serving</item>
         <item quantity="other">%d servings</item>
     </plurals>
+
+    <!-- Recipe rating and discussion UI -->
+    <string name="recipe_rating_title">Ratings</string>
+    <string name="recipe_rating_empty">No ratings yet</string>
+    <string name="recipe_rating_action">Rate recipe</string>
+    <string name="recipe_rating_hint">Choose 1 to 5 stars</string>
+    <string name="recipe_rating_submit">Submit rating</string>
+    <string name="recipe_discussion_title">Discussion</string>
+    <string name="recipe_discussion_empty">No comments yet</string>
+    <string name="recipe_comment_sort">Sort comments</string>
+    <string name="recipe_comment_newest">Newest first</string>
+    <string name="recipe_comment_oldest">Oldest first</string>
+    <string-array name="recipe_comment_sort_options">
+        <item>@string/recipe_comment_newest</item>
+        <item>@string/recipe_comment_oldest</item>
+    </string-array>
+    <string name="recipe_comment_action">Add comment</string>
+    <string name="recipe_comment_hint">Write a comment</string>
+    <string name="recipe_comment_attach_photo">Attach photo</string>
+    <string name="recipe_comment_post">Post comment</string>
+    <string name="recipe_comment_photo_description">Photo attached to comment</string>
+    <string name="recipe_comment_reply">Reply</string>
+    <string name="recipe_comment_edit">Edit</string>
+    <string name="recipe_comment_delete">Delete</string>
 </resources>
