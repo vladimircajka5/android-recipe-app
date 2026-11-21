@@ -1,4 +1,3 @@
-
 package com.siit.recipeapp.ui.home;
 
 import android.os.Bundle;
@@ -6,30 +5,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.firebase.auth.FirebaseAuth;
 import com.siit.recipeapp.MainActivity;
 import com.siit.recipeapp.R;
 import com.siit.recipeapp.data.model.account.UserRole;
 import com.siit.recipeapp.data.repository.AuthRepository;
 import com.siit.recipeapp.data.repository.firebase.FirebaseAuthRepository;
 import com.siit.recipeapp.ui.admin.AdminCatalogFragment;
-import com.siit.recipeapp.ui.recipe.UserRecipesFragment;
+import com.siit.recipeapp.ui.notifications.NotificationsFragment;
 import com.siit.recipeapp.ui.proposals.CategoryProposalsFragment;
 import com.siit.recipeapp.ui.search.RecipeSearchFragment;
-
 
 public class HomeFragment extends Fragment {
 
     public HomeFragment() {
-        // Required empty public constructor
+        // Required empty public constructor.
     }
 
     @Override
@@ -51,6 +46,12 @@ public class HomeFragment extends Fragment {
 
         Button catalogButton = view.findViewById(R.id.btn_home_catalog);
         AuthRepository catalogAuth = new FirebaseAuthRepository();
+        view.findViewById(R.id.btn_home_notifications)
+                .setOnClickListener(v ->
+                        ((MainActivity) requireActivity())
+                                .openProtectedFragment(
+                                        new NotificationsFragment()));
+
         view.findViewById(R.id.btn_home_proposals)
                 .setOnClickListener(v -> {
                     if (!catalogAuth.hasVerifiedSession()) {
@@ -88,8 +89,7 @@ public class HomeFragment extends Fragment {
                         return;
                     }
 
-                    catalogButton.setVisibility(
-                            role == UserRole.ADMIN ? View.VISIBLE : View.GONE);
+                    catalogButton.setVisibility(role == UserRole.ADMIN ? View.VISIBLE : View.GONE);
                 }
 
                 @Override
@@ -101,7 +101,6 @@ public class HomeFragment extends Fragment {
                     catalogButton.setVisibility(View.GONE);
                 }
             });
-
         }
     }
 }

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="notification_preview_title">Notifications</string>
+    <string name="notification_preview_home">Notifications · Preview</string>
+    <string name="notification_preview_back">Back</string>
+    <string name="notification_preview_close">Close</string>
+    <string name="notification_preview_order">Newest first</string>
+
+    <string name="notification_preview_notice">PREVIEW: Sample notifications. Read status changes are temporary and are not saved or sent.</string>
+    <string name="notification_preview_checking_role">Showing user samples. Checking administrator access…</string>
+    <string name="notification_preview_user">User notification preview</string>
+    <string name="notification_preview_admin">Administrator preview · includes administrator samples</string>
+    <string name="notification_preview_role_error">Administrator access could not be checked. Only user samples are shown. Reopen this screen to retry.</string>
+    <string name="notification_preview_sign_in">Sign in with a verified account to view notifications.</string>
+
+    <string name="notification_preview_status_label">Read status</string>
+    <string name="notification_preview_type_label">Notification type</string>
+    <string name="notification_preview_read">Read</string>
+    <string name="notification_preview_unread">Unread</string>
+    <string name="notification_preview_mark_read">Mark read</string>
+    <string name="notification_preview_mark_unread">Mark unread</string>
+    <string name="notification_preview_not_read">Not read yet</string>
+
+    <string name="notification_preview_summary">Showing %1$d · %2$d unread in inbox</string>
+    <string name="notification_preview_empty">No sample notifications match these filters. Try All statuses and All types.</string>
+    <string name="notification_preview_updated">Preview updated. Nothing was saved or sent.</string>
+    <string name="notification_preview_details">%1$s\n%2$s\n\n%3$s\n\nStatus: %4$s\nRead at: %5$s\n\n%6$s</string>
+
+    <string-array name="notification_preview_statuses">
+        <item>All statuses</item>
+        <item>Unread</item>
+        <item>Read</item>
+    </string-array>
+
+    <!-- Order matches NotificationsPreviewViewModel.Type. -->
+    <string-array name="notification_preview_types">
+        <item>All types</item>
+        <item>Account</item>
+        <item>Ingredient expiry</item>
+        <item>Cooking timer</item>
+        <item>Content reports</item>
+        <item>Category proposals</item>
+        <item>Shopping reminders</item>
+    </string-array>
+
+</resources>

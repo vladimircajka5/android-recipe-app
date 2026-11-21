@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="16dp">
+
+
+    <TextView
+        style="@style/AppTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:accessibilityHeading="true"
+        android:text="@string/notification_preview_title" />
+
+    <TextView
+        style="@style/AppTextSecondary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="@string/notification_preview_order" />
+
+    <TextView
+        style="@style/AppText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@color/app_surface"
+        android:padding="12dp"
+        android:text="@string/notification_preview_notice" />
+
+    <TextView
+        android:id="@+id/tv_notifications_access"
+        style="@style/AppTextSecondary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="@string/notification_preview_checking_role" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/AppText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:labelFor="@id/spinner_notification_status"
+                android:text="@string/notification_preview_status_label" />
+
+            <Spinner
+                android:id="@+id/spinner_notification_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:prompt="@string/notification_preview_status_label"
+                android:spinnerMode="dialog" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/AppText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:labelFor="@id/spinner_notification_type"
+                android:text="@string/notification_preview_type_label" />
+
+            <Spinner
+                android:id="@+id/spinner_notification_type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:prompt="@string/notification_preview_type_label"
+                android:spinnerMode="dialog" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_notifications_summary"
+        style="@style/AppTextSecondary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:accessibilityLiveRegion="polite" />
+
+    <TextView
+        android:id="@+id/tv_notifications_empty"
+        style="@style/AppText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@color/app_surface"
+        android:padding="16dp"
+        android:text="@string/notification_preview_empty"
+        android:visibility="gone" />
+
+</LinearLayout>
