@@ -8,12 +8,25 @@
 
     <include layout="@layout/bg_circles_soft" />
 
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/recipe_detail_preview_toolbar"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        android:visibility="gone"
+        app:title="@string/recipe_detail_title"
+        app:navigationIcon="@drawable/ic_report_back"
+        app:navigationContentDescription="@string/report_back"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <ScrollView
+        android:id="@+id/recipe_detail_scroll"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fillViewport="true"
         app:layout_constraintWidth_max="520dp"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/recipe_detail_preview_toolbar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -72,6 +85,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 tools:text="Preparation time: 45 min" />
+
+            <TextView
+                android:id="@+id/tv_recipe_detail_description"
+                style="@style/AppText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/tv_recipe_detail_original"
@@ -180,72 +201,78 @@
 
             </LinearLayout>
 
-            <Button
-                android:id="@+id/btn_recipe_detail_cook"
-                style="@style/PrimaryButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:text="@string/recipe_detail_cook" />
-
             <LinearLayout
+                android:id="@+id/recipe_detail_actions"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:orientation="horizontal">
-
+                android:orientation="vertical">
                 <Button
-                    android:id="@+id/btn_recipe_detail_favorite"
-                    style="@style/SecondaryButton"
-                    android:layout_width="0dp"
+                    android:id="@+id/btn_recipe_detail_cook"
+                    style="@style/PrimaryButton"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="8dp"
-                    android:text="@string/recipe_detail_favorite" />
+                    android:layout_marginTop="32dp"
+                    android:text="@string/recipe_detail_cook" />
 
-                <Button
-                    android:id="@+id/btn_recipe_detail_modify"
-                    style="@style/SecondaryButton"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8dp"
-                    android:text="@string/recipe_detail_modify" />
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal">
 
-            </LinearLayout>
+                    <Button
+                        android:id="@+id/btn_recipe_detail_favorite"
+                        style="@style/SecondaryButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        android:text="@string/recipe_detail_favorite" />
 
-            <TextView
-                android:id="@+id/tv_recipe_detail_manage_title"
-                style="@style/AppSubtitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:text="@string/recipe_detail_manage_title" />
+                    <Button
+                        android:id="@+id/btn_recipe_detail_modify"
+                        style="@style/SecondaryButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="8dp"
+                        android:text="@string/recipe_detail_modify" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:orientation="horizontal">
+                </LinearLayout>
 
-                <Button
-                    android:id="@+id/btn_recipe_detail_edit"
-                    style="@style/SecondaryButton"
-                    android:layout_width="0dp"
+                <TextView
+                    android:id="@+id/tv_recipe_detail_manage_title"
+                    style="@style/AppSubtitle"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="8dp"
-                    android:text="@string/recipe_detail_edit" />
+                    android:layout_marginTop="32dp"
+                    android:text="@string/recipe_detail_manage_title" />
 
-                <Button
-                    android:id="@+id/btn_recipe_detail_delete"
-                    style="@style/SecondaryButton"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8dp"
-                    android:text="@string/recipe_detail_delete" />
+                    android:layout_marginTop="12dp"
+                    android:orientation="horizontal">
 
+                    <Button
+                        android:id="@+id/btn_recipe_detail_edit"
+                        style="@style/SecondaryButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        android:text="@string/recipe_detail_edit" />
+
+                    <Button
+                        android:id="@+id/btn_recipe_detail_delete"
+                        style="@style/SecondaryButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="8dp"
+                        android:text="@string/recipe_detail_delete" />
+
+                </LinearLayout>
             </LinearLayout>
 
         </LinearLayout>

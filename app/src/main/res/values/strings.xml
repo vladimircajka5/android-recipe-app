@@ -503,4 +503,74 @@
         <item>Reject</item>
         <item>Suggest another category</item>
     </string-array>
+
+    <!-- Recipe search and detail preview -->
+    <string name="search_title">Search recipes</string>
+    <string name="search_sample_notice">Sample recipes</string>
+    <string name="search_query_hint">Recipe name</string>
+    <string name="search_filters">Filters</string>
+    <string name="search_filters_active">Filters active</string>
+    <string name="search_filters_title">Search filters</string>
+    <string name="search_empty">No recipes match. Try another name or change your filters.</string>
+    <string name="search_any">Any</string>
+    <string name="search_dish">Dish type</string>
+    <string name="search_diet">Diet type</string>
+    <string name="search_meal">Meal type</string>
+    <string name="search_method">Preparation method</string>
+    <string name="search_dish_main">Main dish</string>
+    <string name="search_dish_dessert">Dessert</string>
+    <string name="search_diet_vegetarian">Vegetarian</string>
+    <string name="search_diet_vegan">Vegan</string>
+    <string name="search_meal_breakfast">Breakfast</string>
+    <string name="search_meal_lunch">Lunch</string>
+    <string name="search_meal_dinner">Dinner</string>
+    <string name="search_method_boiling">Boiling</string>
+    <string name="search_method_baking">Baking</string>
+    <string name="search_method_frying">Frying</string>
+    <string name="search_prep_time">Preparation time</string>
+    <string name="search_min_time">Minimum</string>
+    <string name="search_max_time">Maximum</string>
+    <string name="search_min_unit">Minimum time unit</string>
+    <string name="search_max_unit">Maximum time unit</string>
+    <string name="search_minutes">Minutes</string>
+    <string name="search_hours">Hours</string>
+    <string name="search_time_range_error">Maximum must be at least the minimum.</string>
+    <string name="search_number_error">Enter a number between 0 and 999.</string>
+    <string name="search_exclude_allergens">Exclude allergens</string>
+    <string name="search_allergen_gluten">Gluten</string>
+    <string name="search_allergen_milk">Milk</string>
+    <string name="search_allergen_egg">Eggs</string>
+    <string name="search_ingredients">Available ingredients</string>
+    <string name="search_ingredients_off">Ignore ingredients</string>
+    <string name="search_ingredients_manual">Choose from catalog</string>
+    <string name="search_ingredients_pantry">Use sample pantry</string>
+    <string name="search_find_ingredient">Find an ingredient</string>
+    <string name="search_no_ingredients">No ingredients match.</string>
+    <string name="search_selected_ingredients">Selected: %1$d</string>
+    <string name="search_pantry_contents">Sample pantry: %1$s</string>
+    <string name="search_max_missing">Maximum missing ingredients</string>
+    <string name="search_max_missing_hint">Leave empty to require all ingredients.</string>
+    <string name="search_apply">Apply filters</string>
+    <string name="search_clear">Clear filters</string>
+    <string name="search_result_meta">%1$s · %2$s · %3$d min</string>
+    <string name="search_can_make">All ingredients available</string>
+    <string name="search_missing">Missing %1$d: %2$s</string>
+    <string name="search_sample_pancakes">Homemade Pancakes</string>
+    <string name="search_sample_pancakes_description">Soft pancakes made in a pan and served warm.</string>
+    <string name="search_sample_pancakes_steps">1. Whisk the flour, milk, and eggs.\n\n2. Pour portions of batter into a hot pan.\n\n3. Flip each pancake when bubbles appear.</string>
+    <string name="search_sample_pasta">Tomato and Cheese Pasta</string>
+    <string name="search_sample_pasta_description">A simple pasta with fresh tomatoes and grated cheese.</string>
+    <string name="search_sample_pasta_steps">1. Boil the pasta.\n\n2. Warm the chopped tomatoes in a pan.\n\n3. Toss the pasta with the tomatoes and top with cheese.</string>
+    <string name="search_sample_rice">Baked Tomato Rice</string>
+    <string name="search_sample_rice_description">Oven-baked rice with tomatoes and black pepper.</string>
+    <string name="search_sample_rice_steps">1. Add rice, chopped tomatoes, pepper, and water to a baking dish.\n\n2. Cover and bake until the rice is tender.\n\n3. Rest the rice for five minutes before serving.</string>
+    <string name="search_sample_author">By Alex · Sample recipe</string>
+    <string name="search_detail_duration">Preparation time: %1$d min</string>
+    <string name="search_detail_ingredient">%1$s · %2$s</string>
+    <string name="search_detail_allergens">Contains: %1$s</string>
+    <string name="search_detail_no_allergens">No allergens listed</string>
+    <plurals name="search_detail_servings">
+        <item quantity="one">%d serving</item>
+        <item quantity="other">%d servings</item>
+    </plurals>
 </resources>
