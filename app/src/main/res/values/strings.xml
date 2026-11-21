@@ -398,6 +398,9 @@
     <string name="report_decision_label">Administrator decision</string>
     <string name="report_resolved_label">Decision date</string>
     <string name="report_photo_description">Reported photograph of homemade pancakes</string>
+    <string name="report_recipe_action">Report recipe</string>
+    <string name="report_comment_action">Report comment</string>
+    <string name="report_photo_action">Report photo</string>
     <string name="report_back">Back</string>
     <string name="report_cancel">Cancel</string>
     <string name="report_submit">Submit report</string>

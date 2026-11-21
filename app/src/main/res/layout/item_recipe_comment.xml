@@ -43,6 +43,15 @@
             android:scaleType="centerCrop"
             android:visibility="gone" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/recipe_comment_report_photo"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:enabled="false"
+            android:text="@string/report_photo_action"
+            android:visibility="gone" />
+
         <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -59,6 +68,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/recipe_comment_reply" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/recipe_comment_report"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:enabled="false"
+                    android:text="@string/report_comment_action" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/recipe_comment_edit"
