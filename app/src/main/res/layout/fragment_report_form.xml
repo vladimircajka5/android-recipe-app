@@ -46,6 +46,14 @@
                 android:minHeight="48dp"
                 android:contentDescription="@string/report_content_label" />
             <TextView
+                android:id="@+id/report_target_title"
+                style="@style/AppText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+            <TextView
                 android:id="@+id/report_target_type"
                 style="@style/AppTextSecondary"
                 android:layout_width="match_parent"

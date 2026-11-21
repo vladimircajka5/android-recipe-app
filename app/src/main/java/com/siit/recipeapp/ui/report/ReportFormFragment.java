@@ -8,8 +8,10 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.appbar.MaterialToolbar;
@@ -23,8 +25,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class ReportFormFragment extends Fragment {
+    private static final String ARG_RECIPE_TITLE = "recipe_title";
+    private static final String ARG_RECIPE_DESCRIPTION = "recipe_description";
+    private static final String ARG_RECIPE_PHOTO = "recipe_photo";
+
     public ReportFormFragment() {
         super(R.layout.fragment_report_form);
+    }
+
+    public static ReportFormFragment newForRecipe(@StringRes int title,
+                                                  @StringRes int description,
+                                                  @DrawableRes int photo) {
+        ReportFormFragment fragment = new ReportFormFragment();
+        Bundle arguments = new Bundle();
+        arguments.putInt(ARG_RECIPE_TITLE, title);
+        arguments.putInt(ARG_RECIPE_DESCRIPTION, description);
+        arguments.putInt(ARG_RECIPE_PHOTO, photo);
+        fragment.setArguments(arguments);
+        return fragment;
     }
 
     @Override
@@ -33,8 +51,23 @@ public final class ReportFormFragment extends Fragment {
         toolbar.setNavigationOnClickListener(view -> getParentFragmentManager().popBackStack());
         root.findViewById(R.id.report_cancel).setOnClickListener(view ->
                 getParentFragmentManager().popBackStack());
-        setupContentPicker(root);
+        setupTarget(root);
         root.findViewById(R.id.report_submit).setOnClickListener(view -> previewSubmission(root));
+    }
+
+    private void setupTarget(View root) {
+        Bundle arguments = getArguments();
+        if (arguments == null || !arguments.containsKey(ARG_RECIPE_TITLE)) {
+            setupContentPicker(root);
+            return;
+        }
+
+        root.findViewById(R.id.report_target).setVisibility(View.GONE);
+        TextView title = root.findViewById(R.id.report_target_title);
+        title.setText(arguments.getInt(ARG_RECIPE_TITLE));
+        title.setVisibility(View.VISIBLE);
+        showContent(root, R.string.report_type_recipe, arguments.getInt(ARG_RECIPE_DESCRIPTION),
+                arguments.getInt(ARG_RECIPE_PHOTO), R.string.recipe_detail_photo_description);
     }
 
     private void setupContentPicker(View root) {
@@ -50,7 +83,9 @@ public final class ReportFormFragment extends Fragment {
         picker.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                showContent(root, ReportPreviewData.TARGETS.get(position));
+                Target target = ReportPreviewData.TARGETS.get(position);
+                showContent(root, target.type, target.content, target.image,
+                        R.string.report_photo_description);
             }
 
             @Override
@@ -58,13 +93,15 @@ public final class ReportFormFragment extends Fragment {
         });
     }
 
-    private void showContent(View root, Target target) {
-        ((TextView) root.findViewById(R.id.report_target_type)).setText(target.type);
-        ((TextView) root.findViewById(R.id.report_target_content)).setText(target.content);
+    private void showContent(View root, @StringRes int type, @StringRes int content,
+                             @DrawableRes int image, @StringRes int photoDescription) {
+        ((TextView) root.findViewById(R.id.report_target_type)).setText(type);
+        ((TextView) root.findViewById(R.id.report_target_content)).setText(content);
         ImageView photo = root.findViewById(R.id.report_target_photo);
-        photo.setVisibility(target.image == 0 ? View.GONE : View.VISIBLE);
-        if (target.image != 0) {
-            photo.setImageResource(target.image);
+        photo.setVisibility(image == 0 ? View.GONE : View.VISIBLE);
+        if (image != 0) {
+            photo.setImageResource(image);
+            photo.setContentDescription(getString(photoDescription));
         }
     }
 

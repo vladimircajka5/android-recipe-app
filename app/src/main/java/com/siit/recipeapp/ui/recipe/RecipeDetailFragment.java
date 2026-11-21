@@ -10,10 +10,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.appbar.MaterialToolbar;
+import com.siit.recipeapp.MainActivity;
 import com.siit.recipeapp.R;
 import com.siit.recipeapp.ui.preview.RecipeSearchPreviewData;
 import com.siit.recipeapp.ui.preview.RecipeSearchPreviewData.Amount;
 import com.siit.recipeapp.ui.preview.RecipeSearchPreviewData.Recipe;
+import com.siit.recipeapp.ui.report.ReportFormFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +50,7 @@ public class RecipeDetailFragment extends Fragment {
         MaterialToolbar toolbar = root.findViewById(R.id.recipe_detail_preview_toolbar);
         toolbar.setVisibility(View.VISIBLE);
         toolbar.setNavigationOnClickListener(view -> getParentFragmentManager().popBackStack());
+        setupRecipeMenu(toolbar, recipe);
         root.findViewById(R.id.tv_recipe_detail_title).setVisibility(View.GONE);
         root.findViewById(R.id.tv_recipe_detail_region).setVisibility(View.GONE);
         root.findViewById(R.id.recipe_detail_actions).setVisibility(View.GONE);
@@ -66,6 +69,18 @@ public class RecipeDetailFragment extends Fragment {
         text(root, R.id.tv_recipe_detail_ingredients_preview).setText(formatIngredients(recipe));
         text(root, R.id.tv_recipe_detail_allergens).setText(formatAllergens(recipe));
         text(root, R.id.tv_recipe_detail_steps_preview).setText(recipe.directions);
+    }
+
+    private void setupRecipeMenu(MaterialToolbar toolbar, Recipe recipe) {
+        toolbar.inflateMenu(R.menu.recipe_detail_menu);
+        toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() != R.id.recipe_detail_report) return false;
+
+            MainActivity activity = (MainActivity) requireActivity();
+            activity.openProtectedFragment(ReportFormFragment.newForRecipe(
+                    recipe.title, recipe.description, recipe.photo));
+            return true;
+        });
     }
 
     private void showPhoto(View root, Recipe recipe) {
