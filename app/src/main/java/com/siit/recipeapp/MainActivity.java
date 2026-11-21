@@ -23,6 +23,7 @@ import com.siit.recipeapp.ui.auth.ForgotPasswordFragment;
 import com.siit.recipeapp.ui.home.HomeFragment;
 import com.siit.recipeapp.ui.profile.ProfileFragment;
 import com.siit.recipeapp.ui.recipe.RecipeListFragment;
+import com.siit.recipeapp.ui.shopping.RecipeIngredientsToListFragment;
 import com.siit.recipeapp.ui.shopping.ShoppingListsFragment;
 import com.siit.recipeapp.ui.shopping.ShoppingDetailFragment;
 import com.siit.recipeapp.ui.shopping.ShoppingListEditorFragment;
@@ -137,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
 
                         ViewCompat.requestApplyInsets(findViewById(R.id.main));
 
-                        if (fragment instanceof HomeFragment) {
+                        if (fragment instanceof HomeFragment || fragment instanceof RecipeIngredientsToListFragment) {
                             bottomNavigation.getMenu()
                                     .findItem(R.id.nav_home)
                                     .setChecked(true);

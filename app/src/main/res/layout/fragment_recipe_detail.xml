@@ -171,6 +171,15 @@
 
             </LinearLayout>
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/recipe_detail_add_to_shopping"
+                style="@style/SecondaryButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/recipe_shopping_title"
+                android:visibility="gone" />
+
             <TextView
                 android:id="@+id/tv_recipe_detail_allergens"
                 style="@style/AppText"

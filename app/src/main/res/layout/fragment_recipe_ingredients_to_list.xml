@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/recipe_shopping_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:navigationContentDescription="@string/report_back"
+        app:navigationIcon="@drawable/ic_report_back"
+        app:title="@string/recipe_shopping_title" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/recipe_shopping_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp"
+            android:paddingBottom="24dp">
+
+            <TextView
+                android:id="@+id/recipe_shopping_name"
+                style="@style/AppTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:accessibilityHeading="true" />
+
+            <TextView
+                android:id="@+id/recipe_shopping_servings"
+                style="@style/AppTextSecondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp" />
+
+            <TextView
+                style="@style/AppSubtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:accessibilityHeading="true"
+                android:text="@string/recipe_shopping_ingredients" />
+
+            <RadioGroup
+                android:id="@+id/recipe_shopping_modes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="vertical">
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/recipe_shopping_selected"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:text="@string/recipe_shopping_selected" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/recipe_shopping_missing"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:text="@string/recipe_shopping_missing" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/recipe_shopping_all"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:text="@string/recipe_shopping_all" />
+            </RadioGroup>
+
+            <LinearLayout
+                android:id="@+id/recipe_shopping_ingredient_choices"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="vertical" />
+
+            <TextView
+                android:id="@+id/recipe_shopping_all_rows"
+                style="@style/AppText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/recipe_shopping_missing_message"
+                style="@style/AppTextSecondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/recipe_shopping_missing_unavailable"
+                android:visibility="gone" />
+
+            <TextView
+                style="@style/AppSubtitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:accessibilityHeading="true"
+                android:text="@string/recipe_shopping_list_heading" />
+
+            <TextView
+                android:id="@+id/recipe_shopping_destination"
+                style="@style/AppTextSecondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:accessibilityLiveRegion="polite"
+                android:text="@string/recipe_shopping_no_list" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/recipe_shopping_choose_list"
+                style="@style/SecondaryButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/recipe_shopping_choose_list" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/recipe_shopping_add"
+                style="@style/Widget.Material3.Button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:enabled="false"
+                android:text="@string/recipe_shopping_add" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>
