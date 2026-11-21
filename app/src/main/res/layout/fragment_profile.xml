@@ -113,6 +113,22 @@
 
             </LinearLayout>
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_profile_reports"
+                style="@style/SecondaryButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/reports_my_title" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_profile_manage_reports"
+                style="@style/SecondaryButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:visibility="gone"
+                android:text="@string/reports_admin_title" />
+
             <TextView
                 android:id="@+id/tv_profile_settings_title"
                 style="@style/AppSubtitle"

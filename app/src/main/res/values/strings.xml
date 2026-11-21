@@ -1,8 +1,6 @@
 <resources>
     <string name="app_name">RecipeApp</string>
 
-    <!-- Perini Stringovi -->
-
     <!-- Login Fragment -->
     <string name="login_title">Wellcome Chief!</string>
     <string name="login_subtitle">Login to continue</string>
@@ -195,9 +193,6 @@
     <string name="nav_my_recipes">My Recipes</string>
     <string name="nav_profile">Profile</string>
 
-
-    <!-- Tarini Stringovi -->
-
     <!-- Home Fragment -->
     <string name="home_title">This is HOME my Nigga</string>
     <string name="home_subtitle">This is subtitle</string>
@@ -207,9 +202,6 @@
     <string name="guest_access_message">Please log in to use this feature.</string>
     <string name="guest_access_back">Back</string>
     <string name="guest_access_login">Log in</string>
-
-
-    <!-- Cajkini Stringovi -->
 
     <!-- Pantry -->
     <string name="pantry_title">My pantry</string>
@@ -390,6 +382,66 @@
         <item>Diet types</item>
     </string-array>
 
+    <!-- Reporting UI and display fixtures -->
+    <string name="reports_my_title">My Reports</string>
+    <string name="reports_admin_title">Manage Reports</string>
+    <string name="reports_filter_description">Filter reports by status</string>
+    <string name="reports_empty">No reports match this filter.</string>
+    <string name="report_new">New report</string>
+    <string name="report_new_title">Report content</string>
+    <string name="report_detail_title">Report details</string>
+    <string name="report_preview_notice">Sample data · Screen preview</string>
+    <string name="report_content_label">Reported content</string>
+    <string name="report_reason_label">Reason for reporting</string>
+    <string name="report_reporter_label">Reported by</string>
+    <string name="report_date_label">Submitted</string>
+    <string name="report_decision_label">Administrator decision</string>
+    <string name="report_resolved_label">Decision date</string>
+    <string name="report_photo_description">Reported photograph of homemade pancakes</string>
+    <string name="report_back">Back</string>
+    <string name="report_cancel">Cancel</string>
+    <string name="report_submit">Submit report</string>
+    <string name="report_withdraw">Withdraw report</string>
+    <string name="report_accept">Accept report</string>
+    <string name="report_reject">Reject report</string>
+    <string name="report_remove">Remove reported content</string>
+    <string name="report_reason_required">Enter a reason for reporting this content.</string>
+    <string name="report_rejection_reason_label">Reason for rejection</string>
+    <string name="report_rejection_required">Enter a reason before rejecting the report.</string>
+    <string name="report_preview_action">Preview action</string>
+    <string name="report_preview_action_message">This is a screen preview. This action will not submit a report or change any content.</string>
+    <string name="report_preview_unchanged">Preview only. No data was changed.</string>
+    <string name="report_status_new">New</string>
+    <string name="report_status_accepted">Accepted</string>
+    <string name="report_status_rejected">Rejected</string>
+    <string name="report_type_recipe">Recipe</string>
+    <string name="report_type_comment">Comment</string>
+    <string name="report_type_photo">Photograph</string>
+    <string name="report_sample_recipe">Homemade Pancakes</string>
+    <string name="report_sample_recipe_content">Soft pancakes served with fresh fruit. The recipe description is shown here for review.</string>
+    <string name="report_sample_comment">Comment on Homemade Pancakes</string>
+    <string name="report_sample_comment_content">Alex · 19 Nov 2026, 14:30\nVisit my page for special offers!\n\nA sample comment for reviewing the reporting screens.</string>
+    <string name="report_sample_photo">Photo of Homemade Pancakes</string>
+    <string name="report_sample_photo_content">A photograph attached to a recipe comment, uploaded by Alex.</string>
+    <string name="report_sample_self">You · Sample user</string>
+    <string name="report_sample_other_user">Mila · Sample user</string>
+    <string name="report_sample_reason_recipe">The description contains misleading information.</string>
+    <string name="report_sample_reason_comment">This comment contains unrelated advertising.</string>
+    <string name="report_sample_reason_photo">The photograph seems unrelated to this recipe.</string>
+    <string name="report_sample_date_new">21 Nov 2026, 10:15</string>
+    <string name="report_sample_date_old">19 Nov 2026, 15:40</string>
+    <string name="report_sample_date_resolved">20 Nov 2026, 09:20</string>
+    <string name="report_sample_accepted">The report was accepted because the comment contains advertising.</string>
+    <string name="report_sample_rejected">The photograph is relevant to the recipe and does not violate the content guidelines.</string>
+    <string-array name="report_user_filters">
+        <item>All statuses</item>
+        <item>@string/report_status_new</item>
+        <item>@string/report_status_accepted</item>
+        <item>@string/report_status_rejected</item>
+    </string-array>
+    <string-array name="report_admin_filters">
+        <item>Active reports</item>
+        <item>Processed reports</item>
 
 
     <string name="proposal_title">Category proposals</string>

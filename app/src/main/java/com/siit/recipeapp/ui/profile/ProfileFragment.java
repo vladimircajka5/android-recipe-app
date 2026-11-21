@@ -32,6 +32,7 @@ import com.siit.recipeapp.ui.auth.AdminRoleFragment;
 import com.siit.recipeapp.ui.auth.ChangePasswordFragment;
 import com.siit.recipeapp.ui.auth.LoginFragment;
 import com.siit.recipeapp.ui.recipe.RecipeListFragment;
+import com.siit.recipeapp.ui.report.ReportsFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +59,11 @@ public class ProfileFragment extends Fragment {
         Button btnRecipes = view.findViewById(R.id.btn_profile_recipes);
         Button btnFavorites = view.findViewById(R.id.btn_profile_favorites);
         ImageView ivAvatar = view.findViewById(R.id.iv_profile_avatar);
+
+        Button btnReports = view.findViewById(R.id.btn_profile_reports);
+        Button btnManageReports = view.findViewById(R.id.btn_profile_manage_reports);
+        btnReports.setOnClickListener(v -> openReports(false));
+        btnManageReports.setOnClickListener(v -> openReports(true));
 
         // ===== Navigacija =====
         // Logout
@@ -143,6 +149,7 @@ public class ProfileFragment extends Fragment {
 
                 if (role == UserRole.ADMIN) {
                     btnGrantAdmin.setVisibility(View.VISIBLE);
+                    btnManageReports.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -209,6 +216,14 @@ public class ProfileFragment extends Fragment {
 
 
 // ===== Privatne metode =====
+
+    private void openReports(boolean admin) {
+        getParentFragmentManager().beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.fragment_container, ReportsFragment.newInstance(admin))
+                .addToBackStack(null)
+                .commit();
+    }
 
     // Ucitavanje profilne slike
     private void loadProfileImage(View view, String userId, ImageView ivAvatar) {
