@@ -17,6 +17,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.siit.recipeapp.MainActivity;
 import com.siit.recipeapp.R;
+import com.siit.recipeapp.data.model.account.UserRole;
+import com.siit.recipeapp.data.repository.AuthRepository;
+import com.siit.recipeapp.data.repository.firebase.FirebaseAuthRepository;
+import com.siit.recipeapp.ui.admin.AdminCatalogFragment;
 import com.siit.recipeapp.ui.recipe.UserRecipesFragment;
 
 
@@ -36,53 +40,41 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Hejj Tara - Sklanjaj sve iz ovog slobodno, ja ga koristio za testirannje :)
-        // Hejj Tara - Sklanjaj sve iz ovog slobodno, ja ga koristio za testirannje :)
-        // Hejj Tara - Sklanjaj sve iz ovog slobodno, ja ga koristio za testirannje :)
-        // Hejj Tara - Sklanjaj sve iz ovog slobodno, ja ga koristio za testirannje :)
+        Button catalogButton = view.findViewById(R.id.btn_home_catalog);
+        AuthRepository catalogAuth = new FirebaseAuthRepository();
 
-        Button btnProfile = view.findViewById(R.id.btn_home_profile);
+        catalogButton.setOnClickListener(v ->
+                getParentFragmentManager()
+                        .beginTransaction()
+                        .replace(
+                                R.id.fragment_container,
+                                new AdminCatalogFragment())
+                        .addToBackStack(null)
+                        .commit()
+        );
 
-        // Otvaranje profila drugog korisnika
-        btnProfile.setOnClickListener(v -> {
+        if (catalogAuth.hasVerifiedSession()) {
+            catalogAuth.getCurrentRole(new AuthRepository.RoleCallback() {
+                @Override
+                public void onSuccess(UserRole role) {
+                    if (!isAdded() || getView() != view) {
+                        return;
+                    }
 
-            // Gost ne moze da cita korisnicke profile
-            if (FirebaseAuth.getInstance().getCurrentUser() == null) {
-                Toast.makeText(requireContext(),
-                        "Please log in to view user profiles.",
-                        Toast.LENGTH_SHORT).show();
-                return;
-            }
+                    catalogButton.setVisibility(
+                            role == UserRole.ADMIN ? View.VISIBLE : View.GONE);
+                }
 
-            EditText etUsername = new EditText(requireContext());
-            etUsername.setSingleLine(true);
-            etUsername.setHint(R.string.other_profile_username_hint);
+                @Override
+                public void onError(String message) {
+                    if (!isAdded() || getView() != view) {
+                        return;
+                    }
 
-            new MaterialAlertDialogBuilder(requireContext())
-                    .setTitle(R.string.other_profile_open_title)
-                    .setView(etUsername)
-                    .setNegativeButton("Cancel", null)
-                    .setPositiveButton(R.string.other_profile_open, (dialog, which) -> {
+                    catalogButton.setVisibility(View.GONE);
+                }
+            });
 
-                        String username = etUsername.getText().toString().trim();
-
-                        if (username.isEmpty()) {
-                            return;
-                        }
-
-                        UserRecipesFragment fragment = new UserRecipesFragment();
-
-                        Bundle args = new Bundle();
-                        args.putString(UserRecipesFragment.ARG_USERNAME, username);
-                        fragment.setArguments(args);
-
-                        getParentFragmentManager()
-                                .beginTransaction()
-                                .replace(R.id.fragment_container, fragment)
-                                .addToBackStack(null)
-                                .commit();
-                    })
-                    .show();
-        });
+        }
     }
 }
