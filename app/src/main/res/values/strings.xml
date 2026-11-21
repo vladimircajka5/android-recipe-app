@@ -389,4 +389,66 @@
         <item>Dish types</item>
         <item>Diet types</item>
     </string-array>
+
+
+
+    <string name="proposal_title">Category proposals</string>
+    <string name="proposal_preview_notice">UI preview: sample data only. Changes are not saved online and reset when the application process restarts.</string>
+    <string name="proposal_scope">Show</string>
+    <string name="proposal_scope_my">My proposals</string>
+    <string name="proposal_scope_all">All proposals</string>
+    <string name="proposal_filter">Status</string>
+    <string name="proposal_new">New proposal</string>
+    <string name="proposal_empty">No proposals match this filter.</string>
+    <string name="proposal_checking_role">Checking administrator view…</string>
+    <string name="proposal_user_view">Your sample proposals</string>
+    <string name="proposal_admin_view">Administrator view is available.</string>
+    <string name="proposal_role_error">Administrator access could not be checked. Showing your sample proposals.</string>
+    <string name="proposal_sign_in">Sign in to access category proposals.</string>
+
+    <string name="proposal_form_title">New category proposal</string>
+    <string name="proposal_element">Ingredient</string>
+    <string name="proposal_name">Proposed category name</string>
+    <string name="proposal_explanation">Explanation (optional)</string>
+    <string name="proposal_preview_submit">Add to preview</string>
+    <string name="proposal_element_required">Enter an ingredient.</string>
+    <string name="proposal_name_required">Enter a category name.</string>
+    <string name="proposal_preview_added">Added to this preview only. Nothing was sent to the server.</string>
+
+    <string name="proposal_details_title">Proposal details</string>
+    <string name="proposal_details_body">Ingredient: %1$s\n\nProposed category: %2$s\n\nExplanation: %3$s\n\nAuthor: %4$s\n\nSubmitted: %5$s\n\nStatus: %6$s\n\nAdministrator response: %7$s\n\nAlternative category: %8$s</string>
+    <string name="proposal_none">Not provided</string>
+    <string name="proposal_you">You (preview)</string>
+    <string name="proposal_sample_member">Sample member</string>
+    <string name="proposal_review_title">Administrator decision</string>
+    <string name="proposal_decision">Decision</string>
+    <string name="proposal_response">Response (optional)</string>
+    <string name="proposal_alternative">Alternative category</string>
+    <string name="proposal_alternative_required">Enter an alternative category.</string>
+    <string name="proposal_apply_preview">Apply to preview</string>
+    <string name="proposal_preview_updated">Preview updated. No category or notification was created.</string>
+    <string name="proposal_changed">This proposal has already been processed.</string>
+    <string name="proposal_close">Close</string>
+    <string name="proposal_cancel">Cancel</string>
+
+    <string-array name="proposal_filters">
+        <item>All statuses</item>
+        <item>Pending</item>
+        <item>Accepted</item>
+        <item>Rejected</item>
+        <item>Alternative proposed</item>
+    </string-array>
+
+    <string-array name="proposal_statuses">
+        <item>Pending</item>
+        <item>Accepted</item>
+        <item>Rejected</item>
+        <item>Alternative proposed</item>
+    </string-array>
+
+    <string-array name="proposal_decisions">
+        <item>Accept</item>
+        <item>Reject</item>
+        <item>Suggest another category</item>
+    </string-array>
 </resources>
