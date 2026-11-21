@@ -22,6 +22,7 @@ import com.siit.recipeapp.data.repository.AuthRepository;
 import com.siit.recipeapp.data.repository.firebase.FirebaseAuthRepository;
 import com.siit.recipeapp.ui.admin.AdminCatalogFragment;
 import com.siit.recipeapp.ui.recipe.UserRecipesFragment;
+import com.siit.recipeapp.ui.proposals.CategoryProposalsFragment;
 
 
 public class HomeFragment extends Fragment {
@@ -42,7 +43,25 @@ public class HomeFragment extends Fragment {
 
         Button catalogButton = view.findViewById(R.id.btn_home_catalog);
         AuthRepository catalogAuth = new FirebaseAuthRepository();
+        view.findViewById(R.id.btn_home_proposals)
+                .setOnClickListener(v -> {
+                    if (!catalogAuth.hasVerifiedSession()) {
+                        Toast.makeText(
+                                requireContext(),
+                                R.string.proposal_sign_in,
+                                Toast.LENGTH_SHORT
+                        ).show();
+                        return;
+                    }
 
+                    getParentFragmentManager()
+                            .beginTransaction()
+                            .replace(
+                                    R.id.fragment_container,
+                                    new CategoryProposalsFragment())
+                            .addToBackStack(null)
+                            .commit();
+                });
         catalogButton.setOnClickListener(v ->
                 getParentFragmentManager()
                         .beginTransaction()
