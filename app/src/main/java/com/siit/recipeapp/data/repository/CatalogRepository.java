@@ -10,6 +10,12 @@ public interface CatalogRepository {
         void onError(Exception error);
     }
 
+    final class EntryInUseException extends IllegalStateException {
+        public EntryInUseException() {
+            super("Catalog entry is in use.");
+        }
+    }
+
     void getIngredientCategories(
             Callback<List<IngredientCategory>> callback);
 

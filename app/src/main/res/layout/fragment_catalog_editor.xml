@@ -64,7 +64,8 @@
             style="@style/AppTextSecondary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="16dp"
+            android:accessibilityLiveRegion="polite" />
 
         <ProgressBar
             android:id="@+id/progress_catalog_editor"
@@ -81,6 +82,32 @@
             android:layout_marginTop="16dp"
             android:enabled="false"
             android:text="@string/admin_catalog_save" />
+
+        <LinearLayout
+            android:id="@+id/layout_catalog_delete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                style="@style/AppTextSecondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/admin_catalog_delete_hint" />
+
+            <Button
+                android:id="@+id/btn_catalog_delete"
+                style="@style/SecondaryButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:enabled="false"
+                android:text="@string/admin_catalog_delete"
+                android:textColor="?attr/colorError" />
+
+        </LinearLayout>
 
     </LinearLayout>
 </ScrollView>

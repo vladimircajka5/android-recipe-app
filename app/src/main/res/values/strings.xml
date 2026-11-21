@@ -355,7 +355,7 @@
     <string name="admin_catalog_checking">Checking administrator access…</string>
     <string name="admin_catalog_loading">Loading catalog…</string>
     <string name="admin_catalog_empty">This catalog has no entries.</string>
-    <string name="admin_catalog_count">Entries: %1$d</string>
+    <string name="admin_catalog_count">Entries: %1$d. Tap an entry to edit.</string>
     <string name="admin_catalog_denied">Administrator access is required.</string>
     <string name="admin_catalog_role_error">Unable to verify access. Check your connection and retry.</string>
     <string name="admin_catalog_load_error">Unable to load the catalog. Check your connection and retry.</string>
@@ -368,6 +368,19 @@
     <string name="admin_catalog_saved">Saved successfully.</string>
     <string name="admin_catalog_name_required">Enter a name.</string>
     <string name="admin_catalog_save_error">Unable to save. Check your connection and administrator access.</string>
+    <string name="admin_catalog_saving">Saving…</string>
+    <string name="admin_catalog_delete">Delete entry</string>
+    <string name="admin_catalog_delete_hint">Only entries that are not in use can be deleted.</string>
+    <string name="admin_catalog_delete_title">Delete catalog entry?</string>
+    <string name="admin_catalog_delete_message">Delete “%1$s”? This action cannot be undone. Entries used by existing data cannot be deleted.</string>
+    <string name="admin_catalog_cancel">Cancel</string>
+    <string name="admin_catalog_ok">OK</string>
+    <string name="admin_catalog_deleting">Deleting…</string>
+    <string name="admin_catalog_deleted">Entry deleted.</string>
+    <string name="admin_catalog_delete_denied">Deletion is not allowed for this entry.</string>
+    <string name="admin_catalog_delete_error">Unable to delete. Check your connection and try again.</string>
+    <string name="admin_catalog_in_use_title">Entry is in use</string>
+    <string name="admin_catalog_in_use_message">This entry is used by existing data and cannot be deleted.</string>
 
     <string-array name="admin_catalog_types">
         <item>Ingredient categories</item>

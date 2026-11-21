@@ -6,13 +6,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.siit.recipeapp.R;
 import com.siit.recipeapp.data.model.account.UserRole;
 import com.siit.recipeapp.data.repository.AppRepositories;
@@ -34,9 +38,13 @@ public class CatalogEditorFragment extends Fragment {
     private String entryId;
     private boolean editing;
     private boolean authorized;
-    private boolean saving;
+    private boolean busy;
+    private boolean completed;
+    private int completionMessage;
 
+    private CatalogRepository repository;
     private CatalogService service;
+    private AlertDialog activeDialog;
 
     public static CatalogEditorFragment newInstance(
             int type, String id, String name, String description) {
@@ -71,6 +79,15 @@ public class CatalogEditorFragment extends Fragment {
         if (entryId == null) {
             entryId = UUID.randomUUID().toString();
         }
+
+        completed = savedInstanceState != null
+                && savedInstanceState.getBoolean("completed", false);
+
+        completionMessage = savedInstanceState == null
+                ? R.string.admin_catalog_saved
+                : savedInstanceState.getInt(
+                "completion_message",
+                R.string.admin_catalog_saved);
     }
 
     @Override
@@ -90,11 +107,11 @@ public class CatalogEditorFragment extends Fragment {
 
         super.onViewCreated(view, savedInstanceState);
 
-        service = AppRepositories.createCatalogService(
-                AppRepositories.createCatalogRepository());
+        repository = AppRepositories.createCatalogRepository();
+        service = AppRepositories.createCatalogService(repository);
 
         authorized = false;
-        saving = false;
+        busy = false;
 
         ((TextView) view.findViewById(R.id.tv_catalog_editor_title))
                 .setText(editing
@@ -109,16 +126,37 @@ public class CatalogEditorFragment extends Fragment {
         TextInputEditText description =
                 view.findViewById(R.id.et_catalog_description);
 
-        if (savedInstanceState == null) {
-            name.setText(requireArguments().getString(ARG_NAME, ""));
-            description.setText(
-                    requireArguments().getString(ARG_DESCRIPTION, ""));
-        }
+        Bundle arguments = requireArguments();
+
+        name.setText(savedInstanceState == null
+                ? arguments.getString(ARG_NAME, "")
+                : savedInstanceState.getString(
+                "draft_name", arguments.getString(ARG_NAME, "")));
+
+        description.setText(savedInstanceState == null
+                ? arguments.getString(ARG_DESCRIPTION, "")
+                : savedInstanceState.getString(
+                "draft_description",
+                arguments.getString(ARG_DESCRIPTION, "")));
+
+        view.findViewById(R.id.layout_catalog_delete)
+                .setVisibility(editing ? View.VISIBLE : View.GONE);
 
         view.findViewById(R.id.btn_catalog_save)
                 .setOnClickListener(v -> save(view));
 
-        setFormEnabled(view, false);
+        view.findViewById(R.id.btn_catalog_delete)
+                .setOnClickListener(v -> confirmDelete(view));
+
+        renderControls(view);
+
+        if (completed) {
+            showStatus(view, completionMessage);
+            return;
+        }
+
+        busy = true;
+        renderControls(view);
         showStatus(view, R.string.admin_catalog_checking);
 
         AuthRepository auth = new FirebaseAuthRepository();
@@ -130,12 +168,12 @@ public class CatalogEditorFragment extends Fragment {
                     return;
                 }
 
+                busy = false;
                 authorized = role == UserRole.ADMIN;
-                setFormEnabled(view, authorized);
+                renderControls(view);
 
                 if (authorized) {
-                    ((TextView) view.findViewById(
-                            R.id.tv_catalog_editor_status)).setText("");
+                    clearStatus(view);
                 } else {
                     showStatus(view, R.string.admin_catalog_denied);
                 }
@@ -147,6 +185,8 @@ public class CatalogEditorFragment extends Fragment {
                     return;
                 }
 
+                busy = false;
+                renderControls(view);
                 showStatus(view, R.string.admin_catalog_role_error);
             }
         });
@@ -157,7 +197,7 @@ public class CatalogEditorFragment extends Fragment {
     }
 
     private void save(View view) {
-        if (!authorized || saving) {
+        if (!authorized || busy || completed) {
             return;
         }
 
@@ -181,59 +221,12 @@ public class CatalogEditorFragment extends Fragment {
             return;
         }
 
-        saving = true;
-        setFormEnabled(view, false);
-
-        ((TextView) view.findViewById(
-                R.id.tv_catalog_editor_status)).setText("");
-
-        view.findViewById(R.id.progress_catalog_editor)
-                .setVisibility(View.VISIBLE);
+        busy = true;
+        renderControls(view);
+        showStatus(view, R.string.admin_catalog_saving);
 
         CatalogRepository.Callback<Void> callback =
-                new CatalogRepository.Callback<Void>() {
-                    @Override
-                    public void onSuccess(Void unused) {
-                        if (!isCurrent(view)) {
-                            return;
-                        }
-
-                        saving = false;
-                        view.findViewById(R.id.progress_catalog_editor)
-                                .setVisibility(View.GONE);
-
-                        showStatus(view, R.string.admin_catalog_saved);
-
-                        if (!getParentFragmentManager().isStateSaved()) {
-                            getParentFragmentManager().popBackStack();
-                        }
-                    }
-
-                    @Override
-                    public void onError(Exception error) {
-                        if (!isCurrent(view)) {
-                            return;
-                        }
-
-                        saving = false;
-                        setFormEnabled(view, true);
-
-                        view.findViewById(R.id.progress_catalog_editor)
-                                .setVisibility(View.GONE);
-
-                        Log.e("AdminCatalog", "Could not save entry", error);
-
-                        TextView status = view.findViewById(
-                                R.id.tv_catalog_editor_status);
-
-                        if (error instanceof IllegalArgumentException) {
-                            status.setText(error.getMessage());
-                        } else {
-                            status.setText(
-                                    R.string.admin_catalog_save_error);
-                        }
-                    }
-                };
+                operationCallback(view, false);
 
         switch (catalogType) {
             case 0:
@@ -259,16 +252,176 @@ public class CatalogEditorFragment extends Fragment {
         }
     }
 
+    private void confirmDelete(View view) {
+        if (!authorized || busy || completed || !editing
+                || !isResumed()
+                || getParentFragmentManager().isStateSaved()) {
+            return;
+        }
+
+        if (activeDialog != null && activeDialog.isShowing()) {
+            return;
+        }
+
+        String originalName = requireArguments().getString(ARG_NAME, "");
+
+        activeDialog = new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.admin_catalog_delete_title)
+                .setMessage(getString(
+                        R.string.admin_catalog_delete_message,
+                        originalName))
+                .setNegativeButton(R.string.admin_catalog_cancel, null)
+                .setPositiveButton(
+                        R.string.admin_catalog_delete,
+                        (dialog, which) -> delete(view))
+                .create();
+
+        activeDialog.setOnDismissListener(dialog -> activeDialog = null);
+        activeDialog.show();
+    }
+
+    private void delete(View view) {
+        if (!isCurrent(view)
+                || !authorized || busy || completed || !editing) {
+            return;
+        }
+
+        busy = true;
+        renderControls(view);
+        showStatus(view, R.string.admin_catalog_deleting);
+
+        CatalogRepository.Callback<Void> callback =
+                operationCallback(view, true);
+
+        switch (catalogType) {
+            case 0:
+                repository.deleteIngredientCategory(entryId, callback);
+                break;
+            case 1:
+                repository.deleteAllergen(entryId, callback);
+                break;
+            case 2:
+                repository.deleteMealType(entryId, callback);
+                break;
+            case 3:
+                repository.deleteDishType(entryId, callback);
+                break;
+            case 4:
+                repository.deleteDietType(entryId, callback);
+                break;
+        }
+    }
+
+    private CatalogRepository.Callback<Void> operationCallback(
+            View view, boolean deleting) {
+
+        return new CatalogRepository.Callback<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                if (!isCurrent(view)) {
+                    return;
+                }
+
+                busy = false;
+                completed = true;
+                completionMessage = deleting
+                        ? R.string.admin_catalog_deleted
+                        : R.string.admin_catalog_saved;
+
+                renderControls(view);
+                showStatus(view, completionMessage);
+
+                if (isResumed()) {
+                    Toast.makeText(
+                            requireContext(),
+                            completionMessage,
+                            Toast.LENGTH_SHORT
+                    ).show();
+                }
+
+                closeIfCompleted();
+            }
+
+            @Override
+            public void onError(Exception error) {
+                if (!isCurrent(view)) {
+                    return;
+                }
+
+                busy = false;
+                renderControls(view);
+
+                Log.e("AdminCatalog", "Catalog operation failed", error);
+
+                if (deleting
+                        && error instanceof
+                        CatalogRepository.EntryInUseException) {
+
+                    showStatus(view, R.string.admin_catalog_in_use_message);
+                    showEntryInUse();
+                    return;
+                }
+
+                if (!deleting
+                        && error instanceof IllegalArgumentException) {
+
+                    ((TextInputLayout) view.findViewById(
+                            R.id.til_catalog_name))
+                            .setError(error.getMessage());
+
+                    clearStatus(view);
+                    return;
+                }
+
+                if (deleting
+                        && error instanceof FirebaseFirestoreException
+                        && ((FirebaseFirestoreException) error).getCode()
+                        == FirebaseFirestoreException.Code.PERMISSION_DENIED) {
+
+                    showStatus(view, R.string.admin_catalog_delete_denied);
+                    return;
+                }
+
+                showStatus(view, deleting
+                        ? R.string.admin_catalog_delete_error
+                        : R.string.admin_catalog_save_error);
+            }
+        };
+    }
+
+    private void showEntryInUse() {
+        if (!isResumed()
+                || getParentFragmentManager().isStateSaved()) {
+            return;
+        }
+
+        activeDialog = new MaterialAlertDialogBuilder(requireContext())
+                .setTitle(R.string.admin_catalog_in_use_title)
+                .setMessage(R.string.admin_catalog_in_use_message)
+                .setPositiveButton(R.string.admin_catalog_ok, null)
+                .create();
+
+        activeDialog.setOnDismissListener(dialog -> activeDialog = null);
+        activeDialog.show();
+    }
+
     private String text(TextInputEditText field) {
         return field.getText() == null
                 ? ""
                 : field.getText().toString().trim();
     }
 
-    private void setFormEnabled(View view, boolean enabled) {
+    private void renderControls(View view) {
+        boolean enabled = authorized && !busy && !completed;
+
         view.findViewById(R.id.et_catalog_name).setEnabled(enabled);
         view.findViewById(R.id.et_catalog_description).setEnabled(enabled);
         view.findViewById(R.id.btn_catalog_save).setEnabled(enabled);
+        view.findViewById(R.id.btn_catalog_delete)
+                .setEnabled(enabled && editing);
+
+        view.findViewById(R.id.progress_catalog_editor)
+                .setVisibility(busy ? View.VISIBLE : View.GONE);
     }
 
     private void showStatus(View view, int message) {
@@ -276,9 +429,51 @@ public class CatalogEditorFragment extends Fragment {
                 .setText(message);
     }
 
+    private void clearStatus(View view) {
+        ((TextView) view.findViewById(R.id.tv_catalog_editor_status))
+                .setText("");
+    }
+
+    private void closeIfCompleted() {
+        if (completed && isResumed()
+                && !getParentFragmentManager().isStateSaved()) {
+            getParentFragmentManager().popBackStack();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        closeIfCompleted();
+    }
+
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
+
         outState.putString("entry_id", entryId);
+        outState.putBoolean("completed", completed);
+        outState.putInt("completion_message", completionMessage);
+
+        View view = getView();
+
+        if (view != null) {
+            outState.putString("draft_name", text(
+                    view.findViewById(R.id.et_catalog_name)));
+
+            outState.putString("draft_description", text(
+                    view.findViewById(R.id.et_catalog_description)));
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (activeDialog != null) {
+            activeDialog.dismiss();
+            activeDialog = null;
+        }
+
+        authorized = false;
+        super.onDestroyView();
     }
 }
