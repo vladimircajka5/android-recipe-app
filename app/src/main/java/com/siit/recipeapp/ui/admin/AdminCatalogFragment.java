@@ -41,6 +41,19 @@ public class AdminCatalogFragment extends Fragment {
 
     private boolean authorized;
     private int requestVersion;
+    private final List<CatalogRow> rows = new ArrayList<>();
+
+    private static final class CatalogRow {
+        final String id;
+        final String name;
+        final String description;
+
+        CatalogRow(String id, String name, String description) {
+            this.id = id;
+            this.name = name;
+            this.description = description == null ? "" : description;
+        }
+    }
 
     @Override
     public View onCreateView(
@@ -90,6 +103,15 @@ public class AdminCatalogFragment extends Fragment {
         ListView list = view.findViewById(R.id.list_catalog);
         list.setAdapter(adapter);
 
+        list.setOnItemClickListener((parent, selected, position, id) -> {
+            if (authorized && position >= 0 && position < rows.size()) {
+                openEditor(rows.get(position));
+            }
+        });
+
+        view.findViewById(R.id.btn_catalog_add)
+                .setOnClickListener(v -> openEditor(null));
+
         view.findViewById(R.id.btn_catalog_refresh)
                 .setOnClickListener(v -> checkAccess(view));
 
@@ -122,9 +144,11 @@ public class AdminCatalogFragment extends Fragment {
     }
 
     private void checkAccess(View view) {
+
         int version = ++requestVersion;
         authorized = false;
         adapter.clear();
+        rows.clear();
 
         setBusy(view, true);
         showStatus(view, R.string.admin_catalog_checking);
@@ -165,12 +189,14 @@ public class AdminCatalogFragment extends Fragment {
     }
 
     private void loadCatalog(View view) {
+
         if (!authorized) {
             return;
         }
 
         int version = ++requestVersion;
         adapter.clear();
+        rows.clear();
 
         setBusy(view, true);
         showStatus(view, R.string.admin_catalog_loading);
@@ -179,6 +205,7 @@ public class AdminCatalogFragment extends Fragment {
             case 0:
                 repository.getIngredientCategories(listCallback(
                         view, version,
+                        IngredientCategory::getId,
                         IngredientCategory::getName,
                         IngredientCategory::getDescription));
                 break;
@@ -186,6 +213,7 @@ public class AdminCatalogFragment extends Fragment {
             case 1:
                 repository.getAllergens(listCallback(
                         view, version,
+                        Allergen::getId,
                         Allergen::getName,
                         Allergen::getDescription));
                 break;
@@ -193,6 +221,7 @@ public class AdminCatalogFragment extends Fragment {
             case 2:
                 repository.getMealTypes(listCallback(
                         view, version,
+                        MealType::getId,
                         MealType::getName,
                         MealType::getDescription));
                 break;
@@ -200,6 +229,7 @@ public class AdminCatalogFragment extends Fragment {
             case 3:
                 repository.getDishTypes(listCallback(
                         view, version,
+                        DishType::getId,
                         DishType::getName,
                         DishType::getDescription));
                 break;
@@ -207,6 +237,7 @@ public class AdminCatalogFragment extends Fragment {
             case 4:
                 repository.getDietTypes(listCallback(
                         view, version,
+                        DietType::getId,
                         DietType::getName,
                         DietType::getDescription));
                 break;
@@ -216,6 +247,7 @@ public class AdminCatalogFragment extends Fragment {
     private <T> CatalogRepository.Callback<List<T>> listCallback(
             View view,
             int version,
+            Function<T, String> idOf,
             Function<T, String> nameOf,
             Function<T, String> descriptionOf) {
 
@@ -227,18 +259,23 @@ public class AdminCatalogFragment extends Fragment {
                 }
 
                 adapter.clear();
+                rows.clear();
 
                 for (T entry : entries) {
-                    String name = nameOf.apply(entry);
-                    String description = descriptionOf.apply(entry);
+                    CatalogRow row = new CatalogRow(
+                            idOf.apply(entry),
+                            nameOf.apply(entry),
+                            descriptionOf.apply(entry)
+                    );
+
+                    rows.add(row);
 
                     adapter.add(
-                            description == null || description.isEmpty()
-                                    ? name
-                                    : name + "\n" + description
+                            row.description.isEmpty()
+                                    ? row.name
+                                    : row.name + "\n" + row.description
                     );
                 }
-
                 setBusy(view, false);
 
                 TextView status = view.findViewById(R.id.tv_catalog_status);
@@ -272,6 +309,11 @@ public class AdminCatalogFragment extends Fragment {
                 .setEnabled(!busy);
 
         typeSpinner.setEnabled(authorized && !busy);
+        view.findViewById(R.id.btn_catalog_add)
+                .setEnabled(authorized && !busy);
+
+        view.findViewById(R.id.list_catalog)
+                .setEnabled(authorized && !busy);
     }
 
     private void showStatus(View view, int message) {
@@ -297,5 +339,24 @@ public class AdminCatalogFragment extends Fragment {
         typeSpinner = null;
         adapter = null;
         super.onDestroyView();
+    }
+
+    private void openEditor(CatalogRow row) {
+        if (!authorized) {
+            return;
+        }
+
+        CatalogEditorFragment fragment = CatalogEditorFragment.newInstance(
+                typeSpinner.getSelectedItemPosition(),
+                row == null ? null : row.id,
+                row == null ? "" : row.name,
+                row == null ? "" : row.description
+        );
+
+        getParentFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 }
