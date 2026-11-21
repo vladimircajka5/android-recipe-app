@@ -16,6 +16,7 @@ import com.siit.recipeapp.ui.preview.RecipeSearchPreviewData;
 import com.siit.recipeapp.ui.preview.RecipeSearchPreviewData.Amount;
 import com.siit.recipeapp.ui.preview.RecipeSearchPreviewData.Recipe;
 import com.siit.recipeapp.ui.report.ReportFormFragment;
+import com.siit.recipeapp.ui.shopping.RecipeIngredientsToListFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +67,9 @@ public class RecipeDetailFragment extends Fragment {
         text(root, R.id.tv_recipe_detail_description).setText(recipe.description);
         text(root, R.id.tv_recipe_detail_servings).setText(getResources().getQuantityString(
                 R.plurals.search_detail_servings, recipe.servings, recipe.servings));
-        text(root, R.id.tv_recipe_detail_ingredients_preview).setText(formatIngredients(recipe));
+        ArrayList<String> ingredientRows = formatIngredientRows(recipe);
+        text(root, R.id.tv_recipe_detail_ingredients_preview).setText(String.join("\n", ingredientRows));
+        setupAddToShoppingList(root, recipe, ingredientRows);
         text(root, R.id.tv_recipe_detail_allergens).setText(formatAllergens(recipe));
         text(root, R.id.tv_recipe_detail_steps_preview).setText(recipe.directions);
     }
@@ -83,6 +86,18 @@ public class RecipeDetailFragment extends Fragment {
         });
     }
 
+    private void setupAddToShoppingList(View root, Recipe recipe, ArrayList<String> ingredientRows) {
+        View addButton = root.findViewById(R.id.recipe_detail_add_to_shopping);
+        if (ingredientRows.isEmpty()) return;
+
+        addButton.setVisibility(View.VISIBLE);
+        addButton.setOnClickListener(view -> {
+            MainActivity activity = (MainActivity) requireActivity();
+            activity.openProtectedFragment(RecipeIngredientsToListFragment.newInstance(
+                    getString(recipe.title), recipe.servings, ingredientRows));
+        });
+    }
+
     private void showPhoto(View root, Recipe recipe) {
         ImageView photo = root.findViewById(R.id.iv_recipe_detail_photo);
         if (recipe.photo == 0) {
@@ -92,13 +107,13 @@ public class RecipeDetailFragment extends Fragment {
         }
     }
 
-    private String formatIngredients(Recipe recipe) {
-        List<String> ingredients = new ArrayList<>();
+    private ArrayList<String> formatIngredientRows(Recipe recipe) {
+        ArrayList<String> ingredients = new ArrayList<>();
         for (Amount amount : recipe.ingredients) {
             ingredients.add(getString(R.string.search_detail_ingredient,
                     RecipeSearchPreviewData.ingredientName(amount.ingredientId), amount.quantity));
         }
-        return String.join("\n", ingredients);
+        return ingredients;
     }
 
     private String formatAllergens(Recipe recipe) {
