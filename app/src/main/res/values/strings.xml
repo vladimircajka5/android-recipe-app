@@ -193,6 +193,12 @@
     <string name="nav_my_recipes">My Recipes</string>
     <string name="nav_profile">Profile</string>
 
+    <!-- Splash screen -->
+    <string name="splash_wordmark">Recipe\nApp</string>
+    <string name="splash_logo_description">RecipeApp logo</string>
+    <string name="splash_credit">Brought to you by \"Čajka i Sinovi\"</string>
+    <!-- GORE JE PERINO, TACNO ORGANIZOVANO, NE DIRAJTE GA -->
+
     <!-- Home Fragment -->
     <!-- Home Fragment -->
     <string name="home_title">Discover recipes</string>

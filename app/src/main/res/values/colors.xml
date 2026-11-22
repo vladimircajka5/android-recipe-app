@@ -26,4 +26,8 @@
     <!-- Navigation -->
     <color name="navigation_bar_background">#F0F0F0</color>
 
+    <!-- Splash screen -->
+    <color name="splash_background">#FFFDFC</color>
+    <color name="splash_text">#B6545E</color>
+
 </resources>
