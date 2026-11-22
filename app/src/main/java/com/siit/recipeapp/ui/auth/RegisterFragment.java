@@ -17,6 +17,7 @@ import com.siit.recipeapp.R;
 import com.siit.recipeapp.data.repository.AuthRepository;
 import com.siit.recipeapp.data.repository.firebase.FirebaseAuthRepository;
 import com.siit.recipeapp.domain.validation.AuthValidator;
+import com.siit.recipeapp.ui.animation.EntranceMotion;
 
 public class RegisterFragment extends Fragment {
 
@@ -98,6 +99,11 @@ public class RegisterFragment extends Fragment {
                         }
                     });
         });
+
+        // ===== Animacije =====
+
+        // Animirani ulazak Register ekrana
+        EntranceMotion.playRegister(view);
     }
 
     // ===== Privatne metode =====
@@ -144,5 +150,19 @@ public class RegisterFragment extends Fragment {
         }
 
         tvError.setVisibility(View.VISIBLE);
+
+    }
+
+
+    @Override
+    public void onDestroyView() {
+
+        View view = getView();
+
+        if (view != null) {
+            EntranceMotion.stopRegister(view);
+        }
+
+        super.onDestroyView();
     }
 }

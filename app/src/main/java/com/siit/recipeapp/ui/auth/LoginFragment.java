@@ -19,6 +19,7 @@ import com.siit.recipeapp.R;
 import com.siit.recipeapp.data.model.account.UserRole;
 import com.siit.recipeapp.data.repository.AuthRepository;
 import com.siit.recipeapp.data.repository.firebase.FirebaseAuthRepository;
+import com.siit.recipeapp.ui.animation.EntranceMotion;
 import com.siit.recipeapp.ui.home.HomeFragment;
 
 public class LoginFragment extends Fragment {
@@ -90,6 +91,12 @@ public class LoginFragment extends Fragment {
                     .replace(R.id.fragment_container, new HomeFragment())
                     .commit();
         });
+
+
+        // ===== Animacije =====
+
+        // Animirani ulazak Login ekrana
+        EntranceMotion.playLogin(view);
 
         // ===== Funkcionalnosti =====
 
@@ -212,5 +219,18 @@ public class LoginFragment extends Fragment {
         manager.beginTransaction()
                 .replace(R.id.fragment_container, new HomeFragment())
                 .commit();
+    }
+
+    // Uklanjanje animacije kada se ekran ukloni
+    @Override
+    public void onDestroyView() {
+
+        View view = getView();
+
+        if (view != null) {
+            EntranceMotion.stopLogin(view);
+        }
+
+        super.onDestroyView();
     }
 }
