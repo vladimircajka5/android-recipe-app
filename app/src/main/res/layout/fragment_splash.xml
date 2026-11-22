@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/splash_background">
+
+    <!-- Sadrzaj splash ekrana -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_gravity="center">
+
+        <!-- Naslov aplikacije -->
+
+        <!-- Animirana ikonica -->
+        <TextView
+            android:id="@+id/tv_splash_wordmark"
+            android:translationX="45dp"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:alpha="0"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="start"
+            android:text="@string/splash_wordmark"
+            android:textColor="@color/splash_text"
+            android:textSize="32sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/iv_splash_logo"
+            android:layout_width="160dp"
+            android:layout_height="160dp"
+            android:layout_gravity="center"
+            android:contentDescription="@string/splash_logo_description"
+            android:scaleType="fitCenter" />
+
+    </FrameLayout>
+
+    <!-- Naziv tima -->
+    <TextView
+        android:id="@+id/tv_splash_credit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="40dp"
+        android:text="@string/splash_credit"
+        android:textColor="@color/splash_text"
+        android:textSize="13sp"
+        android:gravity="center" />
+</FrameLayout>

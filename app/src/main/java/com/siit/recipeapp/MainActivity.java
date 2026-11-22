@@ -34,6 +34,7 @@ import com.siit.recipeapp.ui.pantry.BarcodeScannerFragment;
 import com.siit.recipeapp.ui.pantry.PantryProductReviewFragment;
 import android.widget.Toast;
 import com.siit.recipeapp.data.remote.UserDataSession;
+import com.siit.recipeapp.ui.splash.SplashFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -128,7 +129,8 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         boolean isAuthScreen =
-                                fragment instanceof LoginFragment
+                                fragment instanceof SplashFragment
+                                        || fragment instanceof LoginFragment
                                         || fragment instanceof RegisterFragment
                                         || fragment instanceof ForgotPasswordFragment;
 
@@ -170,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
     // ===== Privatne metode =====
 
     // Odredjivanje pocetnog ekrana
+    // Prikaz splash ekrana pri pokretanju aplikacije
     private void showInitialScreen(Bundle savedInstanceState) {
 
         // Android je vec obnovio postojeci fragment
@@ -177,20 +180,13 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        Fragment initialFragment;
-
-        // Provera sacuvane Firebase sesije
-        if (authRepository.hasVerifiedSession()) {
-            initialFragment = new HomeFragment();
-        } else {
-            initialFragment = new LoginFragment();
-        }
-
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragment_container, initialFragment)
+                .setReorderingAllowed(true)
+                .replace(R.id.fragment_container, new SplashFragment())
                 .commit();
     }
+
 
     // ===== Privatne metode =====
 
@@ -230,4 +226,38 @@ public class MainActivity extends AppCompatActivity {
                 .addToBackStack(null)
                 .commit();
     }
+
+
+// ===== Navigacija =====
+
+    // Zavrsavanje splash ekrana
+    public void finishSplash() {
+
+        FragmentManager manager = getSupportFragmentManager();
+
+        // Proveri da li je splash jos uvek aktivan
+        Fragment currentFragment =
+                manager.findFragmentById(R.id.fragment_container);
+
+        if (!(currentFragment instanceof SplashFragment)
+                || manager.isStateSaved()) {
+            return;
+        }
+
+        Fragment initialFragment;
+
+        // Provera sacuvane Firebase sesije
+        if (authRepository.hasVerifiedSession()) {
+            initialFragment = new HomeFragment();
+        } else {
+            initialFragment = new LoginFragment();
+        }
+
+        // Otvaranje odgovarajuceg pocetnog ekrana
+        manager.beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(R.id.fragment_container, initialFragment)
+                .commit();
+    }
+
 }
