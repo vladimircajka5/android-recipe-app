@@ -72,6 +72,15 @@
             app:icon="@drawable/ic_home_search" />
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_home_recipe_map"
+            style="@style/HomeMenuItem"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/map_title"
+            app:icon="@drawable/ic_recipe_map" />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_home_can_make"
             style="@style/HomeMenuItem"
             android:layout_width="match_parent"

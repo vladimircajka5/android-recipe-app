@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="map_title">Recipe map</string>
+    <string name="map_preview_notice">Preview · Sample recipes and locations</string>
+    <string name="map_source_label">Explore by</string>
+    <string name="map_location_hint">Country or region</string>
+    <string name="map_find_location">Find location</string>
+    <string name="map_location_not_found">Choose a country or region from the suggestions.</string>
+
+    <string name="map_world">World</string>
+    <string name="map_back">Back</string>
+    <string name="map_up">Previous level</string>
+    <string name="map_filters">Filters</string>
+    <string name="map_filters_count">Filters (%1$d)</string>
+    <string name="map_clear">Clear filters</string>
+    <string name="map_apply">Apply</string>
+    <string name="map_cancel">Cancel</string>
+    <string name="map_any">Any</string>
+
+    <string name="map_country">Country</string>
+    <string name="map_region">Region</string>
+    <string name="map_max_time">Maximum preparation time</string>
+    <string name="map_min_rating">Minimum rating</string>
+    <string name="map_time_option">%1$d min or less</string>
+    <string name="map_rating_option">%1$.1f and above</string>
+
+    <string name="map_group">%1$s · %2$s</string>
+    <string name="map_choose_country">Select a country to explore its regions.</string>
+    <string name="map_choose_region">Select a region to see its recipes.</string>
+    <string name="map_choose_recipe">Select a recipe to open its details.</string>
+    <string name="map_empty">No recipes match. Try another location or clear the filters.</string>
+    <string name="map_recipes_heading">Recipes</string>
+    <string name="map_view_recipes">View recipes</string>
+
+    <string name="map_recipe_author">By %1$s</string>
+    <string name="map_recipe_origin">Origin: %1$s</string>
+    <string name="map_unknown_origin">Not provided</string>
+    <string name="map_recipe_rating">★ %1$.1f/5</string>
+    <string name="map_recipe_not_rated">Not rated</string>
+    <string name="map_no_photo">No photo available</string>
+
+    <string-array name="map_sources">
+        <item>Recipe origin</item>
+        <item>Author region</item>
+    </string-array>
+
+    <plurals name="map_recipe_count">
+        <item quantity="one">%d recipe</item>
+        <item quantity="other">%d recipes</item>
+    </plurals>
+</resources>
