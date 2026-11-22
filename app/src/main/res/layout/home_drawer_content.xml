@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/home_drawer_panel"
+    android:layout_width="280dp"
+    android:layout_height="match_parent"
+    android:layout_gravity="end"
+    android:background="@color/app_surface"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/AppTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:accessibilityHeading="true"
+                android:text="@string/home_menu_title" />
+
+            <ImageButton
+                android:id="@+id/btn_home_menu_close"
+                android:rotation="180"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/home_menu_close"
+                android:padding="12dp"
+                android:src="@drawable/ic_report_back"
+                app:tint="@color/app_text" />
+
+        </LinearLayout>
+
+        <TextView
+            style="@style/AppTextSecondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/home_menu_subtitle" />
+
+        <TextView
+            android:id="@+id/tv_home_access"
+            style="@style/AppTextSecondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/home_dashboard_guest" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginVertical="20dp"
+            android:background="@color/app_outline" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_home_search_recipes"
+            style="@style/HomeMenuItem"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/search_title"
+            app:icon="@drawable/ic_home_search" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_home_can_make"
+            style="@style/HomeMenuItem"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/home_dashboard_can_make"
+            app:icon="@drawable/ic_nav_pantry" />
+
+        <TextView
+            style="@style/AppTextSecondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="8dp"
+            android:accessibilityHeading="true"
+            android:text="@string/home_dashboard_tools" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_home_notifications"
+            style="@style/HomeMenuItem"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/notification_preview_home"
+            app:icon="@drawable/ic_home_notifications" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_home_proposals"
+            style="@style/HomeMenuItem"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/home_dashboard_proposals"
+            app:icon="@drawable/ic_recipe_add" />
+
+        <TextView
+            android:id="@+id/tv_home_role_state"
+            style="@style/AppTextSecondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:accessibilityLiveRegion="polite"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/layout_home_admin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                style="@style/AppTextSecondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:accessibilityHeading="true"
+                android:text="@string/home_dashboard_admin" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_home_catalog"
+                style="@style/HomeMenuItem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/admin_catalog_title"
+                app:icon="@drawable/ic_nav_recipes" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>
