@@ -194,15 +194,17 @@
     <string name="nav_profile">Profile</string>
 
     <!-- Home Fragment -->
+    <!-- Home Fragment -->
     <string name="home_title">Discover recipes</string>
     <string name="home_subtitle">Find inspiration for your next meal.</string>
+
     <string name="home_dashboard_guest">Exploring as a guest</string>
     <string name="home_dashboard_member">Welcome back</string>
-    <string name="home_dashboard_can_make">Cook with available ingredients · Preview</string>
+    <string name="home_dashboard_can_make">Cook from pantry</string>
     <string name="home_dashboard_feed_title">Explore recipes</string>
     <string name="home_dashboard_feed_label">Show recipes</string>
 
-    <string name="home_dashboard_preview_notice">PREVIEW: Recipes, monthly ratings and history are sample data. No viewing or cooking history is recorded, and your personal pantry is not read.</string>
+    <string name="home_dashboard_preview_notice">Preview · Sample data</string>
 
     <string name="home_dashboard_tools">More tools</string>
     <string name="home_dashboard_proposals">Category proposals · Preview</string>
@@ -211,15 +213,15 @@
     <string name="home_dashboard_role_error">Administrator access could not be checked. Reopen Home to retry.</string>
 
     <string name="home_dashboard_sign_in">Sign in</string>
-    <string name="home_dashboard_personal_access">Sign in with a verified account to explore this preview. The displayed history and pantry examples are sample data.</string>
-    <string name="home_dashboard_empty">No sample recipes are available for this view.</string>
-    <string name="home_dashboard_pantry_empty">No sample recipe has all ingredients in the sample pantry. Your personal pantry has not been checked.</string>
+    <string name="home_dashboard_personal_access">Sign in to explore this view.</string>
+    <string name="home_dashboard_empty">No recipes to show.</string>
+    <string name="home_dashboard_pantry_empty">No matching recipes in the demo pantry.</string>
 
-    <string name="home_dashboard_monthly_rating">Sample monthly average: %1$.1f/5 · %2$d ratings</string>
-    <string name="home_dashboard_published">Sample publication: %1$s</string>
-    <string name="home_dashboard_viewed">Sample viewing: %1$s</string>
-    <string name="home_dashboard_cooked">Sample cooking start: %1$s</string>
-    <string name="home_dashboard_available">All ingredient types are present in the sample pantry.</string>
+    <string name="home_dashboard_monthly_rating">%1$.1f/5 · %2$d ratings this month</string>
+    <string name="home_dashboard_published">Published %1$s</string>
+    <string name="home_dashboard_viewed">Viewed %1$s</string>
+    <string name="home_dashboard_cooked">Cooking started %1$s</string>
+    <string name="home_dashboard_available">Ingredients available</string>
 
     <string-array name="home_dashboard_modes">
         <item>Popular</item>
@@ -230,16 +232,16 @@
     </string-array>
 
     <string-array name="home_dashboard_descriptions">
-        <item>Ordered by sample average rating over the past month.</item>
-        <item>Ordered by sample publication date, newest first.</item>
-        <item>Sample viewing history from the past seven days. Opening a recipe does not change this sample history.</item>
-        <item>Sample cooking-mode starts, newest first. No cooking session is started here.</item>
-        <item>Uses the existing sample pantry by ingredient presence only. Quantities and expiry are not checked.</item>
+        <item>Top rated this month.</item>
+        <item>Latest recipes first.</item>
+        <item>Example viewing history · Last 7 days.</item>
+        <item>Example cooking history · Latest first.</item>
+        <item>Demo pantry matches · Ingredients only, without quantity or expiry checks.</item>
     </string-array>
 
     <plurals name="home_dashboard_count">
-        <item quantity="one">%d sample recipe</item>
-        <item quantity="other">%d sample recipes</item>
+        <item quantity="one">%d recipe</item>
+        <item quantity="other">%d recipes</item>
     </plurals>
 
     <string name="guest_access_title">Login required</string>
