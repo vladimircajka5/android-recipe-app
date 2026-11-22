@@ -47,7 +47,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:paddingHorizontal="24dp"
-                android:paddingVertical="24dp">
+                android:paddingTop="16dp"
+                android:paddingBottom="24dp">
 
                 <TextView
                     style="@style/AppTitle"
@@ -60,25 +61,40 @@
                     style="@style/AppText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="6dp"
                     android:text="@string/home_subtitle" />
 
                 <TextView
-                    android:id="@+id/tv_home_feed_heading"
-                    style="@style/AppSubtitle"
+                    style="@style/AppTextSecondary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:accessibilityHeading="true"
-                    android:text="@string/home_dashboard_feed_title" />
+                    android:layout_marginTop="8dp"
+                    android:text="@string/home_dashboard_preview_notice" />
 
-                <TextView
-                    style="@style/AppText"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:labelFor="@id/spinner_home_feed"
-                    android:text="@string/home_dashboard_feed_label" />
+                    android:layout_marginTop="20dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/AppText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:labelFor="@id/spinner_home_feed"
+                        android:text="@string/home_dashboard_feed_label" />
+
+                    <TextView
+                        android:id="@+id/tv_home_feed_count"
+                        style="@style/AppTextSecondary"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:accessibilityLiveRegion="polite" />
+
+                </LinearLayout>
 
                 <Spinner
                     android:id="@+id/spinner_home_feed"
@@ -93,24 +109,7 @@
                     style="@style/AppTextSecondary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp" />
-
-                <TextView
-                    style="@style/AppTextSecondary"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:background="@color/app_surface"
-                    android:padding="12dp"
-                    android:text="@string/home_dashboard_preview_notice" />
-
-                <TextView
-                    android:id="@+id/tv_home_feed_count"
-                    style="@style/AppTextSecondary"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:accessibilityLiveRegion="polite" />
+                    android:layout_marginTop="4dp" />
 
                 <TextView
                     android:id="@+id/tv_home_feed_empty"
