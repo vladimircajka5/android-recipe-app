@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_menu_open">Open navigation menu</string>
+    <string name="home_menu_close">Close navigation menu</string>
+    <string name="home_menu_title">Your kitchen</string>
+    <string name="home_menu_subtitle">Recipes, inspiration and kitchen essentials.</string>
+</resources>

@@ -10,10 +10,14 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.appbar.MaterialToolbar;
 import com.siit.recipeapp.MainActivity;
 import com.siit.recipeapp.R;
 import com.siit.recipeapp.data.model.account.UserRole;
@@ -65,6 +69,8 @@ public class HomeFragment extends Fragment {
             @Nullable Bundle savedInstanceState) {
 
         super.onViewCreated(root, savedInstanceState);
+
+        setupDrawer(root);
 
         root.findViewById(R.id.btn_home_search_recipes)
                 .setOnClickListener(v -> open(new RecipeSearchFragment()));
@@ -127,9 +133,66 @@ public class HomeFragment extends Fragment {
                     selectedMode = HomePreviewData.CAN_MAKE;
                     feed.setSelection(selectedMode);
                     renderFeed(root);
+                    closeMenu(root);
+                    root.findViewById(R.id.scroll_home).scrollTo(0, 0);
                 });
 
         renderFeed(root);
+    }
+    private void setupDrawer(View root) {
+        DrawerLayout drawer = root.findViewById(R.id.drawer_home);
+        MaterialToolbar toolbar = root.findViewById(R.id.toolbar_home);
+
+        drawer.setScrimColor(0x66000000);
+        drawer.setDrawerTitle(
+                GravityCompat.END, getString(R.string.home_menu_title));
+
+        toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_home_menu) {
+                drawer.openDrawer(GravityCompat.END);
+                return true;
+            }
+
+            return false;
+        });
+
+        root.findViewById(R.id.btn_home_menu_close)
+                .setOnClickListener(v ->
+                        drawer.closeDrawer(GravityCompat.END));
+
+        OnBackPressedCallback closeDrawerOnBack =
+                new OnBackPressedCallback(false) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        drawer.closeDrawer(GravityCompat.END);
+                    }
+                };
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(
+                getViewLifecycleOwner(), closeDrawerOnBack);
+
+        drawer.addDrawerListener(new DrawerLayout.SimpleDrawerListener() {
+            @Override
+            public void onDrawerSlide(
+                    @NonNull View drawerView, float slideOffset) {
+                closeDrawerOnBack.setEnabled(slideOffset > 0f);
+            }
+
+            @Override
+            public void onDrawerOpened(@NonNull View drawerView) {
+                closeDrawerOnBack.setEnabled(true);
+                refreshAccess(root);
+            }
+
+            @Override
+            public void onDrawerClosed(@NonNull View drawerView) {
+                closeDrawerOnBack.setEnabled(false);
+            }
+        });
+    }
+    private void closeMenu(View root) {
+        DrawerLayout drawer = root.findViewById(R.id.drawer_home);
+        drawer.closeDrawer(GravityCompat.END, false);
     }
 
     @Override
@@ -145,12 +208,9 @@ public class HomeFragment extends Fragment {
     }
 
     private void renderFeed(View root) {
-        LinearLayout recipes = root.findViewById(
-                R.id.layout_home_recipes);
-        TextView empty = root.findViewById(
-                R.id.tv_home_feed_empty);
-        TextView count = root.findViewById(
-                R.id.tv_home_feed_count);
+        LinearLayout recipes = root.findViewById(R.id.layout_home_recipes);
+        TextView empty = root.findViewById(R.id.tv_home_feed_empty);
+        TextView count = root.findViewById(R.id.tv_home_feed_count);
 
         recipes.removeAllViews();
 
@@ -340,6 +400,11 @@ public class HomeFragment extends Fragment {
             return;
         }
 
+        View root = getView();
+        if (root != null) {
+            closeMenu(root);
+        }
+
         getParentFragmentManager()
                 .beginTransaction()
                 .setReorderingAllowed(true)
@@ -351,6 +416,11 @@ public class HomeFragment extends Fragment {
     private void openProtected(Fragment fragment) {
         if (!isResumed() || getParentFragmentManager().isStateSaved()) {
             return;
+        }
+
+        View root = getView();
+        if (root != null) {
+            closeMenu(root);
         }
 
         ((MainActivity) requireActivity()).openProtectedFragment(fragment);

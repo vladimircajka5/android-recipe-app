@@ -49,6 +49,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.ext.junit)
+    implementation(libs.drawerlayout)
 
     // Firebase BoM
     implementation(platform(libs.firebase.bom))

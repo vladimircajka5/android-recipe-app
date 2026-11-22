@@ -1,5 +1,6 @@
 [versions]
 agp = "9.5.0"
+drawerlayout = "1.2.0"
 junit = "4.13.2"
 junitVersion = "1.3.0"
 espressoCore = "3.7.0"
@@ -16,6 +17,7 @@ googleServices = "4.4.2"
 glide = "4.16.0"
 
 [libraries]
+drawerlayout = { module = "androidx.drawerlayout:drawerlayout", version.ref = "drawerlayout" }
 google-firebase-auth = { module = "com.google.firebase:firebase-auth" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
