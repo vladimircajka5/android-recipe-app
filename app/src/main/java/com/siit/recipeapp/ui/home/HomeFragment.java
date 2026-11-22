@@ -31,6 +31,7 @@ import com.siit.recipeapp.ui.preview.RecipeSearchPreviewData.Recipe;
 import com.siit.recipeapp.ui.proposals.CategoryProposalsFragment;
 import com.siit.recipeapp.ui.recipe.RecipeDetailFragment;
 import com.siit.recipeapp.ui.search.RecipeSearchFragment;
+import com.siit.recipeapp.ui.map.RecipeMapFragment;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -74,6 +75,9 @@ public class HomeFragment extends Fragment {
 
         root.findViewById(R.id.btn_home_search_recipes)
                 .setOnClickListener(v -> open(new RecipeSearchFragment()));
+
+        root.findViewById(R.id.btn_home_recipe_map)
+                .setOnClickListener(v -> open(new RecipeMapFragment()));
 
         root.findViewById(R.id.btn_home_notifications)
                 .setOnClickListener(v ->
