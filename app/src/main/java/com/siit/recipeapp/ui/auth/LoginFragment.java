@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.transition.MaterialSharedAxis;
 import com.siit.recipeapp.R;
 import com.siit.recipeapp.data.model.account.UserRole;
 import com.siit.recipeapp.data.repository.AuthRepository;
@@ -61,8 +62,10 @@ public class LoginFragment extends Fragment {
 
         // Otvaranje Register ekrana
         btnRegister.setOnClickListener(v -> {
+
             getParentFragmentManager()
                     .beginTransaction()
+                    .setReorderingAllowed(true)
                     .replace(R.id.fragment_container, new RegisterFragment())
                     .addToBackStack(null)
                     .commit();
@@ -220,6 +223,28 @@ public class LoginFragment extends Fragment {
                 .replace(R.id.fragment_container, new HomeFragment())
                 .commit();
     }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // ===== Tranzicije =====
+
+        // Odlazak na Register - nagore
+        MaterialSharedAxis forward =
+                new MaterialSharedAxis(MaterialSharedAxis.Y, true);
+
+        forward.setDuration(300);
+        setExitTransition(forward);
+
+        // Povratak sa Register ekrana - nadole
+        MaterialSharedAxis backward =
+                new MaterialSharedAxis(MaterialSharedAxis.Y, false);
+
+        backward.setDuration(300);
+        setReenterTransition(backward);
+    }
+
 
     // Uklanjanje animacije kada se ekran ukloni
     @Override

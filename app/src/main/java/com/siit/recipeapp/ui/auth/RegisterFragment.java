@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.transition.MaterialSharedAxis;
 import com.siit.recipeapp.R;
 import com.siit.recipeapp.data.repository.AuthRepository;
 import com.siit.recipeapp.data.repository.firebase.FirebaseAuthRepository;
@@ -164,5 +165,26 @@ public class RegisterFragment extends Fragment {
         }
 
         super.onDestroyView();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // ===== Tranzicije =====
+
+        // Dolazak sa Login ekrana - nagore
+        MaterialSharedAxis forward =
+                new MaterialSharedAxis(MaterialSharedAxis.Y, true);
+
+        forward.setDuration(300);
+        setEnterTransition(forward);
+
+        // Povratak na Login ekran - nadole
+        MaterialSharedAxis backward =
+                new MaterialSharedAxis(MaterialSharedAxis.Y, false);
+
+        backward.setDuration(300);
+        setReturnTransition(backward);
     }
 }
